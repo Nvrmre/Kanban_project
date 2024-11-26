@@ -3,7 +3,6 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
-use phpDocumentor\Reflection\Types\Nullable;
 
 return new class extends Migration
 {
@@ -12,13 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('boards', function (Blueprint $table) {
+        Schema::create('settings', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->longText('description')->nullable();
-            $table->foreignId('user_id')->constrained('users.id');
-            $table->timestamp('created_at');
-            $table->timestamps('updated_at');
+            $table->text('value');
+            $table->timestamps();
         });
     }
 
@@ -27,6 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('boards');
+        Schema::dropIfExists('settings');
     }
 };
