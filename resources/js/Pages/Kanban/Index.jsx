@@ -1,7 +1,9 @@
 import React, { useState } from "react";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
-import TaskModal from "../../Components/TaskModal";
-import AddTaskModal from "../../Components/AddTaskModal";
+import TaskModal from "@/Components/TaskModal";
+import AddTaskModal from "@/Components/AddTaskModal";
+import DeleteModal from "@/Components/DeleteModal";
+import { FaRegTrashAlt } from "react-icons/fa";
 
 const initialColumns = {
     backlog: {
@@ -73,13 +75,19 @@ const initialColumns = {
 
 function Kanban() {
     const [columns, setColumns] = useState(initialColumns);
-    const [columnOrder, setColumnOrder] = useState([
-        "backlog",
-        "waiting",
-        "done",
-    ]);
-    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [columnOrder, setColumnOrder] = useState(["backlog", "waiting", "done"]);
+
+    // State untuk modal TaskModal
+    const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
     const [selectedTask, setSelectedTask] = useState(null);
+
+    // State untuk modal AddTaskModal
+    const [isAddTaskModalOpen, setIsAddTaskModalOpen] = useState(false);
+
+    // state untuk modal DeleteModal
+    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+    const [modalTitle, setModalTitle] = useState(""); // Untuk judul modal
+
 
     const onDragEnd = (result) => {
         const { source, destination, type } = result;
@@ -129,37 +137,50 @@ function Kanban() {
         }
     };
 
-    const openModal = (task) => {
+    const openTaskModal = (task) => {
         setSelectedTask(task);
-        setIsModalOpen(true);
+        setIsTaskModalOpen(true);
     };
 
-    const closeModal = () => {
-        setIsModalOpen(false);
+    const closeTaskModal = () => {
+        setIsTaskModalOpen(false);
         setSelectedTask(null);
     };
 
-    const [isModalOpenAddTask, setIsModalOpenAddTask] = useState(false);
-    const openModalAddTask = () => {
-        setIsModalOpenAddTask(true);
+    const openAddTaskModal = () => {
+        setIsAddTaskModalOpen(true);
     };
 
-    const closeModalAddTask = () => {
-        setIsModalOpenAddTask(false);
+    const closeAddTaskModal = () => {
+        setIsAddTaskModalOpen(false);
     };
+
+    const openDeleteModal = (title) => {
+        setModalTitle(title); // Set judul modal sesuai nama kolom atau task
+        setIsDeleteModalOpen(true); // Buka modal
+    };
+    
+    const closeDeleteModal = () => {
+        setIsDeleteModalOpen(false); // Tutup modal
+    };
+    
 
     const renderPriorityIcon = (priority) => {
-        switch (priority) {
-            case "High":
-                return <span className="text-red-500">⬆</span>;
-            case "Medium":
-                return <span className="text-orange-500">➡</span>;
-            case "Low":
-                return <span className="text-green-500">⬇</span>;
-            default:
-                return null;
-        }
+        return (
+            <div
+                className={`absolute top-0 left-0 h-full w-2 rounded-l ${
+                    priority === "High"
+                        ? "bg-red-500"
+                        : priority === "Medium"
+                        ? "bg-yellow-500"
+                        : priority === "Low"
+                        ? "bg-green-500"
+                        : "bg-gray-300"
+                }`}
+            ></div>
+        );
     };
+    
 
     const renderChecklist = (checklist) => {
         const completedCount = checklist.filter(
@@ -177,24 +198,24 @@ function Kanban() {
 
     return (
         <div className="p-6 bg-gray-100 min-h-screen">
-            <h1 className="text-xl font-semibold text-gray-700">
-                Boards / Main Board
-            </h1>
-            <div className="mt-2 flex items-center space-x-2">
-                <span className="text-gray-600">Show Priority:</span>
-                <button className="px-3 py-1 text-sm bg-blue-500 text-white rounded">
-                    All
-                </button>
-                <button className="px-3 py-1 text-sm bg-gray-200 text-gray-700 rounded">
-                    Hard
-                </button>
-                <button className="px-3 py-1 text-sm bg-gray-200 text-gray-700 rounded">
-                    Medium
-                </button>
-                <button className="px-3 py-1 text-sm bg-gray-200 text-gray-700 rounded">
-                    Low
-                </button>
-            </div>
+        <h1 className="text-xl font-semibold text-gray-700">
+            Boards / Main Board
+        </h1>
+        <div className="mt-2 flex items-center space-x-2">
+            <span className="text-gray-600">Show Priority:</span>
+            <button className="px-3 py-1 text-sm bg-blue-500 text-white rounded">
+                All
+            </button>
+            <button className="px-3 py-1 text-sm bg-gray-200 text-gray-700 rounded">
+                Hard
+            </button>
+            <button className="px-3 py-1 text-sm bg-gray-200 text-gray-700 rounded">
+                Medium
+            </button>
+            <button className="px-3 py-1 text-sm bg-gray-200 text-gray-700 rounded">
+                Low
+            </button>
+        </div>
 
             <DragDropContext onDragEnd={onDragEnd}>
                 <Droppable
@@ -218,16 +239,28 @@ function Kanban() {
                                     >
                                         {(provided) => (
                                             <div
+                                                
                                                 {...provided.draggableProps}
                                                 ref={provided.innerRef}
                                                 className="bg-white rounded shadow p-4 w-96 transition-transform duration-200 h-fit"
                                             >
                                                 <div
                                                     {...provided.dragHandleProps}
-                                                    className="mb-4 text-lg font-semibold text-blue-600 cursor-move w-60"
+                                                    className="mb-3 text-lg font-semibold text-gray-100 cursor-move w-full bg-blue-500 p-2 rounded"
                                                 >
                                                     {column.name}
+                                                    <button
+                                                        className="float-end text-gray-100 hover:text-gray-400"
+                                                        onClick={(e) => {
+                                                            e.stopPropagation(); // Prevent opening the modal
+                                                            openDeleteModal(`Delete Card: ${column.name}`);
+                                                            // deleteTask(columnId, task.id);
+                                                        }}
+                                                    >
+                                                        <FaRegTrashAlt  className="my-1 w-5 h-5"/>
+                                                    </button>
                                                 </div>
+                                                
                                                 <Droppable
                                                     droppableId={columnId}
                                                     type="TASK"
@@ -235,80 +268,45 @@ function Kanban() {
                                                     {(provided) => (
                                                         <div
                                                             {...provided.droppableProps}
-                                                            ref={
-                                                                provided.innerRef
-                                                            }
+                                                            ref={provided.innerRef}
                                                             className={`min-h-0 p-2 border rounded ${
-                                                                column.tasks
-                                                                    .length ===
-                                                                0
+                                                                column.tasks.length === 0
                                                                     ? "border-dashed border-transparent"
                                                                     : "border-transparent"
                                                             }`}
                                                         >
-                                                            {column.tasks.map(
-                                                                (
-                                                                    task,
-                                                                    index
-                                                                ) => (
-                                                                    <Draggable
-                                                                        draggableId={
-                                                                            task.id
-                                                                        }
-                                                                        index={
-                                                                            index
-                                                                        }
-                                                                        key={
-                                                                            task.id
-                                                                        }
-                                                                    >
-                                                                        {(
-                                                                            provided,
-                                                                            snapshot
-                                                                        ) => (
-                                                                            <div
-                                                                                ref={
-                                                                                    provided.innerRef
-                                                                                }
-                                                                                {...provided.draggableProps}
-                                                                                {...provided.dragHandleProps}
-                                                                                className={`bg-gray-50 p-3 rounded shadow mb-3 cursor-pointer transition-transform duration-200 ${
-                                                                                    snapshot.isDragging
-                                                                                        ? "bg-blue-100 scale-105"
-                                                                                        : ""
-                                                                                }`}
-                                                                                onClick={() =>
-                                                                                    openModal(
-                                                                                        task
-                                                                                    )
-                                                                                }
-                                                                            >
-                                                                                <div className="flex justify-between">
-                                                                                    <span>
-                                                                                        {
-                                                                                            task.title
-                                                                                        }
-                                                                                    </span>
-
-                                                                                    {renderPriorityIcon(
-                                                                                        task.priority
-                                                                                    )}
-                                                                                </div>
-                                                                                {task
-                                                                                    .checklist
-                                                                                    .length >
-                                                                                    0 &&
-                                                                                    renderChecklist(
-                                                                                        task.checklist
-                                                                                    )}
+                                                            {column.tasks.map((task, index) => (
+                                                                <Draggable
+                                                                    draggableId={task.id}
+                                                                    index={index}
+                                                                    key={task.id}
+                                                                >
+                                                                    {(provided, snapshot) => (
+                                                                        <div
+                                                                            ref={provided.innerRef}
+                                                                            {...provided.draggableProps}
+                                                                            {...provided.dragHandleProps}
+                                                                            className={`relative bg-gray-50 p-3 rounded shadow mb-3 cursor-pointer transition-transform duration-200 ${
+                                                                                snapshot.isDragging
+                                                                                    ? "bg-blue-100 scale-105"
+                                                                                    : ""
+                                                                            }`}
+                                                                            onClick={() => openTaskModal(task)}
+                                                                        >
+                                                                            
+                                                                            <div className="flex justify-between ">
+                                                                                <span className="ml-2">{task.title}</span>
+                                                                                {renderPriorityIcon(task.priority)}
                                                                             </div>
-                                                                        )}
-                                                                    </Draggable>
-                                                                )
-                                                            )}
-                                                            {
-                                                                provided.placeholder
-                                                            }
+                                                                            {task.checklist.length > 0 && (
+                                                                                <div className="ml-2">{renderChecklist(task.checklist)}</div>
+                                                                            )}
+
+                                                                        </div>
+                                                                    )}
+                                                                </Draggable>
+                                                            ))}
+                                                            {provided.placeholder}
                                                         </div>
                                                     )}
                                                 </Droppable>
@@ -318,34 +316,50 @@ function Kanban() {
                                 );
                             })}
                             {provided.placeholder}
-                            <div className="pt-4">
-                                <input
-                                    className="bg-white hover:bg-blue-50 text-blue-700 font-bold rounded-xl text-base w-44"
-                                    type="text"
-                                    placeholder="Add New Column"
-                                />
+                            <div className="flex justify-center p-1">
+                                {/* form add task card ketika dienter maka akan membuat task card  */}
+                                <form autoComplete='off' className=''>
+                                    <input maxLength='20' className='truncate bg-white placeholder-indigo-500 text-indigo-800 bg-indigo-50 px-2 outline-none py-1 rounded-sm ring-1 focus:ring-indigo-500' type="text" name='newCol' placeholder='Add a new Task Card' />
+                                </form>
                             </div>
                         </div>
                     )}
+                
+                    
                 </Droppable>
             </DragDropContext>
 
-            <div className="fixed bottom-4 right-4">
-                <button
-                    className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full text-3xl"
-                    onClick={openModalAddTask}
-                >
-                    +
-                </button>
-            </div>
+
+            <button
+                className="fixed bottom-4 right-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full text-3xl"
+                onClick={openAddTaskModal}
+            >
+                +
+            </button>
+
             <TaskModal
-                isOpen={isModalOpen}
-                onClose={closeModal}
+                isOpen={isTaskModalOpen}
+                onClose={closeTaskModal}
                 task={selectedTask}
             />
-            <AddTaskModal isOpen={isModalOpen} onClose={closeModal} />
+            <AddTaskModal
+                isOpen={isAddTaskModalOpen}
+                onClose={closeAddTaskModal}
+            />
+
+            <DeleteModal
+                isOpen={isDeleteModalOpen}
+                onClose={closeDeleteModal}
+                onDelete={() => {
+                    console.log("Delete action triggered");
+                    closeDeleteModal(); // Tutup modal setelah menghapus
+                }}
+                title={modalTitle}
+            />
+
         </div>
     );
 }
 
 export default Kanban;
+

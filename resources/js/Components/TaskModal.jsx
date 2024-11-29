@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
+import DeleteModal from "@/Components/DeleteModal";
 
 const TaskModal = ({ isOpen, onClose, task }) => {
     // Add a guard clause if task is null
@@ -7,6 +8,7 @@ const TaskModal = ({ isOpen, onClose, task }) => {
 
     const [checklist, setChecklist] = useState(task.checklist || []);
     const [newTask, setNewTask] = useState("");
+    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
     // Handle the drag-and-drop logic
     const handleDragEnd = (result) => {
@@ -188,12 +190,19 @@ const TaskModal = ({ isOpen, onClose, task }) => {
 
                     {/* Delete Button */}
                     <div>
-                        <button className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600">
+                        <button className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
+                        onClick={() => setIsDeleteModalOpen(true)}
+                        >
                             Delete Task
                         </button>
                     </div>
                 </div>
             </div>
+            <DeleteModal
+                isOpen={isDeleteModalOpen}
+                onClose={() => setIsDeleteModalOpen(false)} // Close DeleteModal
+                title="Delete Task"
+            />
         </div>
     );
 };
