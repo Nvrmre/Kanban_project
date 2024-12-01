@@ -30,6 +30,12 @@ export default function AuthenticatedLayout({ header, children }) {
                                 >
                                     Dashboard
                                 </NavLink>
+                                <NavLink
+                                    // href={route('kanban.index')}
+                                    // active={route().current('kanban.index')}
+                                >
+                                    Kanban
+                                </NavLink>
                             </div>
                         </div>
 
