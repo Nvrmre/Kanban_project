@@ -30,7 +30,7 @@ export default function Register() {
                     <input
                         className="text-sm w-full px-4 py-2 border border-solid border-gray-300 rounded"
                         type="text"
-                        placeholder="Email Address"
+                        placeholder="Name"
                         id="name"
                         name="name"
                         value={data.name}
