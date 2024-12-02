@@ -15,7 +15,8 @@ return new class extends Migration
             $table->id(); // Auto increment primary key
             $table->string('name'); // Nama board
             $table->longText('description')->nullable(); // Deskripsi board
-            $table->foreignId('user_id')->constrained(); // Menambahkan foreign key ke tabel users
+            $table->foreignId('created_by')->constrained('users'); // Menambahkan foreign key ke tabel users
+            $table->foreignId('updated_by')->constrained('users');
             $table->timestamps(); // Menambahkan kolom created_at dan updated_at
         });
     }

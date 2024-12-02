@@ -18,7 +18,7 @@ return new class extends Migration
             $table->enum('priority', ['low', 'medium', 'high']); // Prioritas (gunakan huruf kecil untuk konsistensi)
             $table->enum('status', ['to_do', 'in_progress', 'done']); // Status (gunakan snake_case untuk konsistensi)
             $table->foreignId('assigned_id')->constrained('users')->onDelete('cascade'); // Foreign key ke tabel users
-            $table->foreignId('board_id')->constrained('projects')->onDelete('cascade'); // Foreign key ke tabel boards
+            $table->foreignId('board_id')->constrained('boards'); // Foreign key ke tabel boards
             $table->date('due_date')->nullable(); // Tipe data due_date diperbaiki menjadi date
             $table->timestamps(); // Kolom created_at dan updated_at
         });
