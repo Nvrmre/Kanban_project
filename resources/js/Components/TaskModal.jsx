@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import DeleteModal from "@/Components/DeleteModal";
+import { FaTimes } from "react-icons/fa";
+
 
 const TaskModal = ({ isOpen, onClose, task }) => {
     // Add a guard clause if task is null
@@ -9,6 +11,7 @@ const TaskModal = ({ isOpen, onClose, task }) => {
     const [checklist, setChecklist] = useState(task.checklist || []);
     const [newTask, setNewTask] = useState("");
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+    const [newComment, setNewComment] = useState("");
 
     // Handle the drag-and-drop logic
     const handleDragEnd = (result) => {
@@ -42,6 +45,15 @@ const TaskModal = ({ isOpen, onClose, task }) => {
         setChecklist(updatedChecklist);
     };
 
+    // comments
+    const addComment = (e) => {
+        e.preventDefault();
+        if (newComment.trim() !== "") {
+            task.comments.push({ id: `c${task.comments.length + 1}`, name: "You", text: newComment });
+            setNewComment("");
+        }
+    };
+
     return (
         <div className="fixed inset-0 bg-black bg-opacity-40 flex justify-center items-center z-50">
             <div className="bg-white w-full max-w-4xl p-6 rounded-lg shadow-lg relative max-h-[80vh] overflow-y-auto">
@@ -50,7 +62,7 @@ const TaskModal = ({ isOpen, onClose, task }) => {
                     className="absolute top-4 right-4 text-gray-500 hover:text-gray-700"
                     onClick={onClose}
                 >
-                    ✖
+                    <FaTimes className="text-2xl"/>
                 </button>
 
                 {/* Modal Content */}
@@ -196,6 +208,43 @@ const TaskModal = ({ isOpen, onClose, task }) => {
                             Delete Task
                         </button>
                     </div>
+
+                    {/* Comments */}
+                    <div>
+                        <h2 className="text-lg font-semibold text-gray-700">COMMENTS:</h2>
+                        <div className="space-y-2 mt-2">
+                            {task.comments.map((comment) => (
+                                <div
+                                    key={comment.id}
+                                    className="bg-gray-100 p-2 rounded shadow"
+                                >
+                                    <strong className="text-blue-600">
+                                        {comment.name}:
+                                    </strong>{" "}
+                                    <span>{comment.text}</span>
+                                </div>
+                            ))}
+                        </div>
+                        <form
+                            className="mt-3 flex items-center space-x-2"
+                            onSubmit={addComment}
+                        >
+                            <input
+                                type="text"
+                                placeholder="Add a comment"
+                                value={newComment}
+                                onChange={(e) => setNewComment(e.target.value)}
+                                className="flex-1 border border-gray-300 rounded p-2"
+                            />
+                            <button
+                                type="submit"
+                                className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+                            >
+                                Add
+                            </button>
+                        </form>
+                    </div>
+
                 </div>
             </div>
             <DeleteModal

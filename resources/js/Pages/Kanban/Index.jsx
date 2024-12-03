@@ -20,6 +20,10 @@ const initialColumns = {
                 status: "Backlog",
                 dateAdded: "11/28/2024",
                 checklist: [],
+                comments: [
+                    { id: "c1", name: "John Doe", text: "Great start!" },
+                    { id: "c2", name: "Jane Smith", text: "I like this feature!" },
+                ],
             },
             {
                 id: "2",
@@ -36,6 +40,7 @@ const initialColumns = {
                         completed: false,
                     },
                 ],
+                comments: [{ id: "c4", name: "Bob Lee", text: "Looks good so far." }],
             },
         ],
     },
@@ -51,6 +56,7 @@ const initialColumns = {
                 status: "Waiting",
                 dateAdded: "11/28/2024",
                 checklist: [],
+                comments: [],
             },
             {
                 id: "4",
@@ -64,6 +70,7 @@ const initialColumns = {
                     { id: "d", text: "Step 2", completed: false },
                     { id: "e", text: "Step 3", completed: false },
                 ],
+                comments: [{ id: "c4", name: "Bob Lee", text: "Looks good so far." }],
             },
         ],
     },

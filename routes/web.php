@@ -22,8 +22,16 @@ Route::get('/dashboard', function () {
 Route::get('/users/test', [UserController::class, 'show'])->name('users.test');
 
 Route::get('/kanban', function () {
-    return Inertia::render('Kanban/Index');
-});
+    return Inertia::render('Kanban/Index'); 
+})->name('kanban.index');
+
+Route::get('/setting', function () {
+    return Inertia::render('Setting/Index'); 
+})->name('setting.index');
+
+Route::get('/laporan', function () {
+    return Inertia::render('Laporan/Index'); 
+})->name('laporan.index');
 
 Route::get('/users', function () {
     $users = app(UserController::class)->index();
@@ -41,5 +49,10 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
+// Route::middleware('auth')->group(function () {
+//     Route::get('/setting', [ProfileController::class, 'edit'])->name('setting.edit');
+//     Route::patch('/setting', [ProfileController::class, 'update'])->name('setting.update');
+//     Route::delete('/setting', [ProfileController::class, 'destroy'])->name('setting.destroy');
+// });
 
 require __DIR__.'/auth.php';
