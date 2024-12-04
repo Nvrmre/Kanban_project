@@ -105,6 +105,9 @@ function Kanban() {
     // state untuk filter
     const [selectedPriority, setSelectedPriority] = useState("All");
 
+    // state untuk new board
+    const [newBoardName, setNewBoardName] = useState("");
+
 
 
     const onDragEnd = (result) => {
@@ -202,12 +205,30 @@ function Kanban() {
         closeColorModal(); 
     };
 
+     const handleAddBoard = (e) => {
+        e.preventDefault();
+        if (newBoardName.trim() === "") return;
+
+        const newColumnId = newBoardName.toLowerCase().replace(/\s+/g, "-");
+        const newColumn = {
+            id: newColumnId,
+            name: newBoardName,
+            tasks: [],
+        };
+
+        setColumns((prevColumns) => ({
+            ...prevColumns,
+            [newColumnId]: newColumn,
+        }));
+
+        setColumnOrder((prevOrder) => [...prevOrder, newColumnId]);
+        setNewBoardName(""); // Clear input after adding
+    };
+
     const handlePriorityClick = (priority) => {
         setSelectedPriority(priority);
     };
-    
-    
-
+        
     const renderPriorityIcon = (priority) => {
         return (
             <div
@@ -224,7 +245,6 @@ function Kanban() {
         );
     };
     
-
     const renderChecklist = (checklist) => {
         const completedCount = checklist.filter(
             (item) => item.completed
@@ -298,7 +318,6 @@ function Kanban() {
                                             >
                                                 {(provided) => (
                                                     <div
-                                                        
                                                         {...provided.draggableProps}
                                                         ref={provided.innerRef}
                                                         className="bg-white rounded shadow p-4 w-96 transition-transform duration-200 h-fit"
@@ -386,9 +405,17 @@ function Kanban() {
                                     })}
                                     {provided.placeholder}
                                     <div className="flex justify-center p-1">
-                                        {/* form add task card ketika dienter maka akan membuat task card  */}
-                                        <form autoComplete='off' className=''>
-                                            <input maxLength='20' className='truncate bg-white placeholder-indigo-500 text-indigo-800 bg-indigo-50 px-2 outline-none py-1 rounded-sm ring-1 focus:ring-indigo-500' type="text" name='newCol' placeholder='Add a new Task Card' />
+                                        {/* form add board ketika dienter maka akan membuat Board */}
+                                        <form autoComplete='off'onSubmit={handleAddBoard} className=''>
+                                            <input 
+                                            maxLength='20' 
+                                            className='truncate bg-white placeholder-indigo-500 text-indigo-800 bg-indigo-50 px-2 outline-none py-1 rounded-sm ring-1 focus:ring-indigo-500' 
+                                            type="text" 
+                                            name='newCol' 
+                                            placeholder='Add a new Board'
+                                            value={newBoardName}
+                                            onChange={(e) => setNewBoardName(e.target.value)}
+                                            />
                                         </form>
                                     </div>
                                 </div>
@@ -442,4 +469,5 @@ function Kanban() {
 }
 
 export default Kanban;
+
 

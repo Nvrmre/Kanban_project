@@ -81,33 +81,33 @@ export default function Dashboard() {
                             {projects.map((project, index) => (
                                 <div key={index} className="relative block p-4 bg-gray-100 border border-gray-300 rounded-lg shadow-sm hover:bg-blue-200 ">
                                     <div className="flex w-full items-start">
-    <Link href={`/kanban/${project.title.replace(/\s+/g, '-').toLowerCase()}`} className="flex-grow">
-        <div className="flex flex-col">
-            <h4 className="text-lg font-bold text-blue-700 font-medium">
-                {project.title}
-            </h4>
-            <p className="text-sm text-gray-600 truncate max-w-full">
-                {project.description}
-            </p>
-            <div className="flex justify-between text-xs text-gray-500">
-                <p>Date Added: {project.dateAdded}</p>
-                <p>Date Updated: {project.dateUpdated}</p>
-            </div>
-            <p className="text-sm text-gray-600">
-                Click to view
-            </p>
-        </div>
-    </Link>
+                                        <Link href={`/kanban/${project.title.replace(/\s+/g, '-').toLowerCase()}`} className="flex-grow">
+                                            <div className="flex flex-col">
+                                                <h4 className="text-lg font-bold text-blue-700 font-medium">
+                                                    {project.title}
+                                                </h4>
+                                                <p className="text-sm text-gray-600 truncate max-w-full">
+                                                    {project.description}
+                                                </p>
+                                                <div className="flex justify-between text-xs text-gray-500">
+                                                    <p>Date Added: {project.dateAdded}</p>
+                                                    <p>Date Updated: {project.dateUpdated}</p>
+                                                </div>
+                                                <p className="text-sm text-gray-600">
+                                                    Click to view
+                                                </p>
+                                            </div>
+                                        </Link>
 
-    <div className="ml-2 flex-shrink-0">
-        <button>
-            <FaRegTrashAlt 
-                onClick={openDeleteModal} 
-                className="text-red-500 hover:text-red-700"
-            />
-        </button>  
-    </div>
-</div>
+                                        <div className="ml-2 flex-shrink-0">
+                                            <button>
+                                                <FaRegTrashAlt 
+                                                    onClick={openDeleteModal} 
+                                                    className="text-red-500 hover:text-red-700"
+                                                />
+                                            </button>  
+                                        </div>
+                                    </div>
 
 
 
