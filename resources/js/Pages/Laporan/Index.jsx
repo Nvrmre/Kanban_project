@@ -8,9 +8,6 @@ import PrimaryButton from '@/Components/PrimaryButton';
 import { Link, useForm, usePage } from '@inertiajs/react';
 import { Transition } from '@headlessui/react';
 
-// import DeleteUserForm from './Partials/DeleteUserForm';
-// import UpdatePasswordForm from './Partials/UpdatePasswordForm';
-// import UpdateProfileInformationForm from './Partials/UpdateProfileInformationForm';
 
 export default function Setting () {
     return (

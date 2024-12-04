@@ -77,6 +77,19 @@ const TaskModal = ({ isOpen, onClose, task }) => {
                         </p>
                     </div>
 
+                    {/* Due Date */}
+                    <div>
+                        <h2 className="text-lg font-semibold text-gray-700">
+                                DUE DATE:
+                        </h2>
+                        <input
+                            type="date"
+                            value={task.dueDate || ""}
+                            onChange={(e) => (task.dueDate = e.target.value)} 
+                            className="w-25 border border-gray-300 rounded p-2 mt-1"
+                        />
+                    </div>
+
                     {/* Checklist */}
                     <div>
                         <h2 className="text-lg font-semibold text-gray-700">
@@ -134,7 +147,8 @@ const TaskModal = ({ isOpen, onClose, task }) => {
                                                             }
                                                             className="text-red-500 hover:text-red-700"
                                                         >
-                                                            ✖
+                                                            <FaTimes className="text-2xl"/>
+                                                            
                                                         </button>
                                                     </div>
                                                 )}
@@ -240,7 +254,7 @@ const TaskModal = ({ isOpen, onClose, task }) => {
                                 type="submit"
                                 className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
                             >
-                                Add
+                                Send
                             </button>
                         </form>
                     </div>

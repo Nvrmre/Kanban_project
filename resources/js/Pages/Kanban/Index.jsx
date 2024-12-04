@@ -3,8 +3,9 @@ import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import TaskModal from "@/Components/TaskModal";
 import AddTaskModal from "@/Components/AddTaskModal";
 import DeleteModal from "@/Components/DeleteModal";
-import { FaRegTrashAlt } from "react-icons/fa";
+import { FaRegTrashAlt,FaPen } from "react-icons/fa";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
+import EditCardModal from "@/Components/EditCardModal";
 
 const initialColumns = {
     backlog: {
@@ -96,6 +97,15 @@ function Kanban() {
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
     const [modalTitle, setModalTitle] = useState(""); // Untuk judul modal
 
+    // state unutk modal edit    cover board
+    const [isColorModalOpen, setIsColorModalOpen] = useState(false); // Untuk membuka modal
+    const [selectedColumnId, setSelectedColumnId] = useState(null); // Menyimpan ID kolom yang sedang diubah warna
+    const [columnColors, setColumnColors] = useState({});
+
+    // state untuk filter
+    const [selectedPriority, setSelectedPriority] = useState("All");
+
+
 
     const onDragEnd = (result) => {
         const { source, destination, type } = result;
@@ -171,6 +181,31 @@ function Kanban() {
     const closeDeleteModal = () => {
         setIsDeleteModalOpen(false); // Tutup modal
     };
+
+    const openColorModal = (columnId) => {
+        setSelectedColumnId(columnId);
+        setIsColorModalOpen(true);
+    };
+    
+    const closeColorModal = () => {
+        setIsColorModalOpen(false);
+        setSelectedColumnId(null);
+    };
+    
+    const changeColumnColor = (color) => {
+        if (selectedColumnId) {
+            setColumnColors((prevColors) => ({
+                ...prevColors,
+                [selectedColumnId]: color,
+            }));
+        }
+        closeColorModal(); 
+    };
+
+    const handlePriorityClick = (priority) => {
+        setSelectedPriority(priority);
+    };
+    
     
 
     const renderPriorityIcon = (priority) => {
@@ -208,23 +243,38 @@ function Kanban() {
         <AuthenticatedLayout>
             <div className="p-6 bg-gray-100 min-h-screen">
                 <h1 className="text-xl font-semibold text-gray-700">
-                    Boards / Main Board
+                    Boards / Main Board  
+                    {/* ini nanti "Main Board akan diganti sama kayak judul board yang nantinya user buat" */}
                 </h1>
+                
                 <div className="mt-2 flex items-center space-x-2">
                     <span className="text-gray-600">Show Priority:</span>
-                    <button className="px-3 py-1 text-sm bg-blue-500 text-white rounded">
+                        <button
+                            className={`px-3 py-1 text-sm ${selectedPriority === "All" ? "bg-blue-500 text-white" : "bg-gray-200 text-gray-700"} rounded`}
+                            onClick={() => handlePriorityClick("All")}
+                        >
                         All
-                    </button>
-                    <button className="px-3 py-1 text-sm bg-gray-200 text-gray-700 rounded">
-                        Hard
-                    </button>
-                    <button className="px-3 py-1 text-sm bg-gray-200 text-gray-700 rounded">
+                        </button>
+                        <button
+                            className={`px-3 py-1 text-sm ${selectedPriority === "High" ? "bg-blue-500 text-white" : "bg-gray-200 text-gray-700"} rounded`}
+                            onClick={() => handlePriorityClick("High")}
+                        >
+                        High
+                        </button>
+                        <button
+                            className={`px-3 py-1 text-sm ${selectedPriority === "Medium" ? "bg-blue-500 text-white" : "bg-gray-200 text-gray-700"} rounded`}
+                            onClick={() => handlePriorityClick("Medium")}
+                        >
                         Medium
-                    </button>
-                    <button className="px-3 py-1 text-sm bg-gray-200 text-gray-700 rounded">
+                        </button>
+                        <button
+                            className={`px-3 py-1 text-sm ${selectedPriority === "Low" ? "bg-blue-500 text-white" : "bg-gray-200 text-gray-700"} rounded`}
+                            onClick={() => handlePriorityClick("Low")}
+                        >
                         Low
-                    </button>
-                </div>
+                        </button>
+                    </div>
+
         
                     <DragDropContext onDragEnd={onDragEnd}>
                         <Droppable
@@ -253,11 +303,17 @@ function Kanban() {
                                                         ref={provided.innerRef}
                                                         className="bg-white rounded shadow p-4 w-96 transition-transform duration-200 h-fit"
                                                     >
-                                                        <div
-                                                            {...provided.dragHandleProps}
-                                                            className="mb-3 text-lg font-semibold text-gray-100 cursor-move w-full bg-blue-500 p-2 rounded"
-                                                        >
+                                                            <div
+                                                               {...provided.dragHandleProps}
+                                                               className={`mb-3 text-lg font-semibold text-gray-100 cursor-move w-full p-2 rounded`}
+                                                               style={{
+                                                                   backgroundColor: columnColors[column.id] || "#3b82f6", // Warna default biru
+                                                               }}
+                                                            >
                                                             {column.name}
+
+                                                            
+
                                                             <button
                                                                 className="float-end text-gray-100 hover:text-gray-400"
                                                                 onClick={(e) => {
@@ -268,9 +324,19 @@ function Kanban() {
                                                             >
                                                                 <FaRegTrashAlt  className="my-1 w-5 h-5"/>
                                                             </button>
+
+                                                            <button
+                                                                className="float-end text-gray-100 hover:text-gray-400 me-2"
+                                                                onClick={(e) => {
+                                                                e.stopPropagation();
+                                                                openColorModal(columnId);
+                                                                }}
+                                                            >
+                                                                <FaPen className="my-1 w-5 h-5"/>
+                                                            </button>
                                                         </div>
                                                         
-                                                        <Droppable
+                                                        <Droppable  
                                                             droppableId={columnId}
                                                             type="TASK"
                                                         >
@@ -284,37 +350,31 @@ function Kanban() {
                                                                             : "border-transparent"
                                                                     }`}
                                                                 >
-                                                                    {column.tasks.map((task, index) => (
-                                                                        <Draggable
-                                                                            draggableId={task.id}
-                                                                            index={index}
-                                                                            key={task.id}
-                                                                        >
-                                                                            {(provided, snapshot) => (
-                                                                                <div
-                                                                                    ref={provided.innerRef}
-                                                                                    {...provided.draggableProps}
-                                                                                    {...provided.dragHandleProps}
-                                                                                    className={`relative bg-gray-50 p-3 rounded shadow mb-3 cursor-pointer transition-transform duration-200 ${
-                                                                                        snapshot.isDragging
-                                                                                            ? "bg-blue-100 scale-105"
-                                                                                            : ""
-                                                                                    }`}
-                                                                                    onClick={() => openTaskModal(task)}
-                                                                                >
-                                                                                    
-                                                                                    <div className="flex justify-between ">
-                                                                                        <span className="ml-2">{task.title}</span>
-                                                                                        {renderPriorityIcon(task.priority)}
+                                                                    {column.tasks.map((task, index) => {
+                                                                        const isHighlighted = selectedPriority === "All" || task.priority === selectedPriority;
+                                                                        return (
+                                                                            <Draggable draggableId={task.id} index={index} key={task.id}>
+                                                                                {(provided, snapshot) => (
+                                                                                    <div
+                                                                                        ref={provided.innerRef}
+                                                                                        {...provided.draggableProps}
+                                                                                        {...provided.dragHandleProps}
+                                                                                        className={`relative bg-gray-50 p-3 rounded shadow mb-3 cursor-pointer transition-transform duration-200 ${snapshot.isDragging ? "bg-blue-100 scale-105" : ""}`}
+                                                                                        style={{ opacity: isHighlighted ? 1 : 0.5 }}
+                                                                                        onClick={() => openTaskModal(task)}
+                                                                                    >
+                                                                                        <div className="flex justify-between ">
+                                                                                            <span className="ml-2">{task.title}</span>
+                                                                                            {renderPriorityIcon(task.priority)}
+                                                                                        </div>
+                                                                                        {task.checklist.length > 0 && (
+                                                                                            <div className="ml-2">{renderChecklist(task.checklist)}</div>
+                                                                                        )}
                                                                                     </div>
-                                                                                    {task.checklist.length > 0 && (
-                                                                                        <div className="ml-2">{renderChecklist(task.checklist)}</div>
-                                                                                    )}
-        
-                                                                                </div>
-                                                                            )}
-                                                                        </Draggable>
-                                                                    ))}
+                                                                                )}
+                                                                            </Draggable>
+                                                                        );
+                                                                    })}
                                                                     {provided.placeholder}
                                                                 </div>
                                                             )}
@@ -365,6 +425,13 @@ function Kanban() {
                         }}
                         title={modalTitle}
                     />
+                    
+                    <EditCardModal
+                        isOpen={isColorModalOpen}
+                        onClose={closeColorModal}
+                        onSelectColor={changeColumnColor}
+                    />
+
         
                 </div>
 
