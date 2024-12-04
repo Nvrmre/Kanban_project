@@ -108,6 +108,9 @@ function Kanban() {
     // state untuk new board
     const [newBoardName, setNewBoardName] = useState("");
 
+   
+
+
 
 
     const onDragEnd = (result) => {
@@ -259,6 +262,7 @@ function Kanban() {
         );
     };
 
+
     return (
         <AuthenticatedLayout>
             <div className="p-6 bg-gray-100 min-h-screen">
@@ -370,16 +374,22 @@ function Kanban() {
                                                                     }`}
                                                                 >
                                                                     {column.tasks.map((task, index) => {
-                                                                        const isHighlighted = selectedPriority === "All" || task.priority === selectedPriority;
+                                                                         // state filter priority
+                                                                            const isHighlighted = selectedPriority === "All" || task.priority === selectedPriority;
                                                                         return (
-                                                                            <Draggable draggableId={task.id} index={index} key={task.id}>
+                                                                            <Draggable 
+                                                                            draggableId={task.id} 
+                                                                            index={index} 
+                                                                            key={task.id}>
                                                                                 {(provided, snapshot) => (
                                                                                     <div
                                                                                         ref={provided.innerRef}
                                                                                         {...provided.draggableProps}
                                                                                         {...provided.dragHandleProps}
-                                                                                        className={`relative bg-gray-50 p-3 rounded shadow mb-3 cursor-pointer transition-transform duration-200 ${snapshot.isDragging ? "bg-blue-100 scale-105" : ""}`}
-                                                                                        style={{ opacity: isHighlighted ? 1 : 0.5 }}
+                                                                                        className={`relative bg-gray-50 p-3 rounded shadow mb-3 cursor-pointer transition-transform duration-200 
+                                                                                        ${snapshot.isDragging ? "bg-blue-100 scale-105" : ""}
+                                                                                        ${isHighlighted ? "opacity-100" : "opacity-50"}`}
+                                                                                        
                                                                                         onClick={() => openTaskModal(task)}
                                                                                     >
                                                                                         <div className="flex justify-between ">
