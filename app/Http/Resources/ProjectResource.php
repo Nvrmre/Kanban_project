@@ -18,11 +18,15 @@ class ProjectResource extends JsonResource
         return [
             'name' => $this->name,
             'description' => $this->description,
-            'created_at' => (new Carbon($this->created_at))->format('Y-m-d'),
-            'due_date' => (new Carbon($this->due_date))->format('Y-m-d'),
+            'created_at' => $this->created_at ? (new Carbon($this->created_at))->format('Y-m-d') : null,
+            'due_date' => $this->due_date ? (new Carbon($this->due_date))->format('Y-m-d') : null,
             'status' => $this->status,
-            'created_by' => $this->createdBy,
-            'updated_by' => $this->updatedBy,
+            'created_by' => $this->whenLoaded('createdBy', function () {
+                return $this->createdBy->name ?? null; // Misalkan 'createdBy' adalah relasi ke User
+            }),
+            'updated_by' => $this->whenLoaded('updatedBy', function () {
+                return $this->updatedBy->name ?? null; // Misalkan 'updatedBy' adalah relasi ke User
+            }),
         ];
     }
 }

@@ -38,14 +38,24 @@ class ProjectController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreProjectRequest $request)
-    {
-        $data = $request->validated();
-        $data['created_by'] = Auth::id();
-        $data['updated_by'] = Auth::id();
-       $project =Project::create($data);
-       return to_route('project.index');
-    }
+   // app/Http/Controllers/ProjectController.php
+
+   public function store(StoreProjectRequest $request)
+   {
+       // Validasi dan simpan data proyek baru
+       $validated = $request->validated();
+       $validated['created_by'] = Auth::id();
+       $validated['updated_by'] = Auth::id();
+   
+       $project = Project::create($validated);
+   
+       // Kirim data proyek baru ke frontend setelah berhasil dibuat
+       return inertia('Kanban/Index', [
+           'projects' => ProjectResource::collection(Project::latest()->paginate(10)),
+           'project' => new ProjectResource($project),
+       ]);
+   }
+   
 
 
     /**

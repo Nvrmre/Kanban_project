@@ -37,7 +37,6 @@ class TaskController extends Controller
     {
         $data = $request->validated();
         $data['assigned_id'] =Auth::id();
-        $data['board_id'] = Board::id();
         $data['created_by'] = Auth::id();
         $data['updated_by'] = Auth::id();
        $tasks =Task::create($data);
