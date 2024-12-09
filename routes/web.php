@@ -12,27 +12,33 @@ use Inertia\Inertia;
 Route::redirect('/', '/dashboard');
 
 Route::middleware(['auth', 'verified'])->group(function(){
-    Route::get('/dashboard', fn()=> Inertia::render('Dashboard'))
+    Route::get('/dashboard', [ProjectController::class, 'index'])
     ->name('dashboard');
 
+    Route::delete('/project/{id}', [ProjectController::class, 'destroy'])->name('project.destroy');
     Route::resource('project', ProjectController::class);
+
     Route::resource('task', TaskController::class);
     Route::resource('board', BoardController::class);
+   Route::get('/kanban', function () {
+        return Inertia::render('Kanban/Index');
+    })->name('kanban.index');
 
+
+    Route::get('/kanban/{id}', function ($id) {
+        return Inertia::render('Kanban/Index', ['id' => $id]);
+    })->name('kanban.show');
 });
 
 Route::get('/users/test', [UserController::class, 'show'])->name('users.test');
 
-Route::get('/kanban', function () {
-    return Inertia::render('Kanban/Index'); 
-})->name('kanban.index');
 
 Route::get('/setting', function () {
-    return Inertia::render('Setting/Index'); 
+    return Inertia::render('Setting/Index');
 })->name('setting.index');
 
 Route::get('/laporan', function () {
-    return Inertia::render('Laporan/Index'); 
+    return Inertia::render('Laporan/Index');
 })->name('laporan.index');
 
 Route::get('/users', function () {

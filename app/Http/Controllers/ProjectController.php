@@ -15,12 +15,10 @@ class ProjectController extends Controller
      */
     public function index()
     {
+        $projects = Project::latest()->paginate(10);
 
-        $query = Project::query();
-        $projects = $query->paginate(10);
-
-        return inertia("Project/index", [
-            "projects" => ProjectResource::collection($projects),
+        return inertia('Dashboard', [
+            'projects' => ProjectResource::collection($projects),
         ]);
     }
 
@@ -46,16 +44,15 @@ class ProjectController extends Controller
        $validated = $request->validated();
        $validated['created_by'] = Auth::id();
        $validated['updated_by'] = Auth::id();
-   
+
        $project = Project::create($validated);
-   
+
        // Kirim data proyek baru ke frontend setelah berhasil dibuat
-       return inertia('Kanban/Index', [
-           'projects' => ProjectResource::collection(Project::latest()->paginate(10)),
-           'project' => new ProjectResource($project),
-       ]);
+       return redirect()->route('dashboard') // Ganti 'dashboard' dengan nama route yang sesuai
+        ->with('success', 'Project berhasil dibuat.');
+
    }
-   
+
 
 
     /**
@@ -84,9 +81,15 @@ class ProjectController extends Controller
 
     /**
      * Remove the specified resource from storage.
-     */
-    public function destroy(Project $project)
+        */
+    public function destroy($id)
     {
-        //
+
+         $project = Project::findOrFail($id);
+         $project->delete();
+
+
+    return redirect()->route('dashboard') // Ganti dengan nama route yang sesuai
+        ->with('success', 'Project deleted successfully.');
     }
 }
