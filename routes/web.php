@@ -16,6 +16,7 @@ Route::middleware(['auth', 'verified'])->group(function(){
     ->name('dashboard');
 
     Route::delete('/project/{id}', [ProjectController::class, 'destroy'])->name('project.destroy');
+    Route::put('/project/{id}', [ProjectController::class, 'update'])->name('project.update');
     Route::resource('project', ProjectController::class);
 
     Route::resource('task', TaskController::class);

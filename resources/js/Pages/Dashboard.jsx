@@ -1,7 +1,7 @@
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import { useState, useEffect } from "react";
 import DeleteModal from "@/Components/DeleteModal";
-import { FaRegTrashAlt } from "react-icons/fa";
+import { FaRegTrashAlt, FaEdit } from "react-icons/fa";
 import { Head, Link, useForm, router } from "@inertiajs/react";
 import PrimaryButton from "@/Components/PrimaryButton";
 import TextInput from "@/Components/TextInput";
@@ -9,12 +9,16 @@ import InputLabel from "@/Components/InputLabel";
 import { Textarea } from "@headlessui/react";
 import StatusAlert, { StatusAlertService } from "react-status-alert";
 import "react-status-alert/dist/status-alert.css";
+import Pagination from "@/Components/Pagination";
 
 export default function Dashboard({ projects, session }) {
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
     const [currentProjectId, setCurrentProjectId] = useState(null);
-    const alert = StatusAlertService;
+    const [isEditing, setIsEditing] = useState(false);
+    const [currentPage, setCurrentPage] = useState(projects.meta.current_page);
 
+    const alert = StatusAlertService;
+    console.log("projects:", projects);
     const showSuccessAlert = (msg) => {
         alert.showSuccess(msg);
     };
@@ -37,21 +41,38 @@ export default function Dashboard({ projects, session }) {
         description: "", // Initial value for project description
     });
 
-    const handleCreateProject = (e) => {
+    const handleCreateOrEditProject = (e) => {
         e.preventDefault();
-        post(
-            "/project",
-            {
+        if (isEditing) {
+            router.visit(`/project/${currentProjectId}`, {
+                method: "put",
+                preserveState: true,
                 onSuccess: () => {
                     setData({ name: "", description: "" });
-                    showSuccessAlert("Project Add successfully");
+                    setIsEditing(false);
+                    showSuccessAlert("Project updated successfully");
                 },
-                onError: (errors) => {
-                    showErrorAlert("Error delete failed");
+                onError: () => {
+                    showErrorAlert("Failed to update project");
                 },
-            },
-            {}
-        );
+            });
+        } else {
+            post("/project", {
+                onSuccess: () => {
+                    setData({ name: "", description: "" });
+                    showSuccessAlert("Project created successfully");
+                },
+                onError: () => {
+                    showErrorAlert("Failed to create project");
+                },
+            });
+        }
+    };
+
+    const handleEdit = (project) => {
+        setData({ name: project.name, description: project.description });
+        setCurrentProjectId(project.id);
+        setIsEditing(true);
     };
 
     const handleDelete = () => {
@@ -68,6 +89,15 @@ export default function Dashboard({ projects, session }) {
         });
     };
 
+    const handlePageChange = (page) => {
+        router.visit(`/dashboard?page=${page}`, {
+            preserveState: true,
+            onSuccess: () => {
+                setCurrentPage(page);
+            },
+        });
+    };
+
     return (
         <>
             <StatusAlert />
@@ -79,15 +109,15 @@ export default function Dashboard({ projects, session }) {
                 }
             >
                 <Head title="Dashboard" />
-                <div className="py-12">
+                <div className="py-6 md:py-12">
                     <div className="mx-auto max-w-7xl sm:px-6 lg:px-8 space-y-6">
                         {/* Form Input for Project Name */}
                         <div className="overflow-hidden bg-blue-100 shadow-sm sm:rounded-lg dark:bg-gray-800 p-6">
                             <h3 className="text-lg font-bold text-blue-600 dark:text-gray-300">
-                                Create Project
+                                {isEditing ? "Edit Project" : "Create Project"}
                             </h3>
                             <form
-                                onSubmit={handleCreateProject}
+                                onSubmit={handleCreateOrEditProject}
                                 className="mt-4"
                             >
                                 <div className="mb-4">
@@ -129,8 +159,26 @@ export default function Dashboard({ projects, session }) {
                                     type="submit"
                                     disabled={processing}
                                 >
-                                    {processing ? "Creating..." : "Create"}
+                                    {processing
+                                        ? isEditing
+                                            ? "Updating..."
+                                            : "Creating..."
+                                        : isEditing
+                                        ? "Update"
+                                        : "Create"}
                                 </PrimaryButton>
+                                {isEditing && (
+                                    <PrimaryButton
+                                        type="button"
+                                        onClick={() => {
+                                            setIsEditing(false);
+                                            reset();
+                                        }}
+                                        className="ml-2 text-gray-600"
+                                    >
+                                        Cancel
+                                    </PrimaryButton>
+                                )}
                             </form>
                         </div>
 
@@ -176,6 +224,14 @@ export default function Dashboard({ projects, session }) {
                                             <div className="ml-2 flex-shrink-0">
                                                 <button
                                                     onClick={() =>
+                                                        handleEdit(project)
+                                                    }
+                                                    className="mr-2"
+                                                >
+                                                    <FaEdit className="text-blue-500 hover:text-blue-700" />
+                                                </button>
+                                                <button
+                                                    onClick={() =>
                                                         openDeleteModal(
                                                             project.id
                                                         )
@@ -187,6 +243,14 @@ export default function Dashboard({ projects, session }) {
                                         </div>
                                     </div>
                                 ))}
+                            </div>
+
+                            <div>
+                                <Pagination
+                                    currentPage={projects.meta.current_page}
+                                    lastPage={projects.meta.last_page}
+                                    onPageChange={handlePageChange}
+                                />
                             </div>
                         </div>
                     </div>
