@@ -6,6 +6,8 @@ import DeleteModal from "@/Components/DeleteModal";
 import { FaRegTrashAlt,FaPen } from "react-icons/fa";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import EditCardModal from "@/Components/EditCardModal";
+import { Head } from '@inertiajs/react';
+
 
 const initialColumns = {
     backlog: {
@@ -265,6 +267,9 @@ function Kanban() {
 
     return (
         <AuthenticatedLayout>
+
+            <Head title="Kanban" />
+
             <div className="p-6 bg-gray-100 min-h-screen">
                 <h1 className="text-xl font-semibold text-gray-700">
                     Boards / Main Board  
