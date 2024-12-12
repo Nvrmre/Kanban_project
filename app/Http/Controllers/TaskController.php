@@ -5,73 +5,80 @@ namespace App\Http\Controllers;
 use App\Models\Task;
 use App\Http\Requests\StoreTaskRequest;
 use App\Http\Requests\UpdateTaskRequest;
-use App\Models\Board;
 use Illuminate\Support\Facades\Auth;
 
 class TaskController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Menampilkan daftar tugas.
      */
     public function index()
     {
-        return inertia("Task/index",[
-            
+        $tasks = Task::all();
+
+        return inertia('Task/Index', [
+            'tasks' => $tasks,
         ]);
     }
 
     /**
-     * Show the form for creating a new resource.
+     * Menampilkan form untuk membuat tugas baru.
      */
     public function create()
     {
-        return inertia("Task/create",[
-            'tasks' => Task::all(),
-        ]);
+        return inertia('Task/Create');
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Menyimpan tugas baru.
      */
     public function store(StoreTaskRequest $request)
     {
         $data = $request->validated();
-        $data['assigned_id'] =Auth::id();
-        $data['created_by'] = Auth::id();
-        $data['updated_by'] = Auth::id();
-       $tasks =Task::create($data);
-       return to_route('task.index');
+        $data['assigned_id'] = Auth::id();
+        
+        Task::create($data);
+
+        return redirect()->route('task.index')->with('success', 'Tugas berhasil dibuat.');
     }
 
     /**
-     * Display the specified resource.
+     * Menampilkan detail tugas.
      */
     public function show(Task $task)
     {
-        //
+        return inertia('Task/Show', [
+            'task' => $task,
+        ]);
     }
 
     /**
-     * Show the form for editing the specified resource.
+     * Menampilkan form untuk mengedit tugas.
      */
     public function edit(Task $task)
     {
-        //
+        return inertia('Task/Edit', [
+            'task' => $task,
+        ]);
     }
 
     /**
-     * Update the specified resource in storage.
+     * Memperbarui tugas yang ada.
      */
     public function update(UpdateTaskRequest $request, Task $task)
     {
-        //
+        $task->update($request->validated());
+
+        return redirect()->route('task.index')->with('success', 'Tugas berhasil diperbarui.');
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Menghapus tugas.
      */
     public function destroy(Task $task)
     {
-        //
+        $task->delete();
+
+        return redirect()->route('task.index')->with('success', 'Tugas berhasil dihapus.');
     }
 }

@@ -16,14 +16,17 @@ class TaskResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
+            'id' => $this->id,
             'name' => $this->name,
             'description' => $this->description,
-            'created_at' => (new Carbon($this->created_at))->format('Y-m-d'),
-            'due_date' => (new Carbon($this->due_date))->format('Y-m-d'),
+            'priority' => $this->priority,
             'status' => $this->status,
-            'created_by' => $this->createdBy,
-            'updated_by' => $this->updatedBy,
-
+            'assigned_id' => $this->assigned_id,
+            'board_id' => $this->board_id,
+            'due_date' => $this->due_date ? Carbon::parse($this->due_date)->format('Y-m-d') : null,
+            'notification_duration' => $this->notification_duration, // Tambahkan ini
+            'created_at' => Carbon::parse($this->created_at)->format('Y-m-d H:i:s'),
+            'updated_at' => Carbon::parse($this->updated_at)->format('Y-m-d H:i:s'),
         ];
     }
 }
