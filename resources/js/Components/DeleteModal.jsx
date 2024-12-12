@@ -1,4 +1,4 @@
-import { Transition } from '@headlessui/react';
+import { Transition } from "@headlessui/react";
 
 export default function DeleteModal({ isOpen, onClose, onDelete, title }) {
     if (!isOpen) return null;
@@ -13,7 +13,7 @@ export default function DeleteModal({ isOpen, onClose, onDelete, title }) {
             leaveFrom="opacity-100"
             leaveTo="opacity-0"
         >
-            <div className="fixed inset-0 bg-black bg-opacity-25">
+            <div className="fixed inset-0 bg-black bg-opacity-0 w-screen h-screen">
                 <div className="flex items-center justify-center min-h-screen">
                     <div className="bg-white rounded-lg shadow-lg p-4">
                         <h2 className="text-lg font-bold">{title}</h2>
