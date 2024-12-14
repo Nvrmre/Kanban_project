@@ -7,6 +7,7 @@ use App\Http\Requests\StoreProjectRequest;
 use App\Http\Requests\UpdateProjectRequest;
 use App\Http\Resources\ProjectResource;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Http\Request;
 
 class ProjectController extends Controller
 {
@@ -15,7 +16,6 @@ class ProjectController extends Controller
      */
     public function index()
     {
-
         $query = Project::query();
         $projects = $query->paginate(10);
 
@@ -29,7 +29,6 @@ class ProjectController extends Controller
      */
     public function create()
     {
-
         return inertia("Project/create", [
             'projects' => Project::all(),
         ]);
@@ -38,32 +37,31 @@ class ProjectController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-   // app/Http/Controllers/ProjectController.php
-
-   public function store(StoreProjectRequest $request)
-   {
-       // Validasi dan simpan data proyek baru
-       $validated = $request->validated();
-       $validated['created_by'] = Auth::id();
-       $validated['updated_by'] = Auth::id();
-   
-       $project = Project::create($validated);
-   
-       // Kirim data proyek baru ke frontend setelah berhasil dibuat
-       return inertia('Kanban/Index', [
-           'projects' => ProjectResource::collection(Project::latest()->paginate(10)),
-           'project' => new ProjectResource($project),
-       ]);
-   }
-   
-
+    public function store(StoreProjectRequest $request)
+    {
+        // Validasi dan simpan data proyek baru
+        $validated = $request->validated();
+        $validated['created_by'] = Auth::id();
+        $validated['updated_by'] = Auth::id();
+    
+        $project = Project::create($validated);
+    
+        // Kirim data proyek baru ke frontend setelah berhasil dibuat
+        return inertia('Kanban/Index', [
+            'projects' => ProjectResource::collection(Project::latest()->paginate(10)),
+            'project' => new ProjectResource($project),
+        ]);
+    }
 
     /**
      * Display the specified resource.
      */
     public function show(Project $project)
     {
-        //
+        // Menampilkan detail proyek
+        return inertia('Project/show', [
+            'project' => new ProjectResource($project),
+        ]);
     }
 
     /**
@@ -71,7 +69,10 @@ class ProjectController extends Controller
      */
     public function edit(Project $project)
     {
-        //
+        // Form untuk mengedit proyek
+        return inertia('Project/edit', [
+            'project' => new ProjectResource($project),
+        ]);
     }
 
     /**
@@ -79,7 +80,13 @@ class ProjectController extends Controller
      */
     public function update(UpdateProjectRequest $request, Project $project)
     {
-        //
+        // Validasi dan update proyek
+        $validated = $request->validated();
+        $validated['updated_by'] = Auth::id();
+
+        $project->update($validated);
+
+        return redirect()->route('projects.index')->with('success', 'Project updated successfully.');
     }
 
     /**
@@ -87,6 +94,9 @@ class ProjectController extends Controller
      */
     public function destroy(Project $project)
     {
-        //
+        // Hapus proyek
+        $project->delete();
+
+        return redirect()->route('projects.index')->with('success', 'Project deleted successfully.');
     }
 }
