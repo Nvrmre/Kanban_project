@@ -272,8 +272,8 @@ function Kanban() {
 
             <div className="p-6 bg-gray-100 min-h-screen">
                 <h1 className="text-xl font-semibold text-gray-700">
-                    Boards / Main Board  
-                    {/* ini nanti "Main Board akan diganti sama kayak judul board yang nantinya user buat" */}
+                    Boards / Main project  
+                    {/* ini nanti "Main project akan diganti sama kayak judul project yang nantinya user buat" */}
                 </h1>
                 
                 <div className="mt-2 flex items-center space-x-2">
@@ -329,7 +329,7 @@ function Kanban() {
                                                     <div
                                                         {...provided.draggableProps}
                                                         ref={provided.innerRef}
-                                                        className="bg-white rounded shadow p-4 w-96 transition-transform duration-200 h-fit"
+                                                        className="bg-white rounded shadow p-4 w-96 transition-transform duration-200 h-fit flex-shrink-0"
                                                     >
                                                             <div
                                                                {...provided.dragHandleProps}
@@ -484,5 +484,7 @@ function Kanban() {
 }
 
 export default Kanban;
+
+
 
 
