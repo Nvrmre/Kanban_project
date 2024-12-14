@@ -8,6 +8,10 @@ use App\Http\Requests\UpdateProjectRequest;
 use App\Http\Resources\ProjectResource;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
+use Inertia\Inertia;
+use App\Http\Controllers;
+use Illuminate\Support\Facades\DB;
+
 
 class ProjectController extends Controller
 {
@@ -41,9 +45,10 @@ class ProjectController extends Controller
     {
         // Validasi dan simpan data proyek baru
         $validated = $request->validated();
-        $validated['created_by'] = Auth::id();
-        $validated['updated_by'] = Auth::id();
+        $validated['created_by'] = Auth::id(); // Menambahkan created_by
+        $validated['updated_by'] = Auth::id(); // Menambahkan updated_by
     
+        // Menyimpan proyek baru
         $project = Project::create($validated);
     
         // Kirim data proyek baru ke frontend setelah berhasil dibuat
@@ -56,13 +61,25 @@ class ProjectController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Project $project)
-    {
-        // Menampilkan detail proyek
-        return inertia('Project/show', [
-            'project' => new ProjectResource($project),
-        ]);
-    }
+   
+
+public function show($id)
+{
+    // Mengambil project berdasarkan ID
+    $project = Project::findOrFail($id);
+
+    // Mengambil boards terkait dengan project_id
+    $boards = DB::table('boards')->where('boards.projects_id', '=', $id)->get();
+
+
+    // Menampilkan tampilan menggunakan Inertia dan mengirim data project serta boards
+    return Inertia::render('Projects/Show', [
+        'project' => $project,
+        'boards' => $boards,
+    ]);
+}
+
+
 
     /**
      * Show the form for editing the specified resource.
@@ -82,7 +99,7 @@ class ProjectController extends Controller
     {
         // Validasi dan update proyek
         $validated = $request->validated();
-        $validated['updated_by'] = Auth::id();
+        $validated['updated_by'] = Auth::id(); // Menambahkan updated_by
 
         $project->update($validated);
 

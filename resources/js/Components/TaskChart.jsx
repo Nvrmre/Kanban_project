@@ -1,78 +1,60 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import Chart from 'chart.js/auto';
 
+const dummyTaskData = {
+    complete: 0,
+    overdue: 0,
+};
 
-const dummyWeeklyProgress = [  // Dummy weekly progress data
-    { date: "2023-06-01", complete: 12, overdue: 5 },
-    { date: "2023-06-02", complete: 15, overdue: 3 },
-    { date: "2023-06-03", complete: 10, overdue: 7 },
-    { date: "2023-06-04", complete: 18, overdue: 2 },
-    { date: "2023-06-05", complete: 14, overdue: 4 },
-    { date: "2023-06-06", complete: 20, overdue: 1 },
-    { date: "2023-06-07", complete: 16, overdue: 6 },
-];
+const today = new Date();
+const firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+const lastDayOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+const daysInMonth = lastDayOfMonth.getDate();
+
+const dummyWeeklyProgress = [...Array(daysInMonth)].map((_, i) => {
+    const date = new Date(firstDayOfMonth.getTime());
+    date.setDate(i + 1);
+    return {
+        date: date.toISOString().slice(0, 10),
+        complete: Math.floor(Math.random() * 20) + 1,
+        overdue: Math.floor(Math.random() * 10) + 1,
+    };
+});
 
 export default function TaskChart({ data }) {
     const chartRef = useRef(null);
     const chartInstance = useRef(null);
+    const [aspectRatio, setAspectRatio] = useState(2); 
 
-    // Jika data dari props tidak ada, gunakan dummy data
-    const safeData = {
-        complete: data?.complete ?? dummyTaskData.complete,
-        overdue: data?.overdue ?? dummyTaskData.overdue,
+    const handleResize = () => {
+        const screenWidth = window.innerWidth;
+        if (screenWidth >= 1024) { 
+            setAspectRatio(2);
+        } else if (screenWidth >= 640) { 
+            setAspectRatio(1);
+        } else {
+            setAspectRatio(1); 
+        }
     };
 
-    // Menyiapkan data progres mingguan
+    useEffect(() => {
+        handleResize(); 
+        window.addEventListener('resize', handleResize);
+        return () => {
+            window.removeEventListener('resize', handleResize);
+        };
+    }, []);
+
+    const safeData = {
+        complete: data?.complete ?? dummyTaskData.complete,
+        overdue: data?.overdue ?? dummyTaskData.overdue,    
+    };
+
     const safeWeeklyProgress = data?.weeklyProgress ?? dummyWeeklyProgress;
     const weeklyDates = safeWeeklyProgress.map(item => item.date);
     const weeklyComplete = safeWeeklyProgress.map(item => item.complete);
     const weeklyOverdue = safeWeeklyProgress.map(item => item.overdue);
 
-    useEffect(() => {
-        if (chartRef.current) {
-            const ctx = chartRef.current.getContext('2d');
-            if (ctx) {
-                // Hancurkan instance sebelumnya untuk mencegah duplikasi
-                if (chartInstance.current) {
-                    chartInstance.current.destroy();
-                }
-
-                // Inisialisasi chart baru
-                chartInstance.current = new Chart(ctx, {
-                    type: 'bar',
-                    data: {
-                        labels: ['Complete', 'Overdue'],
-                        datasets: [
-                            {
-                                data: [safeData.complete, safeData.overdue],
-                                backgroundColor: ['rgba(37, 99, 235, 0.8)', 'rgba(239, 68, 68, 0.8)'],
-                                borderColor: ['rgba(37, 99, 235, 1)', 'rgba(239, 68, 68, 1)'],
-                                borderWidth: 1,
-                            },
-                        ],
-                    },
-                    options: {
-                        responsive: true,
-                        plugins: {
-                            legend: { display: false },
-                            title: { display: true, text: 'Task Status' },
-                        },
-                        scales: {
-                            y: { beginAtZero: true, title: { display: true, text: 'Number of Tasks' } },
-                        },
-                    },
-                });
-            }
-        }
-
-        return () => {
-            if (chartInstance.current) {
-                chartInstance.current.destroy();
-            }
-        };
-    }, [safeData]);
-
-    // Weekly progress chart
     useEffect(() => {
         if (chartRef.current) {
             const ctx = chartRef.current.getContext('2d');
@@ -104,9 +86,10 @@ export default function TaskChart({ data }) {
                     },
                     options: {
                         responsive: true,
+                        aspectRatio: aspectRatio, 
                         plugins: {
                             legend: { display: true },
-                            title: { display: true, text: 'Weekly Task Progress' },
+                            title: { display: true, text: 'Monthly Task Progress' },
                         },
                         scales: {
                             x: { title: { display: true, text: 'Date' } },
@@ -122,7 +105,9 @@ export default function TaskChart({ data }) {
                 chartInstance.current.destroy();
             }
         };
-    }, [safeWeeklyProgress]);
+    }, [safeWeeklyProgress, aspectRatio]); 
 
-    return <canvas ref={chartRef} />;
+    return (
+        <canvas ref={chartRef} />
+    );
 }

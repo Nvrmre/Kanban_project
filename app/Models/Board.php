@@ -21,6 +21,13 @@ class Board extends Model
      */
     public function project()
     {
-        return $this->belongsTo(Project::class, 'projects_id');
+        return $this->belongsTo(Project::class, 'project_id'); // Menyebutkan project_id sebagai foreign key
+    }
+    
+
+    // Relasi board dengan tugas
+    public function tasks()
+    {
+        return $this->hasMany(Task::class);
     }
 }
