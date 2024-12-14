@@ -1,4 +1,6 @@
-import React from 'react';
+import React, { useRef } from 'react';
+import html2canvas from 'html2canvas';
+import { saveAs } from 'file-saver';
 
 import TaskChart from '@/Components/TaskChart';
 import TaskPieChart from '@/Components/TaskPieChart';
@@ -14,17 +16,34 @@ const dummyTaskData = {
     overdue: 30,
 };
 
-// const dummyWeeklyProgress = [  // Dummy weekly progress data
-//     { date: "2023-06-01", complete: 12, overdue: 5 },
-//     { date: "2023-06-02", complete: 15, overdue: 3 },
-//     { date: "2023-06-03", complete: 10, overdue: 7 },
-//     { date: "2023-06-04", complete: 18, overdue: 2 },
-//     { date: "2023-06-05", complete: 14, overdue: 4 },
-//     { date: "2023-06-06", complete: 20, overdue: 1 },
-//     { date: "2023-06-07", complete: 16, overdue: 6 },
-// ];
-
 export default function TaskReport({ taskData = { complete: 0, overdue: 0 }, weeklyProgress = [] }) {
+    // Refs to chart elements
+    const chartRef = useRef(null);
+    const pieChartRef = useRef(null);
+
+    // Function to download a specific chart
+    const downloadChart = async (chartRef, fileName) => {
+        if (!chartRef.current) return;
+    
+        // Simpan style asli untuk shadow
+        const originalBoxShadow = chartRef.current.style.boxShadow;
+    
+        // Hapus shadow sebelum render
+        chartRef.current.style.boxShadow = 'none';
+    
+        // Render elemen menjadi canvas
+        const canvas = await html2canvas(chartRef.current);
+    
+        // Pulihkan shadow setelah render
+        chartRef.current.style.boxShadow = originalBoxShadow;
+    
+        // Simpan sebagai gambar
+        canvas.toBlob((blob) => {
+            saveAs(blob, `${fileName}.png`);
+        });
+    };
+    
+
     return (
         <AuthenticatedLayout
             header={
@@ -35,22 +54,36 @@ export default function TaskReport({ taskData = { complete: 0, overdue: 0 }, wee
         >
             <Head title="Laporan" />
 
-            <div className="bg-gray-100">
+            <div className="bg-gray-100">   
                 <main className="container mx-auto px-4 py-8">
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-8">
-                        <div className="bg-white p-6 rounded-lg shadow-md transition-all duration-300 hover:shadow-lg">
-                            <h2 className="text-xl font-semibold text-blue-700 mb-4">Task Status</h2>
-                            <TaskChart data={taskData} />
-                        </div>
-                        <div className="bg-white p-6 rounded-lg shadow-md transition-all duration-300 hover:shadow-lg">
-                            <h2 className="text-xl font-semibold text-blue-700 mb-4">Task Distribution</h2>
-                            <TaskPieChart data={dummyTaskData} />
-                        </div>
+                    {/* Task Status Chart */}
+                    <div ref={chartRef} className="h-auto mb-4 w-full bg-white p-6 rounded-lg shadow-md transition-all duration-300 hover:shadow-lg">
+                        <h2 className="text-xl font-semibold text-blue-700 mb-4">Task Status</h2>
+                        <TaskChart data={taskData} />
                     </div>
 
-                    <div className="flex justify-end mt-4">
-                        <PrimaryButton className='flex text-sm'>
-                            <FaFileDownload/><p className='ml-2'>Download Report</p>
+                    {/* Task Distribution Chart */}
+                    <div ref={pieChartRef} className="bg-white p-6 rounded-lg shadow-md transition-all duration-300 hover:shadow-lg">
+                        <h2 className="text-xl font-semibold text-blue-700 mb-4">Task Distribution</h2>
+                        <TaskPieChart data={dummyTaskData} />
+                    </div>
+
+                    {/* Download Buttons */}
+                    <div className="flex justify-end mt-4 gap-4">
+                        <PrimaryButton
+                            className="flex text-sm"
+                            onClick={() => downloadChart(chartRef, 'Task_Status_Chart')}
+                        >
+                            <FaFileDownload />
+                            <p className="ml-2">Download Task Status Chart</p>
+                        </PrimaryButton>
+
+                        <PrimaryButton
+                            className="flex text-sm"
+                            onClick={() => downloadChart(pieChartRef, 'Task_Distribution_Chart')}
+                        >
+                            <FaFileDownload />
+                            <p className="ml-2">Download Task Distribution Chart</p>
                         </PrimaryButton>
                     </div>
                 </main>

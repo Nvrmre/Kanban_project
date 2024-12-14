@@ -26,6 +26,7 @@ export default function TaskPieChart({ data }) {
           },
           options: {
             responsive: true,
+            aspectRatio: 2.5,
             plugins: {
               legend: {
                 position: 'bottom'
@@ -47,6 +48,10 @@ export default function TaskPieChart({ data }) {
     };
   }, [data]);
 
-  return <canvas ref={chartRef} />;
+  return (
+    <canvas
+      ref={chartRef}
+    />
+  );
 }
 
