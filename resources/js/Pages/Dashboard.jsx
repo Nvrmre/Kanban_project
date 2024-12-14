@@ -116,7 +116,7 @@ export default function Dashboard() {
                                 >
                                     <div className="flex w-full items-start">
                                         <Link
-                                            href={`/kanban/${project.name
+                                            href={`/board/${project.name
                                                 .replace(/\s+/g, "-")
                                                 .toLowerCase()}`} // Menggunakan 'name' untuk URL
                                             className="flex-grow"
