@@ -11,6 +11,7 @@ import StatusAlert, { StatusAlertService } from "react-status-alert";
 import "react-status-alert/dist/status-alert.css";
 import Pagination from "@/Components/Pagination";
 
+
 export default function Dashboard({ projects, session }) {
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
     const [currentProjectId, setCurrentProjectId] = useState(null);
@@ -112,8 +113,8 @@ export default function Dashboard({ projects, session }) {
                 <div className="py-6 md:py-12">
                     <div className="mx-auto max-w-7xl sm:px-6 lg:px-8 space-y-6">
                         {/* Form Input for Project Name */}
-                        <div className="overflow-hidden bg-blue-100 shadow-sm sm:rounded-lg dark:bg-gray-800 p-6">
-                            <h3 className="text-lg font-bold text-blue-600 dark:text-gray-300">
+                        <div className="overflow-hidden bg-blue-100 shadow-sm sm:rounded-lg p-6 hover:outline-none hover:ring-2 hover:ring-blue-500 hover:ring-offset-2 transition duration-150 ease-in-out">
+                            <h3 className="text-lg font-bold text-blue-600 ">
                                 {isEditing ? "Edit Project" : "Create Project"}
                             </h3>
                             <form
@@ -183,7 +184,7 @@ export default function Dashboard({ projects, session }) {
                         </div>
 
                         {/* Display Projects */}
-                        <div className="overflow-hidden bg-blue-100 shadow-sm sm:rounded-lg dark:bg-gray-800 p-6">
+                        <div className="overflow-hidden bg-blue-100 shadow-sm sm:rounded-lg p-6 hover:outline-none hover:ring-2 hover:ring-blue-500 hover:ring-offset-2 transition duration-150 ease-in-out">
                             <h3 className="text-lg font-bold text-blue-600 dark:text-gray-300">
                                 Your Projects
                             </h3>
