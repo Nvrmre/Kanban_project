@@ -94,7 +94,7 @@ const TaskModal = ({ isOpen, onClose, task }) => {
                     </div>
 
                     {/* Setting */}
-                    <div>
+                    {/* <div>
                         <h2 className="text-lg font-semibold text-gray-700">
                             SETTING:
                         </h2>
@@ -127,7 +127,7 @@ const TaskModal = ({ isOpen, onClose, task }) => {
                                 </select>
                             </div>
                         </div>
-                    </div>
+                    </div> */}
 
                     {/* Checklist */}
                     <div>
