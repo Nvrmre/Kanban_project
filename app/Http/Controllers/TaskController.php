@@ -23,11 +23,11 @@ class TaskController extends Controller
             ->paginate(10)
             ->withQueryString();
 
-        return inertia('Task/Index', [
-            'tasks' => $tasks,
-            'statusOptions' => ['to_do', 'in_progress', 'done'],
-            'priorityOptions' => ['low', 'medium', 'high'],
-        ]);
+        return inertia('Kanban/Index', [
+        'tasks' => $tasks,  // Pass the tasks data to the Inertia view
+        'boardId' => $boardId,  // Optionally pass the boardId filter to the frontend
+        'status' => $status,  // Optionally pass the status filter to the frontend
+    ]);
     }
 
     /**
