@@ -27,4 +27,15 @@ class Project extends Model
     {
         return $this->belongsTo(User::class, 'updated_by');
     }
+    public function boards()
+    {
+        return $this->hasMany(Board::class, 'project_id'); // Menyebutkan project_id sebagai foreign key
+    }
+    
+
+    // Mendefinisikan relasi dengan tugas melalui board
+    public function tasks()
+    {
+        return $this->hasManyThrough(Task::class, Board::class);
+    }
 }

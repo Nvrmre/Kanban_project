@@ -43,4 +43,8 @@ class Task extends Model
     {
         return \Carbon\Carbon::parse($value)->format('Y-m-d');
     }
+    public function board()
+    {
+        return $this->belongsTo(Board::class);
+    }
 }

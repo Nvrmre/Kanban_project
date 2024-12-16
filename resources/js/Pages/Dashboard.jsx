@@ -1,3 +1,4 @@
+
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import { useState, useEffect } from "react";
 import DeleteModal from "@/Components/DeleteModal";
@@ -241,6 +242,7 @@ export default function Dashboard({ projects, session }) {
                                                     <FaRegTrashAlt className="text-red-500 hover:text-red-700" />
                                                 </button>
                                             </div>
+
                                         </div>
                                     </div>
                                 ))}
@@ -257,6 +259,7 @@ export default function Dashboard({ projects, session }) {
                     </div>
                 </div>
 
+
                 <DeleteModal
                     isOpen={isDeleteModalOpen}
                     onClose={closeDeleteModal}
@@ -265,5 +268,8 @@ export default function Dashboard({ projects, session }) {
                 />
             </AuthenticatedLayout>
         </>
+
     );
-}
+};
+
+export default Dashboard;

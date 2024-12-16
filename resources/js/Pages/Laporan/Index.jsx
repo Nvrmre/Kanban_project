@@ -57,13 +57,17 @@ export default function TaskReport({ taskData = { complete: 0, overdue: 0 }, wee
             <div className="bg-gray-100">   
                 <main className="container mx-auto px-4 py-8">
                     {/* Task Status Chart */}
-                    <div ref={chartRef} className="h-auto mb-4 w-full bg-white p-6 rounded-lg shadow-md hover:outline-none hover:ring-2 hover:ring-blue-500 hover:ring-offset-2 transition duration-150 ease-in-out">
+
+                    <div ref={chartRef} className="h-auto mb-4 w-full bg-white p-6 rounded-lg shadow-md transition-all duration-300 hover:shadow-lg">
+
                         <h2 className="text-xl font-semibold text-blue-700 mb-4">Task Status</h2>
                         <TaskChart data={taskData} />
                     </div>
 
                     {/* Task Distribution Chart */}
-                    <div ref={pieChartRef} className="bg-white p-6 rounded-lg shadow-md hover:outline-none hover:ring-2 hover:ring-blue-500 hover:ring-offset-2 transition duration-150 ease-in-out">
+
+                    <div ref={pieChartRef} className="bg-white p-6 rounded-lg shadow-md transition-all duration-300 hover:shadow-lg">
+
                         <h2 className="text-xl font-semibold text-blue-700 mb-4">Task Distribution</h2>
                         <TaskPieChart data={dummyTaskData} />
                     </div>

@@ -7,6 +7,11 @@ use App\Http\Requests\StoreProjectRequest;
 use App\Http\Requests\UpdateProjectRequest;
 use App\Http\Resources\ProjectResource;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Http\Request;
+use Inertia\Inertia;
+use App\Http\Controllers;
+use Illuminate\Support\Facades\DB;
+
 
 class ProjectController extends Controller
 {
@@ -15,10 +20,16 @@ class ProjectController extends Controller
      */
     public function index()
     {
-        $projects = Project::latest()->paginate(10);
+
+          $query = Project::query();
+        $projects = $query->paginate(10);
 
         return inertia('Dashboard', [
             'projects' => ProjectResource::collection($projects),
+
+     
+
+
         ]);
     }
 
@@ -27,7 +38,6 @@ class ProjectController extends Controller
      */
     public function create()
     {
-
         return inertia("Project/create", [
             'projects' => Project::all(),
         ]);
@@ -36,6 +46,7 @@ class ProjectController extends Controller
     /**
      * Store a newly created resource in storage.
      */
+
    // app/Http/Controllers/ProjectController.php
 
    public function store(StoreProjectRequest $request)
@@ -58,17 +69,35 @@ class ProjectController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Project $project)
-    {
-        //
-    }
+   
+
+public function show($id)
+{
+    // Mengambil project berdasarkan ID
+    $project = Project::findOrFail($id);
+
+    // Mengambil boards terkait dengan project_id
+    $boards = DB::table('boards')->where('boards.projects_id', '=', $id)->get();
+
+
+    // Menampilkan tampilan menggunakan Inertia dan mengirim data project serta boards
+    return Inertia::render('Projects/index', [
+        'project' => $project,
+        'boards' => $boards,
+    ]);
+}
+
+
 
     /**
      * Show the form for editing the specified resource.
      */
     public function edit(Project $project)
     {
-        //
+        // Form untuk mengedit proyek
+        return inertia('Project/edit', [
+            'project' => new ProjectResource($project),
+        ]);
     }
 
     /**
@@ -76,6 +105,14 @@ class ProjectController extends Controller
      */
     public function update(UpdateProjectRequest $request, Project $project)
     {
+
+        // Validasi dan update proyek
+        $validated = $request->validated();
+        $validated['updated_by'] = Auth::id(); // Menambahkan updated_by
+
+        $project->update($validated);
+
+        return redirect()->route('projects.index')->with('success', 'Project updated successfully.');
 
     }
 
@@ -85,11 +122,13 @@ class ProjectController extends Controller
     public function destroy($id)
     {
 
+
          $project = Project::findOrFail($id);
          $project->delete();
 
 
     return redirect()->route('dashboard') // Ganti dengan nama route yang sesuai
         ->with('success', 'Project deleted successfully.');
+
     }
 }
