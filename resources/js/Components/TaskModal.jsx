@@ -3,6 +3,8 @@ import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import DeleteModal from "@/Components/DeleteModal";
 import { FaTimes } from "react-icons/fa";
 import InputLabel from "@/Components/InputLabel";
+import { IoMdSend } from "react-icons/io";
+import DangerButton from "@/Components/DangerButton";
 
 
 const TaskModal = ({ isOpen, onClose, task }) => {
@@ -92,7 +94,7 @@ const TaskModal = ({ isOpen, onClose, task }) => {
                     </div>
 
                     {/* Setting */}
-                    <div>
+                    {/* <div>
                         <h2 className="text-lg font-semibold text-gray-700">
                             SETTING:
                         </h2>
@@ -125,7 +127,7 @@ const TaskModal = ({ isOpen, onClose, task }) => {
                                 </select>
                             </div>
                         </div>
-                    </div>
+                    </div> */}
 
                     {/* Checklist */}
                     <div>
@@ -253,11 +255,11 @@ const TaskModal = ({ isOpen, onClose, task }) => {
 
                     {/* Delete Button */}
                     <div>
-                        <button className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
+                        <DangerButton className="bg-red-500 text-white px-4 py-2 rounded"
                         onClick={() => setIsDeleteModalOpen(true)}
                         >
                             Delete Task
-                        </button>
+                        </DangerButton>
                     </div>
 
                     {/* Comments */}
@@ -289,9 +291,9 @@ const TaskModal = ({ isOpen, onClose, task }) => {
                             />
                             <button
                                 type="submit"
-                                className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+                                className="flex items-center bg-blue-500 text-white font-semibold px-4 py-2 rounded hover:bg-blue-600"
                             >
-                                Send
+                                Send<IoMdSend className="ms-2"/>
                             </button>
                         </form>
                     </div>

@@ -10,29 +10,27 @@ use Inertia\Inertia;
 
 Route::redirect('/', '/dashboard');
 
-// Rute dengan Middleware
-Route::middleware(['auth', 'verified'])->group(function () {
-    // Dashboard
-    Route::get('/dashboard', function () {
-        return Inertia::render('Dashboard', [
-            'projects' => \App\Models\Project::all(),
-            'tasks' => \App\Models\Task::all(),
-        ]);
-    })->name('dashboard');
 
-    // Resource Controllers
+Route::middleware(['auth', 'verified'])->group(function(){
+    Route::get('/dashboard', [ProjectController::class, 'index'])
+    ->name('dashboard');
+
+
     Route::resource('project', ProjectController::class);
+
     Route::resource('task', TaskController::class);
     Route::resource('board', BoardController::class);
+
+    Route::get('/kanban/{id}', function ($id) {
+        return Inertia::render('Kanban/Index', ['id' => $id]);
+    })->name('kanban.index');
+
 });
 
 // Rute Testing
 Route::get('/users/test', [UserController::class, 'test'])->name('users.test');
 
-// Rute Kanban
-Route::get('/kanban', function () {
-    return Inertia::render('Kanban/Index');
-})->name('kanban.index');
+
 
 // Rute Setting
 Route::get('/setting', function () {
