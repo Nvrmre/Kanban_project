@@ -1,6 +1,7 @@
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import { useState, useEffect } from "react";
 import DeleteModal from "@/Components/DeleteModal";
+
 import { FaRegTrashAlt, FaEdit } from "react-icons/fa";
 import { Head, Link, useForm, router } from "@inertiajs/react";
 import PrimaryButton from "@/Components/PrimaryButton";
@@ -10,7 +11,6 @@ import { Textarea } from "@headlessui/react";
 import StatusAlert, { StatusAlertService } from "react-status-alert";
 import "react-status-alert/dist/status-alert.css";
 import Pagination from "@/Components/Pagination";
-
 
 export default function Dashboard({ projects, session }) {
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
