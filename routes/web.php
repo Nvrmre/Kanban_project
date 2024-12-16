@@ -57,8 +57,9 @@ Route::middleware('auth')->group(function () {
 // Rute Project Show
 Route::get('/project/{project}', function ($project) {
     return Inertia::render('Project/Show', [
-        'project' => \App\Models\Project::with('boards', 'tasks')->findOrFail($project),
+        'project' => \App\Models\Project::with('boards.tasks')->findOrFail($project),
     ]);
 })->name('project.show');
+
 
 require __DIR__.'/auth.php';

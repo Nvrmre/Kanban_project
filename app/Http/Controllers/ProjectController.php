@@ -73,7 +73,7 @@ public function show($id)
 
 
     // Menampilkan tampilan menggunakan Inertia dan mengirim data project serta boards
-    return Inertia::render('Projects/Show', [
+    return Inertia::render('Projects/index', [
         'project' => $project,
         'boards' => $boards,
     ]);

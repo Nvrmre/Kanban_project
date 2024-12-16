@@ -96,20 +96,15 @@ const Dashboard = ({ projects: initialProjects }) => {
                                 >
                                     <div className="flex w-full items-start">
                                         <Link
-                                            href={`/project/show/${project.id}`}
+                                            href={`/project/${project.id}`}
                                             className="flex-grow"
                                         >
                                             <div className="flex flex-col">
                                                 <h4 className="text-lg font-bold text-blue-700">{project.name}</h4>
                                                 <p className="text-sm text-gray-600 truncate max-w-full">{project.description}</p>
-                                                <div className="flex justify-between text-xs text-gray-500">
-                                                    <p>Date Added: {project.dateAdded}</p>
-                                                    <p>Date Updated: {project.dateUpdated}</p>
-                                                </div>
                                                 <p className="text-sm text-gray-600">Click to view</p>
                                             </div>
                                         </Link>
-
                                         <div className="ml-2 flex-shrink-0">
                                             <button onClick={() => openDeleteModal(project)}>
                                                 <FaRegTrashAlt className="text-red-500 hover:text-red-700" />
