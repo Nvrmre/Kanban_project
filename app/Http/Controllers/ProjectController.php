@@ -21,14 +21,11 @@ class ProjectController extends Controller
     public function index()
     {
 
-          $query = Project::query();
+        $query = Project::query();
         $projects = $query->paginate(10);
 
-        return inertia('Dashboard', [
-            'projects' => ProjectResource::collection($projects),
-
-     
-
+        return inertia("Project/index", [
+            "projects" => ProjectResource::collection($projects),
 
         ]);
     }
@@ -46,30 +43,31 @@ class ProjectController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-
    // app/Http/Controllers/ProjectController.php
 
-   public function store(StoreProjectRequest $request)
-   {
-       // Validasi dan simpan data proyek baru
-       $validated = $request->validated();
-       $validated['created_by'] = Auth::id();
-       $validated['updated_by'] = Auth::id();
 
-       $project = Project::create($validated);
+    public function store(StoreProjectRequest $request)
+    {
+        // Validasi dan simpan data proyek baru
+        $validated = $request->validated();
+        $validated['created_by'] = Auth::id(); // Menambahkan created_by
+        $validated['updated_by'] = Auth::id(); // Menambahkan updated_by
 
-       // Kirim data proyek baru ke frontend setelah berhasil dibuat
-       return redirect()->route('dashboard') // Ganti 'dashboard' dengan nama route yang sesuai
-        ->with('success', 'Project berhasil dibuat.');
+        // Menyimpan proyek baru
+        $project = Project::create($validated);
 
-   }
-
+        // Kirim data proyek baru ke frontend setelah berhasil dibuat
+        return inertia('Kanban/Index', [
+            'projects' => ProjectResource::collection(Project::latest()->paginate(10)),
+            'project' => new ProjectResource($project),
+        ]);
+    }
 
 
     /**
      * Display the specified resource.
      */
-   
+
 
 public function show($id)
 {
@@ -81,7 +79,7 @@ public function show($id)
 
 
     // Menampilkan tampilan menggunakan Inertia dan mengirim data project serta boards
-    return Inertia::render('Projects/index', [
+    return Inertia::render('Projects/Show', [
         'project' => $project,
         'boards' => $boards,
     ]);
@@ -122,13 +120,10 @@ public function show($id)
     public function destroy($id)
     {
 
+        // Hapus proyek
+        $project->delete();
 
-         $project = Project::findOrFail($id);
-         $project->delete();
-
-
-    return redirect()->route('dashboard') // Ganti dengan nama route yang sesuai
-        ->with('success', 'Project deleted successfully.');
+        return redirect()->route('projects.index')->with('success', 'Project deleted successfully.');
 
     }
 }

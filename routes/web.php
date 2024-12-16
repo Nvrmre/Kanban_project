@@ -16,16 +16,16 @@ Route::middleware(['auth', 'verified'])->group(function(){
     ->name('dashboard');
 
 
+
+});
+
+
     Route::resource('project', ProjectController::class);
 
     Route::resource('task', TaskController::class);
     Route::resource('board', BoardController::class);
 
-    Route::get('/kanban/{id}', function ($id) {
-        return Inertia::render('Kanban/Index', ['id' => $id]);
-    })->name('kanban.index');
-
-});
+    Route::get('/kanban/{project_id?}', [BoardController::class, 'index'])->name('kanban.index');
 
 // Rute Testing
 Route::get('/users/test', [UserController::class, 'test'])->name('users.test');

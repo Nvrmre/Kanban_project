@@ -1,4 +1,3 @@
-
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import { useState, useEffect } from "react";
 import DeleteModal from "@/Components/DeleteModal";
@@ -14,6 +13,7 @@ import "react-status-alert/dist/status-alert.css";
 import Pagination from "@/Components/Pagination";
 
 export default function Dashboard({ projects, session }) {
+    console.log("projects:", projects);
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
     const [currentProjectId, setCurrentProjectId] = useState(null);
     const [isEditing, setIsEditing] = useState(false);
@@ -48,6 +48,7 @@ export default function Dashboard({ projects, session }) {
         if (isEditing) {
             router.visit(`/project/${currentProjectId}`, {
                 method: "put",
+
                 preserveState: true,
                 onSuccess: () => {
                     setData({ name: "", description: "" });
@@ -197,7 +198,9 @@ export default function Dashboard({ projects, session }) {
                                     >
                                         <div className="flex w-full items-start">
                                             <Link
-                                                href={`/kanban/${project.id}`}
+                                                href={route("kanban.index", {
+                                                    id: project.id,
+                                                })}
                                                 className="flex-grow"
                                             >
                                                 <div className="flex flex-col">
@@ -210,11 +213,13 @@ export default function Dashboard({ projects, session }) {
                                                     <div className="flex justify-between text-xs text-gray-500">
                                                         <p>
                                                             Date Added:{" "}
-                                                            {project.created_at}
+                                                            {project.dateAdded}
                                                         </p>
                                                         <p>
                                                             Date Updated:{" "}
-                                                            {project.updated_at}
+                                                            {
+                                                                project.dateUpdated
+                                                            }
                                                         </p>
                                                     </div>
                                                     <p className="text-sm text-gray-600">
@@ -242,7 +247,6 @@ export default function Dashboard({ projects, session }) {
                                                     <FaRegTrashAlt className="text-red-500 hover:text-red-700" />
                                                 </button>
                                             </div>
-
                                         </div>
                                     </div>
                                 ))}
@@ -259,7 +263,6 @@ export default function Dashboard({ projects, session }) {
                     </div>
                 </div>
 
-
                 <DeleteModal
                     isOpen={isDeleteModalOpen}
                     onClose={closeDeleteModal}
@@ -268,8 +271,5 @@ export default function Dashboard({ projects, session }) {
                 />
             </AuthenticatedLayout>
         </>
-
     );
-};
-
-export default Dashboard;
+}

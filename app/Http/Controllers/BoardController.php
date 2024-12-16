@@ -21,11 +21,12 @@ class BoardController extends Controller
             ->with('project') // Sertakan data project untuk setiap board
             ->get();
 
-        return Inertia::render('Boards/Index', [
+        return inertia('Kanban/Index', [
             'boards' => $boards,
             'projects' => Project::all(), // Untuk filter project di frontend
+            'id' => $projectId, // Untuk menyimpan project_id yang dipilih
         ]);
-    }
+              }
 
     /**
      * Show the form for creating a new board.

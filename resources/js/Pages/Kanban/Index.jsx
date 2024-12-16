@@ -3,11 +3,10 @@ import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import TaskModal from "@/Components/TaskModal";
 import AddTaskModal from "@/Components/AddTaskModal";
 import DeleteModal from "@/Components/DeleteModal";
-import { FaRegTrashAlt,FaPen } from "react-icons/fa";
+import { FaRegTrashAlt, FaPen } from "react-icons/fa";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import EditCardModal from "@/Components/EditCardModal";
-import { Head } from '@inertiajs/react';
-
+import { Head, Link, useForm, router } from "@inertiajs/react";
 
 const initialColumns = {
     backlog: {
@@ -25,7 +24,11 @@ const initialColumns = {
                 checklist: [],
                 comments: [
                     { id: "c1", name: "John Doe", text: "Great start!" },
-                    { id: "c2", name: "Jane Smith", text: "I like this feature!" },
+                    {
+                        id: "c2",
+                        name: "Jane Smith",
+                        text: "I like this feature!",
+                    },
                 ],
             },
             {
@@ -43,7 +46,9 @@ const initialColumns = {
                         completed: false,
                     },
                 ],
-                comments: [{ id: "c4", name: "Bob Lee", text: "Looks good so far." }],
+                comments: [
+                    { id: "c4", name: "Bob Lee", text: "Looks good so far." },
+                ],
             },
         ],
     },
@@ -73,7 +78,9 @@ const initialColumns = {
                     { id: "d", text: "Step 2", completed: false },
                     { id: "e", text: "Step 3", completed: false },
                 ],
-                comments: [{ id: "c4", name: "Bob Lee", text: "Looks good so far." }],
+                comments: [
+                    { id: "c4", name: "Bob Lee", text: "Looks good so far." },
+                ],
             },
         ],
     },
@@ -84,9 +91,16 @@ const initialColumns = {
     },
 };
 
-function Board() {
+function Board({ projects, boards, id }) {
+    console.log(projects);
+    console.log("board", boards);
+    console.log("id", id);
     const [columns, setColumns] = useState(initialColumns);
-    const [columnOrder, setColumnOrder] = useState(["backlog", "waiting", "done"]);
+    const [columnOrder, setColumnOrder] = useState([
+        "backlog",
+        "waiting",
+        "done",
+    ]);
 
     // State untuk modal TaskModal
     const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
@@ -109,11 +123,6 @@ function Board() {
 
     // state untuk new board
     const [newBoardName, setNewBoardName] = useState("");
-
-   
-
-
-
 
     const onDragEnd = (result) => {
         const { source, destination, type } = result;
@@ -185,7 +194,7 @@ function Board() {
         setModalTitle(title); // Set judul modal sesuai nama kolom atau task
         setIsDeleteModalOpen(true); // Buka modal
     };
-    
+
     const closeDeleteModal = () => {
         setIsDeleteModalOpen(false); // Tutup modal
     };
@@ -194,12 +203,12 @@ function Board() {
         setSelectedColumnId(columnId);
         setIsColorModalOpen(true);
     };
-    
+
     const closeColorModal = () => {
         setIsColorModalOpen(false);
         setSelectedColumnId(null);
     };
-    
+
     const changeColumnColor = (color) => {
         if (selectedColumnId) {
             setColumnColors((prevColors) => ({
@@ -207,10 +216,10 @@ function Board() {
                 [selectedColumnId]: color,
             }));
         }
-        closeColorModal(); 
+        closeColorModal();
     };
 
-     const handleAddBoard = (e) => {
+    const handleAddBoard = (e) => {
         e.preventDefault();
         if (newBoardName.trim() === "") return;
 
@@ -233,7 +242,7 @@ function Board() {
     const handlePriorityClick = (priority) => {
         setSelectedPriority(priority);
     };
-        
+
     const renderPriorityIcon = (priority) => {
         return (
             <div
@@ -249,7 +258,7 @@ function Board() {
             ></div>
         );
     };
-    
+
     const renderChecklist = (checklist) => {
         const completedCount = checklist.filter(
             (item) => item.completed
@@ -264,229 +273,290 @@ function Board() {
         );
     };
 
-
     return (
         <AuthenticatedLayout>
-
             <Head title="Board" />
 
             <div className="p-6 bg-gray-100 min-h-screen">
                 <h1 className="text-xl font-semibold text-gray-700">
-                    Boards / Main project  
+                    Boards / Main project
                     {/* ini nanti "Main project akan diganti sama kayak judul project yang nantinya user buat" */}
                 </h1>
-                
+
                 <div className="mt-2 flex items-center space-x-2">
                     <span className="text-gray-600">Show Priority:</span>
-                        <button
-                            className={`px-3 py-1 text-sm ${selectedPriority === "All" ? "bg-blue-500 text-white" : "bg-gray-200 text-gray-700"} rounded`}
-                            onClick={() => handlePriorityClick("All")}
-                        >
+                    <button
+                        className={`px-3 py-1 text-sm ${
+                            selectedPriority === "All"
+                                ? "bg-blue-500 text-white"
+                                : "bg-gray-200 text-gray-700"
+                        } rounded`}
+                        onClick={() => handlePriorityClick("All")}
+                    >
                         All
-                        </button>
-                        <button
-                            className={`px-3 py-1 text-sm ${selectedPriority === "High" ? "bg-blue-500 text-white" : "bg-gray-200 text-gray-700"} rounded`}
-                            onClick={() => handlePriorityClick("High")}
-                        >
+                    </button>
+                    <button
+                        className={`px-3 py-1 text-sm ${
+                            selectedPriority === "High"
+                                ? "bg-blue-500 text-white"
+                                : "bg-gray-200 text-gray-700"
+                        } rounded`}
+                        onClick={() => handlePriorityClick("High")}
+                    >
                         High
-                        </button>
-                        <button
-                            className={`px-3 py-1 text-sm ${selectedPriority === "Medium" ? "bg-blue-500 text-white" : "bg-gray-200 text-gray-700"} rounded`}
-                            onClick={() => handlePriorityClick("Medium")}
-                        >
+                    </button>
+                    <button
+                        className={`px-3 py-1 text-sm ${
+                            selectedPriority === "Medium"
+                                ? "bg-blue-500 text-white"
+                                : "bg-gray-200 text-gray-700"
+                        } rounded`}
+                        onClick={() => handlePriorityClick("Medium")}
+                    >
                         Medium
-                        </button>
-                        <button
-                            className={`px-3 py-1 text-sm ${selectedPriority === "Low" ? "bg-blue-500 text-white" : "bg-gray-200 text-gray-700"} rounded`}
-                            onClick={() => handlePriorityClick("Low")}
-                        >
+                    </button>
+                    <button
+                        className={`px-3 py-1 text-sm ${
+                            selectedPriority === "Low"
+                                ? "bg-blue-500 text-white"
+                                : "bg-gray-200 text-gray-700"
+                        } rounded`}
+                        onClick={() => handlePriorityClick("Low")}
+                    >
                         Low
-                        </button>
-                    </div>
+                    </button>
+                </div>
 
-        
-                    <DragDropContext onDragEnd={onDragEnd}>
-                        <Droppable
-                            droppableId="all-columns"
-                            direction="horizontal"
-                            type="COLUMN"
-                        >
-                            {(provided) => (
-                                <div
-                                    {...provided.droppableProps}
-                                    ref={provided.innerRef}
-                                    className="flex space-x-6 mt-4 overflow-x-auto"
-                                >
-                                    {columnOrder.map((columnId, index) => {
-                                        const column = columns[columnId];
-                                        return (
-                                            <Draggable
-                                                draggableId={columnId}
-                                                index={index}
-                                                key={columnId}
-                                            >
-                                                {(provided) => (
+                <DragDropContext onDragEnd={onDragEnd}>
+                    <Droppable
+                        droppableId="all-columns"
+                        direction="horizontal"
+                        type="COLUMN"
+                    >
+                        {(provided) => (
+                            <div
+                                {...provided.droppableProps}
+                                ref={provided.innerRef}
+                                className="flex space-x-6 mt-4 overflow-x-auto"
+                            >
+                                {columnOrder.map((columnId, index) => {
+                                    const column = columns[columnId];
+                                    return (
+                                        <Draggable
+                                            draggableId={columnId}
+                                            index={index}
+                                            key={columnId}
+                                        >
+                                            {(provided) => (
+                                                <div
+                                                    {...provided.draggableProps}
+                                                    ref={provided.innerRef}
+                                                    className="bg-white rounded shadow p-4 w-96 transition-transform duration-200 h-fit flex-shrink-0"
+                                                >
                                                     <div
-                                                        {...provided.draggableProps}
-                                                        ref={provided.innerRef}
-                                                        className="bg-white rounded shadow p-4 w-96 transition-transform duration-200 h-fit flex-shrink-0"
+                                                        {...provided.dragHandleProps}
+                                                        className={`mb-3 text-lg font-semibold text-gray-100 cursor-move w-full p-2 rounded`}
+                                                        style={{
+                                                            backgroundColor:
+                                                                columnColors[
+                                                                    column.id
+                                                                ] || "#3b82f6", // Warna default biru
+                                                        }}
                                                     >
-                                                            <div
-                                                               {...provided.dragHandleProps}
-                                                               className={`mb-3 text-lg font-semibold text-gray-100 cursor-move w-full p-2 rounded`}
-                                                               style={{
-                                                                   backgroundColor: columnColors[column.id] || "#3b82f6", // Warna default biru
-                                                               }}
-                                                            >
-                                                            {column.name}
+                                                        {column.name}
 
-                                                            
-
-                                                            <button
-                                                                className="float-end text-gray-100 hover:text-gray-400"
-                                                                onClick={(e) => {
-                                                                    e.stopPropagation(); // Prevent opening the modal
-                                                                    openDeleteModal(`Delete Card: ${column.name}`);
-                                                                    // deleteTask(columnId, task.id);
-                                                                }}
-                                                            >
-                                                                <FaRegTrashAlt  className="my-1 w-5 h-5"/>
-                                                            </button>
-
-                                                            <button
-                                                                className="float-end text-gray-100 hover:text-gray-400 me-2"
-                                                                onClick={(e) => {
-                                                                e.stopPropagation();
-                                                                openColorModal(columnId);
-                                                                }}
-                                                            >
-                                                                <FaPen className="my-1 w-5 h-5"/>
-                                                            </button>
-                                                        </div>
-                                                        
-                                                        <Droppable  
-                                                            droppableId={columnId}
-                                                            type="TASK"
+                                                        <button
+                                                            className="float-end text-gray-100 hover:text-gray-400"
+                                                            onClick={(e) => {
+                                                                e.stopPropagation(); // Prevent opening the modal
+                                                                openDeleteModal(
+                                                                    `Delete Card: ${column.name}`
+                                                                );
+                                                                // deleteTask(columnId, task.id);
+                                                            }}
                                                         >
-                                                            {(provided) => (
-                                                                <div
-                                                                    {...provided.droppableProps}
-                                                                    ref={provided.innerRef}
-                                                                    className={`min-h-0 p-2 border rounded ${
-                                                                        column.tasks.length === 0
-                                                                            ? "border-dashed border-transparent"
-                                                                            : "border-transparent"
-                                                                    }`}
-                                                                >
-                                                                    {column.tasks.map((task, index) => {
-                                                                         // state filter priority
-                                                                            const isHighlighted = selectedPriority === "All" || task.priority === selectedPriority;
+                                                            <FaRegTrashAlt className="my-1 w-5 h-5" />
+                                                        </button>
+
+                                                        <button
+                                                            className="float-end text-gray-100 hover:text-gray-400 me-2"
+                                                            onClick={(e) => {
+                                                                e.stopPropagation();
+                                                                openColorModal(
+                                                                    columnId
+                                                                );
+                                                            }}
+                                                        >
+                                                            <FaPen className="my-1 w-5 h-5" />
+                                                        </button>
+                                                    </div>
+
+                                                    <Droppable
+                                                        droppableId={columnId}
+                                                        type="TASK"
+                                                    >
+                                                        {(provided) => (
+                                                            <div
+                                                                {...provided.droppableProps}
+                                                                ref={
+                                                                    provided.innerRef
+                                                                }
+                                                                className={`min-h-0 p-2 border rounded ${
+                                                                    column.tasks
+                                                                        .length ===
+                                                                    0
+                                                                        ? "border-dashed border-transparent"
+                                                                        : "border-transparent"
+                                                                }`}
+                                                            >
+                                                                {column.tasks.map(
+                                                                    (
+                                                                        task,
+                                                                        index
+                                                                    ) => {
+                                                                        // state filter priority
+                                                                        const isHighlighted =
+                                                                            selectedPriority ===
+                                                                                "All" ||
+                                                                            task.priority ===
+                                                                                selectedPriority;
                                                                         return (
-                                                                            <Draggable 
-                                                                            draggableId={task.id} 
-                                                                            index={index} 
-                                                                            key={task.id}>
-                                                                                {(provided, snapshot) => (
+                                                                            <Draggable
+                                                                                draggableId={
+                                                                                    task.id
+                                                                                }
+                                                                                index={
+                                                                                    index
+                                                                                }
+                                                                                key={
+                                                                                    task.id
+                                                                                }
+                                                                            >
+                                                                                {(
+                                                                                    provided,
+                                                                                    snapshot
+                                                                                ) => (
                                                                                     <div
-                                                                                        ref={provided.innerRef}
+                                                                                        ref={
+                                                                                            provided.innerRef
+                                                                                        }
                                                                                         {...provided.draggableProps}
                                                                                         {...provided.dragHandleProps}
-                                                                                        className={`relative bg-gray-50 p-3 rounded shadow mb-3 cursor-pointer transition-transform duration-200 
-                                                                                        ${snapshot.isDragging ? "bg-blue-100 scale-105" : ""}
-                                                                                        ${isHighlighted ? "opacity-100" : "opacity-50"}`}
-                                                                                        
-                                                                                        onClick={() => openTaskModal(task)}
+                                                                                        className={`relative bg-gray-50 p-3 rounded shadow mb-3 cursor-pointer transition-transform duration-200
+                                                                                        ${
+                                                                                            snapshot.isDragging
+                                                                                                ? "bg-blue-100 scale-105"
+                                                                                                : ""
+                                                                                        }
+                                                                                        ${
+                                                                                            isHighlighted
+                                                                                                ? "opacity-100"
+                                                                                                : "opacity-50"
+                                                                                        }`}
+                                                                                        onClick={() =>
+                                                                                            openTaskModal(
+                                                                                                task
+                                                                                            )
+                                                                                        }
                                                                                     >
                                                                                         <div className="flex justify-between ">
-                                                                                            <span className="ml-2">{task.title}</span>
-                                                                                            {renderPriorityIcon(task.priority)}
+                                                                                            <span className="ml-2">
+                                                                                                {
+                                                                                                    task.title
+                                                                                                }
+                                                                                            </span>
+                                                                                            {renderPriorityIcon(
+                                                                                                task.priority
+                                                                                            )}
                                                                                         </div>
-                                                                                        {task.checklist.length > 0 && (
-                                                                                            <div className="ml-2">{renderChecklist(task.checklist)}</div>
+                                                                                        {task
+                                                                                            .checklist
+                                                                                            .length >
+                                                                                            0 && (
+                                                                                            <div className="ml-2">
+                                                                                                {renderChecklist(
+                                                                                                    task.checklist
+                                                                                                )}
+                                                                                            </div>
                                                                                         )}
                                                                                     </div>
                                                                                 )}
                                                                             </Draggable>
                                                                         );
-                                                                    })}
-                                                                    {provided.placeholder}
-                                                                </div>
-                                                            )}
-                                                        </Droppable>
-                                                    </div>
-                                                )}
-                                            </Draggable>
-                                        );
-                                    })}
-                                    {provided.placeholder}
-                                    <div className="flex justify-center p-1">
-                                        {/* form add board ketika dienter maka akan membuat Board */}
-                                        <form autoComplete='off'onSubmit={handleAddBoard} className=''>
-                                            <input 
-                                            maxLength='20' 
-                                            className='truncate bg-white placeholder-indigo-500 text-indigo-800 bg-indigo-50 px-2 outline-none py-1 rounded-sm ring-1 focus:ring-indigo-500' 
-                                            type="text" 
-                                            name='newCol' 
-                                            placeholder='Add a new Board'
+                                                                    }
+                                                                )}
+                                                                {
+                                                                    provided.placeholder
+                                                                }
+                                                            </div>
+                                                        )}
+                                                    </Droppable>
+                                                </div>
+                                            )}
+                                        </Draggable>
+                                    );
+                                })}
+                                {provided.placeholder}
+                                <div className="flex justify-center p-1">
+                                    {/* form add board ketika dienter maka akan membuat Board */}
+                                    <form
+                                        autoComplete="off"
+                                        onSubmit={handleAddBoard}
+                                        className=""
+                                    >
+                                        <input
+                                            maxLength="20"
+                                            className="truncate bg-white placeholder-indigo-500 text-indigo-800 bg-indigo-50 px-2 outline-none py-1 rounded-sm ring-1 focus:ring-indigo-500"
+                                            type="text"
+                                            name="newCol"
+                                            placeholder="Add a new Board"
                                             value={newBoardName}
-                                            onChange={(e) => setNewBoardName(e.target.value)}
-                                            />
-                                        </form>
-                                    </div>
+                                            onChange={(e) =>
+                                                setNewBoardName(e.target.value)
+                                            }
+                                        />
+                                    </form>
                                 </div>
-                            )}
-                        
-                            
-                        </Droppable>
-                    </DragDropContext>
-        
-        
-                    <button
-                        className="fixed bottom-4 right-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full text-3xl"
-                        onClick={openAddTaskModal}
-                    >
-                        +
-                    </button>
-        
-                    <TaskModal
-                        isOpen={isTaskModalOpen}
-                        onClose={closeTaskModal}
-                        task={selectedTask}
-                    />
-                    <AddTaskModal
-                        isOpen={isAddTaskModalOpen}
-                        onClose={closeAddTaskModal}
-                    />
-        
-                    <DeleteModal
-                        isOpen={isDeleteModalOpen}
-                        onClose={closeDeleteModal}
-                        onDelete={() => {
-                            console.log("Delete action triggered");
-                            closeDeleteModal(); // Tutup modal setelah menghapus
-                        }}
-                        title={modalTitle}
-                    />
-                    
-                    <EditCardModal
-                        isOpen={isColorModalOpen}
-                        onClose={closeColorModal}
-                        onSelectColor={changeColumnColor}
-                    />
+                            </div>
+                        )}
+                    </Droppable>
+                </DragDropContext>
 
-        
-                </div>
+                <button
+                    className="fixed bottom-4 right-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full text-3xl"
+                    onClick={openAddTaskModal}
+                >
+                    +
+                </button>
 
+                <TaskModal
+                    isOpen={isTaskModalOpen}
+                    onClose={closeTaskModal}
+                    task={selectedTask}
+                />
+                <AddTaskModal
+                    isOpen={isAddTaskModalOpen}
+                    onClose={closeAddTaskModal}
+                />
+
+                <DeleteModal
+                    isOpen={isDeleteModalOpen}
+                    onClose={closeDeleteModal}
+                    onDelete={() => {
+                        console.log("Delete action triggered");
+                        closeDeleteModal(); // Tutup modal setelah menghapus
+                    }}
+                    title={modalTitle}
+                />
+
+                <EditCardModal
+                    isOpen={isColorModalOpen}
+                    onClose={closeColorModal}
+                    onSelectColor={changeColumnColor}
+                />
+            </div>
         </AuthenticatedLayout>
-        
-        
     );
 }
 
 export default Board;
-
-
-
-
-
-
