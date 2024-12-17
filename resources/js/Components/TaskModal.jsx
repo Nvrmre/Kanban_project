@@ -6,7 +6,6 @@ import InputLabel from "@/Components/InputLabel";
 import { IoMdSend } from "react-icons/io";
 import DangerButton from "@/Components/DangerButton";
 
-
 const TaskModal = ({ isOpen, onClose, task }) => {
     // Add a guard clause if task is null
     if (!isOpen || !task) return null;
@@ -52,7 +51,11 @@ const TaskModal = ({ isOpen, onClose, task }) => {
     const addComment = (e) => {
         e.preventDefault();
         if (newComment.trim() !== "") {
-            task.comments.push({ id: `c${task.comments.length + 1}`, name: "You", text: newComment });
+            task.comments.push({
+                id: `c${task.comments.length + 1}`,
+                name: "You",
+                text: newComment,
+            });
             setNewComment("");
         }
     };
@@ -65,7 +68,7 @@ const TaskModal = ({ isOpen, onClose, task }) => {
                     className="absolute top-4 right-4 text-gray-500 hover:text-gray-700"
                     onClick={onClose}
                 >
-                    <FaTimes className="text-2xl"/>
+                    <FaTimes className="text-2xl" />
                 </button>
 
                 {/* Modal Content */}
@@ -83,12 +86,12 @@ const TaskModal = ({ isOpen, onClose, task }) => {
                     {/* Due Date */}
                     <div>
                         <h2 className="text-lg font-semibold text-gray-700">
-                                DUE DATE:
+                            DUE DATE:
                         </h2>
                         <input
                             type="date"
                             value={task.dueDate || ""}
-                            onChange={(e) => (task.dueDate = e.target.value)} 
+                            onChange={(e) => (task.dueDate = e.target.value)}
                             className="w-25 border border-gray-300 rounded p-2 mt-1"
                         />
                     </div>
@@ -186,8 +189,7 @@ const TaskModal = ({ isOpen, onClose, task }) => {
                                                             }
                                                             className="text-red-500 hover:text-red-700"
                                                         >
-                                                            <FaTimes className="text-2xl"/>
-                                                            
+                                                            <FaTimes className="text-2xl" />
                                                         </button>
                                                     </div>
                                                 )}
@@ -255,8 +257,9 @@ const TaskModal = ({ isOpen, onClose, task }) => {
 
                     {/* Delete Button */}
                     <div>
-                        <DangerButton className="bg-red-500 text-white px-4 py-2 rounded"
-                        onClick={() => setIsDeleteModalOpen(true)}
+                        <DangerButton
+                            className="bg-red-500 text-white px-4 py-2 rounded"
+                            onClick={() => setIsDeleteModalOpen(true)}
                         >
                             Delete Task
                         </DangerButton>
@@ -264,9 +267,11 @@ const TaskModal = ({ isOpen, onClose, task }) => {
 
                     {/* Comments */}
                     <div>
-                        <h2 className="text-lg font-semibold text-gray-700">COMMENTS:</h2>
+                        <h2 className="text-lg font-semibold text-gray-700">
+                            COMMENTS:
+                        </h2>
                         <div className="space-y-2 mt-2">
-                            {task.comments.map((comment) => (
+                            {/* {task.comments.map((comment) => (
                                 <div
                                     key={comment.id}
                                     className="bg-gray-100 p-2 rounded shadow"
@@ -276,7 +281,7 @@ const TaskModal = ({ isOpen, onClose, task }) => {
                                     </strong>{" "}
                                     <span>{comment.text}</span>
                                 </div>
-                            ))}
+                            ))} */}
                         </div>
                         <form
                             className="mt-3 flex items-center space-x-2"
@@ -293,11 +298,11 @@ const TaskModal = ({ isOpen, onClose, task }) => {
                                 type="submit"
                                 className="flex items-center bg-blue-500 text-white font-semibold px-4 py-2 rounded hover:bg-blue-600"
                             >
-                                Send<IoMdSend className="ms-2"/>
+                                Send
+                                <IoMdSend className="ms-2" />
                             </button>
                         </form>
                     </div>
-
                 </div>
             </div>
             <DeleteModal
