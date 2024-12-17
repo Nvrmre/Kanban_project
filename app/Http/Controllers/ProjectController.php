@@ -103,18 +103,18 @@ public function show($id)
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateProjectRequest $request, Project $project)
+    public function update(UpdateProjectRequest $request, Project $project) 
     {
-
-         $this->authorize('update', Project::class);
+        
+        // $this->authorize('update', Project::class);
 
         // // Validasi dan update proyek
-        // $validated = $request->validated();
-        // $validated['updated_by'] = Auth::id(); // Menambahkan updated_by
+        $validated = $request->validated();
+        $validated['updated_by'] = Auth::id(); // Menambahkan updated_by
 
-        // $project->update($validated);
+        $project->update($validated);
 
-        // return redirect()->route('projects.index')->with('success', 'Project updated successfully.');
+        return redirect()->route('projects.index')->with('success', 'Project updated successfully.');
 
     }
 

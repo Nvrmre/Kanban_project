@@ -143,6 +143,17 @@ function Board({ projects, boards, id, tasks }) {
         closeColorModal();
     };
 
+
+    // delete modal 
+    const openDeleteModal = (title) => {
+        setModalTitle(title); // Set judul modal sesuai nama kolom atau task
+        setIsDeleteModalOpen(true); // Buka modal
+    };
+
+    const closeDeleteModal = () => {
+        setIsDeleteModalOpen(false); // Tutup modal
+    };
+
     // Priority Filter
     const handlePriorityClick = (priority) => setSelectedPriority(priority);
 
@@ -223,7 +234,7 @@ function Board({ projects, boards, id, tasks }) {
                                                             ref={
                                                                 provided.innerRef
                                                             }
-                                                            className="bg-white rounded shadow p-4 w-96 flex-shrink-0"
+                                                            className="bg-white rounded shadow p-4 w-96 transition-transform duration-200 h-fit flex-shrink-0"
                                                         >
                                                             <div
                                                                 {...provided.dragHandleProps}
@@ -231,22 +242,34 @@ function Board({ projects, boards, id, tasks }) {
                                                                 style={{
                                                                     backgroundColor:
                                                                         columnColors[
-                                                                            column
-                                                                                .id
-                                                                        ] ||
-                                                                        "#3b82f6",
+                                                                            column.id
+                                                                        ] || "#3b82f6",  // Warna default biru
                                                                 }}
                                                             >
                                                                 {column.name}
                                                                 <button
-                                                                    className="float-right text-white hover:text-gray-300"
-                                                                    onClick={() =>
-                                                                        openColorModal(
-                                                                            column.id
-                                                                        )
-                                                                    }
+                                                                    className="float-end text-gray-100 hover:text-gray-400"
+                                                                    onClick={(e) => {
+                                                                        e.stopPropagation(); // Prevent opening the modal
+                                                                        openDeleteModal(
+                                                                            `Delete Card: ${column.name}`
+                                                                        );
+                                                                        // deleteTask(columnId, task.id);
+                                                                    }}
                                                                 >
-                                                                    <FaPen className="w-5 h-5" />
+                                                                    <FaRegTrashAlt className="my-1 w-5 h-5" />
+                                                                </button>
+                                                                <button
+                                                                   className="float-end text-gray-100 hover:text-gray-400 me-2"
+                                                                   onClick={(e) => {
+                                                                       e.stopPropagation();
+                                                                       openColorModal(
+                                                                           column.id 
+                                                                        //    awalnya data.name tapi modalnya ga bisa di buka 
+                                                                       );
+                                                                   }}
+                                                                >
+                                                                   <FaPen className="my-1 w-5 h-5" />
                                                                 </button>
                                                             </div>
 
@@ -369,9 +392,13 @@ function Board({ projects, boards, id, tasks }) {
                         onClose={() => setIsAddTaskModalOpen(false)}
                     />
                     <DeleteModal
-                        isOpen={isDeleteModalOpen}
-                        onClose={() => setIsDeleteModalOpen(false)}
-                        title={modalTitle}
+                       isOpen={isDeleteModalOpen}
+                       onClose={closeDeleteModal}
+                       onDelete={() => {
+                           console.log("Delete action triggered");
+                           closeDeleteModal(); // Tutup modal setelah menghapus
+                       }}
+                       title={modalTitle}
                     />
                     <EditCardModal
                         isOpen={isColorModalOpen}
