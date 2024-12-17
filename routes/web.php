@@ -19,8 +19,11 @@ Route::middleware(['auth', 'verified'])->group(function(){
 
 });
 
+Route::put('/project/{project}', [ProjectController::class, 'update'])->middleware('auth');
 
-    Route::resource('project', ProjectController::class);
+
+
+Route::resource('project', ProjectController::class);
 
     Route::resource('task', TaskController::class);
     Route::resource('board', BoardController::class);

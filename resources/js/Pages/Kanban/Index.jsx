@@ -40,6 +40,8 @@ function Board({ projects, boards, id, tasks }) {
 
     // Drag-and-Drop Handler
     const onDragEnd = (result) => {
+        console.log(result);
+
         const { source, destination, type } = result;
 
         if (!destination) return;
@@ -170,7 +172,7 @@ function Board({ projects, boards, id, tasks }) {
 
                     <div className="mt-2 flex items-center space-x-2">
                         <span className="text-gray-600">Show Priority:</span>
-                        {["All", "High", "Medium", "Low"].map((priority) => (
+                        {["All", "high", "medium", "low"].map((priority) => (
                             <button
                                 key={priority}
                                 className={`px-3 py-1 text-sm ${
@@ -205,7 +207,7 @@ function Board({ projects, boards, id, tasks }) {
                                                     ? column.tasks
                                                     : column.tasks.filter(
                                                           (task) =>
-                                                              task.priority ===
+                                                              task.priority ==
                                                               selectedPriority
                                                       );
 
