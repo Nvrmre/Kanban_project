@@ -19,7 +19,7 @@ export default function EditCardModal({ isOpen, onClose, onSelectColor }) {
         <Transition
             appear
             show={isOpen}
-            enter="ease-out duration-300"
+            enter="ease-out duration-20"
             enterFrom="opacity-0 scale-95"
             enterTo="opacity-100 scale-100"
             leave="ease-in duration-200"

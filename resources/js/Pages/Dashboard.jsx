@@ -265,4 +265,6 @@ export default function Dashboard({ projects, session }) {
             </AuthenticatedLayout>
         </>
     );
-}
+};
+
+export default Dashboard;
