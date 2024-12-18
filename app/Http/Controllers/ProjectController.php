@@ -105,14 +105,16 @@ public function show($id)
      */
     public function update(UpdateProjectRequest $request, Project $project) 
     {
-        
-        // $this->authorize('update', Project::class);
 
-        // // Validasi dan update proyek
+         $this->authorize('update', Project::class);
+
+        // Validasi dan update proyek
         $validated = $request->validated();
         $validated['updated_by'] = Auth::id(); // Menambahkan updated_by
 
         $project->update($validated);
+
+
 
         return redirect()->route('projects.index')->with('success', 'Project updated successfully.');
 
