@@ -45,20 +45,25 @@ export default function Dashboard({ projects, session }) {
 
     const handleCreateOrEditProject = (e) => {
         e.preventDefault();
+        console.log("data:", data);
         if (isEditing) {
-            router.visit(`/project/${currentProjectId}`, {
-                method: "put",
-
-                preserveState: true,
-                onSuccess: () => {
-                    setData({ name: "", description: "" });
-                    setIsEditing(false);
-                    showSuccessAlert("Project updated successfully");
+            router.put(
+                `/project/${currentProjectId}`,
+                {
+                    ...data, // Data yang akan dikirimkan
                 },
-                onError: () => {
-                    showErrorAlert("Failed to update project");
-                },
-            });
+                {
+                    preserveState: true,
+                    onSuccess: () => {
+                        setData({ name: "", description: "" });
+                        setIsEditing(false);
+                        showSuccessAlert("Project updated successfully");
+                    },
+                    onError: () => {
+                        showErrorAlert("Failed to update project");
+                    },
+                }
+            );
         } else {
             post("/project", {
                 onSuccess: () => {
