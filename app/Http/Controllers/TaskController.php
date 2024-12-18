@@ -6,6 +6,7 @@ use App\Models\Task;
 use App\Http\Requests\StoreTaskRequest;
 use App\Http\Requests\UpdateTaskRequest;
 use Illuminate\Support\Facades\Auth;
+use Inertia\Inertia;
 
 class TaskController extends Controller
 {
@@ -23,11 +24,11 @@ class TaskController extends Controller
             ->paginate(10)
             ->withQueryString();
 
-        return inertia('Task/Index', [
-            'tasks' => $tasks,
-            'statusOptions' => ['to_do', 'in_progress', 'done'],
-            'priorityOptions' => ['low', 'medium', 'high'],
-        ]);
+        return inertia('Kanban/Index', [
+        'tasks' => $tasks,  // Pass the tasks data to the Inertia view
+        'boardId' => $boardId,  // Optionally pass the boardId filter to the frontend
+        'status' => $status,  // Optionally pass the status filter to the frontend
+    ]);
     }
 
     /**
@@ -101,5 +102,24 @@ class TaskController extends Controller
 
         return redirect()->route('task.index', ['board_id' => $boardId])
             ->with('success', 'Tugas berhasil dihapus.');
+    }
+
+    public function report() {
+        // Mengambil jumlah tugas berdasarkan status
+        $taskData = Task::selectRaw('
+            SUM(CASE WHEN status = "done" THEN 1 ELSE 0 END) AS complete,
+            SUM(CASE WHEN status = "to_do" THEN 1 ELSE 0 END) AS to_do,
+            SUM(CASE WHEN status = "in_progress" THEN 1 ELSE 0 END) AS in_progress
+        ')->first();
+
+        $taskDistribution = [
+            'complete' => $taskData->complete ?? 0,
+            'overdue' => $taskData->to_do ?? 0 // Anda bisa menyesuaikan status ini
+        ];
+        // Kirim data ke frontend menggunakan Inertia
+        return Inertia::render('Laporan/Index', [
+            'taskData' => $taskData,
+            'taskDistribution' => $taskDistribution, // Mengirimkan data ke pie chart
+        ]);
     }
 }

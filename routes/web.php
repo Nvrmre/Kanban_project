@@ -10,41 +10,34 @@ use Inertia\Inertia;
 
 Route::redirect('/', '/dashboard');
 
-Route::middleware(['auth', 'verified'])->group(function(){
+
+Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/dashboard', [ProjectController::class, 'index'])
-    ->name('dashboard');
-
-    Route::delete('/project/{id}', [ProjectController::class, 'destroy'])->name('project.destroy');
-    Route::put('/project/{id}', [ProjectController::class, 'update'])->name('project.update');
-    Route::resource('project', ProjectController::class);
-
-    Route::resource('task', TaskController::class);
-    Route::resource('board', BoardController::class);
-   Route::get('/kanban', function () {
-        return Inertia::render('Kanban/Index');
-    })->name('kanban.index');
-
-
-    Route::get('/kanban/{id}', function ($id) {
-        return Inertia::render('Kanban/Index', ['id' => $id]);
-    })->name('kanban.show');
+        ->name('dashboard');
 });
+
+Route::put('/project/{project}', [ProjectController::class, 'update'])->middleware('auth');
+
+
+Route::resource('project', ProjectController::class);
+
+Route::resource('task', TaskController::class);
+Route::resource('boards', BoardController::class);
+
+Route::get('/kanban/{project_id?}', [BoardController::class, 'index'])->name('kanban.index');
 
 // Rute Testing
 Route::get('/users/test', [UserController::class, 'test'])->name('users.test');
 
 
+
 // Rute Setting
 Route::get('/setting', function () {
-    return Inertia::render('Setting/Index');
     return Inertia::render('Setting/Index');
 })->name('setting.index');
 
 // Rute Laporan
-Route::get('/laporan', function () {
-    return Inertia::render('Laporan/Index');
-    return Inertia::render('Laporan/Index');
-})->name('laporan.index');
+Route::get('/laporan', [TaskController::class, 'report'])->name('laporan.index');
 
 // Rute Users
 Route::get('/users', [UserController::class, 'index'])->name('users.index');
@@ -59,8 +52,9 @@ Route::middleware('auth')->group(function () {
 // Rute Project Show
 Route::get('/project/{project}', function ($project) {
     return Inertia::render('Project/Show', [
-        'project' => \App\Models\Project::with('boards', 'tasks')->findOrFail($project),
+        'project' => \App\Models\Project::with('boards.tasks')->findOrFail($project),
     ]);
 })->name('project.show');
 
-require __DIR__.'/auth.php';
+
+require __DIR__ . '/auth.php';
