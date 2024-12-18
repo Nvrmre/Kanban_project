@@ -9,6 +9,12 @@ import EditCardModal from "@/Components/EditCardModal";
 import { Head } from "@inertiajs/react";
 import ErrorBoundary from "@/error";
 
+import { BsPersonFillAdd } from "react-icons/bs";   
+import AddMemberModal from "@/Components/AddMemberModal";
+import PrimaryButton from "@/Components/PrimaryButton";
+
+
+
 function Board({ projects, boards, id, tasks }) {
     // Merge Tasks with Boards
     const mergedTasksByBoard = boards.reduce((acc, board) => {
@@ -35,6 +41,7 @@ function Board({ projects, boards, id, tasks }) {
     const [modalTitle, setModalTitle] = useState("");
     const [isColorModalOpen, setIsColorModalOpen] = useState(false);
     const [selectedColumnId, setSelectedColumnId] = useState(null);
+    const [isAddMemberModalOpen, setIsAddMemberModalOpen] = useState(false);
 
     const [newBoardName, setNewBoardName] = useState("");
 
@@ -101,6 +108,12 @@ function Board({ projects, boards, id, tasks }) {
         setSelectedTask(null);
     };
 
+    // AddMember Modal Handlers
+    // const openAddMemberModal = (member) => {
+    //     setSelectedTask(task);
+    //     setIsTaskModalOpen(true);
+    // };
+
     // Add Board
     const handleAddBoard = (e) => {
         e.preventDefault();
@@ -160,7 +173,7 @@ function Board({ projects, boards, id, tasks }) {
     const renderPriorityIcon = (priority) => {
         return (
             <div
-                className={`absolute top-0 left-0 h-full w-2 rounded-l ${
+                className={`absolute top-0 left-0 h-full w-2 rounded-lg${
                     priority === "High"
                         ? "bg-red-500"
                         : priority === "Medium"
@@ -177,16 +190,32 @@ function Board({ projects, boards, id, tasks }) {
                 <Head title="Board" />
 
                 <div className="p-6 bg-gray-100 min-h-screen">
-                    <h1 className="text-xl font-semibold text-gray-700">
-                        Boards / Main Project
-                    </h1>
+                    <div className="flex flex-row justify-between items-center">
+                        <div>
+                            <h1 className="text-xl font-semibold text-gray-700">
+                                Boards / Main Project
+                            </h1>
+                        </div>
+
+                        {/* MODAL ADD MEMBER KALO GA JADI DIPAKE DI DELETE AJA  */}
+                        {/* <div className=""> 
+                            <PrimaryButton
+                                onClick={() => setIsAddMemberModalOpen(true)}
+                                className="mt-4"
+                            >
+                                <BsPersonFillAdd className="text-lg mr-2" /> Share
+                            </PrimaryButton>
+                        </div> */}
+                    </div>
+                    
+                    
 
                     <div className="mt-2 flex items-center space-x-2">
-                        <span className="text-gray-600">Show Priority:</span>
+                        <span className="text-gray-600 ">Show Priority:</span>
                         {["All", "high", "medium", "low"].map((priority) => (
                             <button
                                 key={priority}
-                                className={`px-3 py-1 text-sm ${
+                                className={`px-3 py-1 text-sm font-semibold ${
                                     selectedPriority === priority
                                         ? "bg-blue-500 text-white"
                                         : "bg-gray-200 text-gray-700"
@@ -391,6 +420,12 @@ function Board({ projects, boards, id, tasks }) {
                         isOpen={isAddTaskModalOpen}
                         onClose={() => setIsAddTaskModalOpen(false)}
                     />
+
+                    <AddMemberModal
+                        isOpen={isAddMemberModalOpen}
+                        onClose={() => setIsAddMemberModalOpen(false)}
+                    />
+
                     <DeleteModal
                        isOpen={isDeleteModalOpen}
                        onClose={closeDeleteModal}

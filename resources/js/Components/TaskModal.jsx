@@ -96,41 +96,23 @@ const TaskModal = ({ isOpen, onClose, task }) => {
                         />
                     </div>
 
-                    {/* Setting */}
-                    {/* <div>
+                    {/* Asignasi tugas kepada anggota tim */}
+                    <div>
                         <h2 className="text-lg font-semibold text-gray-700">
-                            SETTING:
-                        </h2>
-                        <div className="space-y-2">
-                            <div className="flex items-center justify-between">
-                                <InputLabel value="Notification Duration :" className="text-sm font-medium text-gray-700" />
-                                <select
-                                    className="w-25 border border-gray-300 rounded pe-7"
-                                    value={task.notificationDuration || "6"}
-                                    onChange={(e) => (task.notificationDuration = e.target.value)}
-                                >
-                                    <option value="">6 hours</option>
-                                    <option value="">12 hours</option>
-                                    <option value="">1 day</option>
-                                    <option value="">3 days</option>
-                                    <option value="">5 days</option>
-                                    <option value="">7 days</option>
-                                </select>
-                            </div>
-
-                            <div className="flex items-center justify-between">
-                                <InputLabel value="Role Member :" className="text-sm font-medium text-gray-700" />
-                                <select
-                                    className="w-25 border border-gray-300 rounded pe-7"
-                                    value={task.roleMember || "member"}
-                                    onChange={(e) => (task.roleMember = e.target.value)}
-                                >
-                                    <option value="member">Member</option>
-                                    <option value="admin">Admin</option>
-                                </select>
-                            </div>
-                        </div>
-                    </div> */}
+                            Assign Task to Team Member:
+                        </h2>   
+                        <select
+                            className="w-full border border-gray-300 rounded p-2 mt-1"
+                        >
+                            {/* SEMENTARA PAKE JS NANTI BISA DI GANTI DROPWODN BIASA DI PANGGIL NAMA ATO ID MEMBER */}
+                            {members.map((member, index) => (
+                                <option key={index} value={member.name}>
+                                    {member.name}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
+                    
 
                     {/* Checklist */}
                     <div>
