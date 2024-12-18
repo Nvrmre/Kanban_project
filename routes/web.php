@@ -31,6 +31,7 @@ Route::get('/users/test', [UserController::class, 'test'])->name('users.test');
 
 
 
+
 // Rute Setting
 Route::get('/setting', function () {
     return Inertia::render('Setting/Index');
@@ -52,6 +53,7 @@ Route::middleware('auth')->group(function () {
 // Rute Project Show
 Route::get('/project/{project}', function ($project) {
     return Inertia::render('Project/Show', [
+        'project' => \App\Models\Project::with('boards.tasks')->findOrFail($project),
         'project' => \App\Models\Project::with('boards.tasks')->findOrFail($project),
     ]);
 })->name('project.show');

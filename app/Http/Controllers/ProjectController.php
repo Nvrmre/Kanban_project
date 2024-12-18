@@ -111,6 +111,9 @@ public function show($id)
         $validated['updated_by'] = Auth::id(); // Menambahkan updated_by
 
         $project->update($validated);
+
+
+
         return redirect()->route('projects.index')->with('success', 'Project updated successfully.');
 
     }

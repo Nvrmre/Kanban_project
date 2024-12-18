@@ -43,8 +43,7 @@ function Board({ projects, boards, id, tasks }) {
     const [selectedColumnId, setSelectedColumnId] = useState(null);
     const [isAddMemberModalOpen, setIsAddMemberModalOpen] = useState(false);
 
-    const [newBoardName, setNewBoardName] = useState('');
-   
+    const [newBoardName, setNewBoardName] = useState("");
 
     // Drag-and-Drop Handler
     const onDragEnd = (result) => {

@@ -14,36 +14,39 @@ class BoardController extends Controller
     /**
      * Display a listing of the boards with optional project filter.
      */
-    public function index()
-    {
-        $status = request('status'); // Status filter (to_do, in_progress, done)
-        $projectId = request('projects_id'); // Project ID untuk filter
 
-        // Fetch boards with filters
-        $boards = Board::when($projectId, fn($query) => $query->where('projects_id', $projectId)) // Menggunakan projects_id
-            ->with('project') // Sertakan data project untuk setiap board
-            ->get();
+        public function index()
+{
+    $status = request('status'); // Status filter (to_do, in_progress, done)
+    $projectId = request('project_id'); // Project ID untuk filter
 
-        // Ambil board_id dari board pertama jika ada
-        $boardId = $boards->isNotEmpty() ? $boards->first()->id : null;
+    // Fetch boards with filters
+    $boards = Board::when($projectId, fn($query) => $query->where('project_id', $projectId))
+        ->with('project') // Sertakan data project untuk setiap board
+        ->get();
 
-        // Fetch tasks with filters, menggunakan board_id yang diambil dari data boards
-        $tasks = Task::when($boardId, fn($query) => $query->where('board_id', $boardId))
-            ->when($status, fn($query) => $query->where('status', $status))
-            ->orderBy('priority', 'desc') // Sorting berdasarkan prioritas
-            ->paginate(10)
-            ->withQueryString();
+    // Ambil board_id dari board pertama jika ada
+    $boardId = $boards->isNotEmpty() ? $boards->first()->id : null;
 
-        // Return Inertia view with both tasks and boards data
-        return inertia('Kanban/Index', [
-            'tasks' => $tasks,
-            'boardId' => $boardId, // Pass the boardId to frontend
-            'status' => $status,
-            'boards' => $boards,
-            'projects' => Project::all(), // Untuk filter project di frontend
-            'id' => $projectId, // Untuk menyimpan projects_id yang dipilih
-        ]);
-    }
+    // Fetch tasks with filters, menggunakan board_id yang diambil dari data boards
+    $tasks = Task::when($boardId, fn($query) => $query->where('board_id', $boardId))
+        ->when($status, fn($query) => $query->where('status', $status))
+        ->orderBy('priority', 'desc') // Sorting berdasarkan prioritas
+        ->paginate(10)
+        ->withQueryString();
+
+    // Return Inertia view with both tasks and boards data
+    return inertia('Kanban/Index', [
+        'tasks' => $tasks,
+        'boardId' => $boardId, // Pass the boardId to frontend
+        'status' => $status,
+        'boards' => $boards,
+        'projects' => Project::all(), // Untuk filter project di frontend
+        'id' => $projectId, // Untuk menyimpan project_id yang dipilih
+    ]);
+}
+
+
 
     /**
      * Show the form for creating a new board.
