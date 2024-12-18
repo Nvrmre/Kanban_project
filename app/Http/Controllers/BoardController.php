@@ -16,14 +16,32 @@ class BoardController extends Controller
      */
     public function index()
     {
-        $projectId = request('project_id'); // Filter berdasarkan project_id
-        $boards = Board::when($projectId, fn($query) => $query->where('project_id', $projectId))
+        $status = request('status'); // Status filter (to_do, in_progress, done)
+        $projectId = request('projects_id'); // Project ID untuk filter
+
+        // Fetch boards with filters
+        $boards = Board::when($projectId, fn($query) => $query->where('projects_id', $projectId)) // Menggunakan projects_id
             ->with('project') // Sertakan data project untuk setiap board
             ->get();
 
-        return Inertia::render('Boards/Index', [
+        // Ambil board_id dari board pertama jika ada
+        $boardId = $boards->isNotEmpty() ? $boards->first()->id : null;
+
+        // Fetch tasks with filters, menggunakan board_id yang diambil dari data boards
+        $tasks = Task::when($boardId, fn($query) => $query->where('board_id', $boardId))
+            ->when($status, fn($query) => $query->where('status', $status))
+            ->orderBy('priority', 'desc') // Sorting berdasarkan prioritas
+            ->paginate(10)
+            ->withQueryString();
+
+        // Return Inertia view with both tasks and boards data
+        return inertia('Kanban/Index', [
+            'tasks' => $tasks,
+            'boardId' => $boardId, // Pass the boardId to frontend
+            'status' => $status,
             'boards' => $boards,
             'projects' => Project::all(), // Untuk filter project di frontend
+            'id' => $projectId, // Untuk menyimpan projects_id yang dipilih
         ]);
     }
 
@@ -42,11 +60,25 @@ class BoardController extends Controller
      */
     public function store(StoreBoardRequest $request)
     {
-        $board = Board::create($request->validated());
-
-        return redirect()->route('boards.index', ['project_id' => $board->project_id])
-            ->with('success', 'Board created successfully.');
+        // Validasi request
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'projects_id' => 'required|exists:projects,id', // Validasi projects_id
+        ]);
+    
+        // Menyimpan board baru
+        $board = Board::create([
+            'name' => $request->name,
+            'projects_id' => $request->projects_id, // Gunakan projects_id
+        
+        ]);
+    
+        return response()->json([
+            'message' => 'Board created successfully',
+            'board' => $board
+        ], 201); // Status code 201: Created
     }
+    
 
     /**
      * Display the specified board along with its tasks.
@@ -81,9 +113,10 @@ class BoardController extends Controller
      */
     public function update(UpdateBoardRequest $request, Board $board)
     {
+        // Pastikan untuk memperbarui board dengan projects_id yang benar
         $board->update($request->validated());
 
-        return redirect()->route('boards.index', ['project_id' => $board->project_id])
+        return redirect()->route('boards.index', ['projects_id' => $board->projects_id]) // Gunakan projects_id
             ->with('success', 'Board updated successfully.');
     }
 
@@ -92,10 +125,10 @@ class BoardController extends Controller
      */
     public function destroy(Board $board)
     {
-        $projectId = $board->project_id; // Simpan project_id untuk redirect
+        $projectId = $board->projects_id; // Simpan projects_id untuk redirect
         $board->delete();
 
-        return redirect()->route('boards.index', ['project_id' => $projectId])
+        return redirect()->route('boards.index', ['projects_id' => $projectId]) // Gunakan projects_id
             ->with('success', 'Board deleted successfully.');
     }
 }

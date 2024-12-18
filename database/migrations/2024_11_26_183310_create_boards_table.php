@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('boards', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->foreignId('project_id')->constrained('projects'); // Mengubah nama kolom menjadi project_id
+            $table->foreignId('projects_id')->constrained('projects'); // Mengubah nama kolom menjadi project_id
             $table->timestamps();
         });
     }

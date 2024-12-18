@@ -10,30 +10,30 @@ export default function TaskPieChart({ data }) {
       const ctx = chartRef.current.getContext('2d');
       if (ctx) {
         if (chartInstance.current) {
-          chartInstance.current.destroy();
+          chartInstance.current.destroy(); // Hancurkan chart sebelumnya
         }
 
         chartInstance.current = new Chart(ctx, {
-          type: 'pie',
+          type: 'pie', // Jenis grafik pie
           data: {
-            labels: ['Complete', 'Overdue'],
+            labels: ['Complete', 'Overdue'], // Label kategori
             datasets: [{
-              data: [data.complete, data.overdue],
-              backgroundColor: ['rgba(37, 99, 235, 0.8)', 'rgba(239, 68, 68, 0.8)'],
-              borderColor: ['rgba(37, 99, 235, 1)', 'rgba(239, 68, 68, 1)'],
-              borderWidth: 1
+              data: [data.complete, data.overdue], // Menggunakan data yang diterima
+              backgroundColor: ['rgba(37, 99, 235, 0.8)', 'rgba(239, 68, 68, 0.8)'], // Warna untuk masing-masing kategori
+              borderColor: ['rgba(37, 99, 235, 1)', 'rgba(239, 68, 68, 1)'], // Warna border
+              borderWidth: 1 // Ketebalan border
             }]
           },
           options: {
-            responsive: true,
-            aspectRatio: 2.5,
+            responsive: true, // Responsif untuk berbagai ukuran layar
+            aspectRatio: 2.5, // Menyesuaikan aspek rasio grafik
             plugins: {
               legend: {
-                position: 'bottom'
+                position: 'bottom' // Menempatkan legenda di bawah grafik
               },
               title: {
                 display: true,
-                text: 'Task Distribution'
+                text: 'Task Distribution' // Judul grafik
               }
             }
           }
@@ -43,15 +43,14 @@ export default function TaskPieChart({ data }) {
 
     return () => {
       if (chartInstance.current) {
-        chartInstance.current.destroy();
+        chartInstance.current.destroy(); // Hancurkan chart saat komponen di-unmount
       }
     };
   }, [data]);
 
   return (
     <canvas
-      ref={chartRef}
+      ref={chartRef} // Menghubungkan canvas ke chart.js
     />
   );
 }
-

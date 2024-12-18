@@ -3,7 +3,8 @@ import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import DeleteModal from "@/Components/DeleteModal";
 import { FaTimes } from "react-icons/fa";
 import InputLabel from "@/Components/InputLabel";
-
+import { IoMdSend } from "react-icons/io";
+import DangerButton from "@/Components/DangerButton";
 
 const TaskModal = ({ isOpen, onClose, task }) => {
     // Add a guard clause if task is null
@@ -50,7 +51,11 @@ const TaskModal = ({ isOpen, onClose, task }) => {
     const addComment = (e) => {
         e.preventDefault();
         if (newComment.trim() !== "") {
-            task.comments.push({ id: `c${task.comments.length + 1}`, name: "You", text: newComment });
+            task.comments.push({
+                id: `c${task.comments.length + 1}`,
+                name: "You",
+                text: newComment,
+            });
             setNewComment("");
         }
     };
@@ -63,7 +68,7 @@ const TaskModal = ({ isOpen, onClose, task }) => {
                     className="absolute top-4 right-4 text-gray-500 hover:text-gray-700"
                     onClick={onClose}
                 >
-                    <FaTimes className="text-2xl"/>
+                    <FaTimes className="text-2xl" />
                 </button>
 
                 {/* Modal Content */}
@@ -81,51 +86,33 @@ const TaskModal = ({ isOpen, onClose, task }) => {
                     {/* Due Date */}
                     <div>
                         <h2 className="text-lg font-semibold text-gray-700">
-                                DUE DATE:
+                            DUE DATE:
                         </h2>
                         <input
                             type="date"
                             value={task.dueDate || ""}
-                            onChange={(e) => (task.dueDate = e.target.value)} 
+                            onChange={(e) => (task.dueDate = e.target.value)}
                             className="w-25 border border-gray-300 rounded p-2 mt-1"
                         />
                     </div>
 
-                    {/* Setting */}
+                    {/* Asignasi tugas kepada anggota tim */}
                     <div>
                         <h2 className="text-lg font-semibold text-gray-700">
-                            SETTING:
-                        </h2>
-                        <div className="space-y-2">
-                            <div className="flex items-center justify-between">
-                                <InputLabel value="Notification Duration :" className="text-sm font-medium text-gray-700" />
-                                <select
-                                    className="w-25 border border-gray-300 rounded pe-7"
-                                    value={task.notificationDuration || "6"}
-                                    onChange={(e) => (task.notificationDuration = e.target.value)}
-                                >
-                                    <option value="">6 hours</option>
-                                    <option value="">12 hours</option>
-                                    <option value="">1 day</option>
-                                    <option value="">3 days</option>
-                                    <option value="">5 days</option>
-                                    <option value="">7 days</option>
-                                </select>
-                            </div>
-
-                            <div className="flex items-center justify-between">
-                                <InputLabel value="Role Member :" className="text-sm font-medium text-gray-700" />
-                                <select
-                                    className="w-25 border border-gray-300 rounded pe-7"
-                                    value={task.roleMember || "member"}
-                                    onChange={(e) => (task.roleMember = e.target.value)}
-                                >
-                                    <option value="member">Member</option>
-                                    <option value="admin">Admin</option>
-                                </select>
-                            </div>
-                        </div>
+                            Assign Task to Team Member:
+                        </h2>   
+                        <select
+                            className="w-full border border-gray-300 rounded p-2 mt-1"
+                        >
+                            {/* SEMENTARA PAKE JS NANTI BISA DI GANTI DROPWODN BIASA DI PANGGIL NAMA ATO ID MEMBER */}
+                            {members.map((member, index) => (
+                                <option key={index} value={member.name}>
+                                    {member.name}
+                                </option>
+                            ))}
+                        </select>
                     </div>
+                    
 
                     {/* Checklist */}
                     <div>
@@ -184,8 +171,7 @@ const TaskModal = ({ isOpen, onClose, task }) => {
                                                             }
                                                             className="text-red-500 hover:text-red-700"
                                                         >
-                                                            <FaTimes className="text-2xl"/>
-                                                            
+                                                            <FaTimes className="text-2xl" />
                                                         </button>
                                                     </div>
                                                 )}
@@ -253,18 +239,21 @@ const TaskModal = ({ isOpen, onClose, task }) => {
 
                     {/* Delete Button */}
                     <div>
-                        <button className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
-                        onClick={() => setIsDeleteModalOpen(true)}
+                        <DangerButton
+                            className="bg-red-500 text-white px-4 py-2 rounded"
+                            onClick={() => setIsDeleteModalOpen(true)}
                         >
                             Delete Task
-                        </button>
+                        </DangerButton>
                     </div>
 
                     {/* Comments */}
                     <div>
-                        <h2 className="text-lg font-semibold text-gray-700">COMMENTS:</h2>
+                        <h2 className="text-lg font-semibold text-gray-700">
+                            COMMENTS:
+                        </h2>
                         <div className="space-y-2 mt-2">
-                            {task.comments.map((comment) => (
+                            {/* {task.comments.map((comment) => (
                                 <div
                                     key={comment.id}
                                     className="bg-gray-100 p-2 rounded shadow"
@@ -274,7 +263,7 @@ const TaskModal = ({ isOpen, onClose, task }) => {
                                     </strong>{" "}
                                     <span>{comment.text}</span>
                                 </div>
-                            ))}
+                            ))} */}
                         </div>
                         <form
                             className="mt-3 flex items-center space-x-2"
@@ -289,13 +278,13 @@ const TaskModal = ({ isOpen, onClose, task }) => {
                             />
                             <button
                                 type="submit"
-                                className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+                                className="flex items-center bg-blue-500 text-white font-semibold px-4 py-2 rounded hover:bg-blue-600"
                             >
                                 Send
+                                <IoMdSend className="ms-2" />
                             </button>
                         </form>
                     </div>
-
                 </div>
             </div>
             <DeleteModal

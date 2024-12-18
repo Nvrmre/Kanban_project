@@ -7,9 +7,7 @@ use App\Http\Requests\StoreProjectRequest;
 use App\Http\Requests\UpdateProjectRequest;
 use App\Http\Resources\ProjectResource;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Http\Request;
 use Inertia\Inertia;
-use App\Http\Controllers;
 use Illuminate\Support\Facades\DB;
 
 
@@ -20,12 +18,16 @@ class ProjectController extends Controller
      */
     public function index()
     {
+
         $query = Project::query();
         $projects = $query->paginate(10);
-        $projects = Project::latest()->paginate(10);
 
         return inertia('Dashboard', [
             'projects' => ProjectResource::collection($projects),
+
+
+
+
         ]);
     }
 
@@ -42,22 +44,7 @@ class ProjectController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreProjectRequest $request)
-    {
-        // Validasi dan simpan data proyek baru
-        $validated = $request->validated();
-        $validated['created_by'] = Auth::id(); // Menambahkan created_by
-        $validated['updated_by'] = Auth::id(); // Menambahkan updated_by
-    
-        // Menyimpan proyek baru
-        $project = Project::create($validated);
-    
-        // Kirim data proyek baru ke frontend setelah berhasil dibuat
-        return inertia('Kanban/Index', [
-            'projects' => ProjectResource::collection(Project::latest()->paginate(10)),
-            'project' => new ProjectResource($project),
-        ]);
-    }
+
    // app/Http/Controllers/ProjectController.php
 
    public function store(StoreProjectRequest $request)
@@ -80,7 +67,7 @@ class ProjectController extends Controller
     /**
      * Display the specified resource.
      */
-   
+
 
 public function show($id)
 {
@@ -92,7 +79,7 @@ public function show($id)
 
 
     // Menampilkan tampilan menggunakan Inertia dan mengirim data project serta boards
-    return Inertia::render('Projects/Show', [
+    return Inertia::render('Projects/index', [
         'project' => $project,
         'boards' => $boards,
     ]);
@@ -114,14 +101,16 @@ public function show($id)
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateProjectRequest $request, Project $project)
+    public function update(UpdateProjectRequest $request, Project $project) 
     {
+
+         $this->authorize('update', Project::class);
+
         // Validasi dan update proyek
         $validated = $request->validated();
         $validated['updated_by'] = Auth::id(); // Menambahkan updated_by
 
         $project->update($validated);
-
         return redirect()->route('projects.index')->with('success', 'Project updated successfully.');
 
     }
@@ -132,11 +121,13 @@ public function show($id)
     public function destroy($id)
     {
 
+
          $project = Project::findOrFail($id);
          $project->delete();
 
 
     return redirect()->route('dashboard') // Ganti dengan nama route yang sesuai
         ->with('success', 'Project deleted successfully.');
+
     }
 }

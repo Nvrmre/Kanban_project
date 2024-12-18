@@ -12,8 +12,6 @@ class Board extends Model
     protected $fillable = [
         'name',
         'projects_id',
-        'created_by',
-        'updated_by',
     ];
 
     /**
@@ -21,7 +19,7 @@ class Board extends Model
      */
     public function project()
     {
-        return $this->belongsTo(Project::class, 'project_id'); // Menyebutkan project_id sebagai foreign key
+        return $this->belongsTo(Project::class, 'projects_id'); // Menyebutkan project_id sebagai foreign key
     }
     
 

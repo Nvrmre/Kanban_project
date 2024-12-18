@@ -1,4 +1,6 @@
 import React, { useState } from "react";
+import { FaTimes } from "react-icons/fa";
+
 
 const AddTaskModal = ({ isOpen, onClose }) => {
     const [title, setTitle] = useState("");
@@ -17,7 +19,8 @@ const AddTaskModal = ({ isOpen, onClose }) => {
                     className="absolute top-4 right-4 text-gray-500 hover:text-gray-700"
                     onClick={onClose}
                 >
-                    ✖
+                    <FaTimes className="text-2xl" />
+                    
                 </button>
 
                 {/* Modal Title */}

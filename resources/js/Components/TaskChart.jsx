@@ -1,98 +1,79 @@
 import React, { useEffect, useRef, useState } from 'react';
+import { usePage } from '@inertiajs/react'; // Mengakses data dari Inertia
 import Chart from 'chart.js/auto';
 
-const dummyTaskData = {
-    complete: 0,
-    overdue: 0,
-};
+export default function TaskReport() {
+    // Mengakses data yang dikirim dari backend melalui Inertia
+    const { taskData } = usePage().props;
 
-const today = new Date();
-const firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
-const lastDayOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0);
-const daysInMonth = lastDayOfMonth.getDate();
+    // Menyiapkan data untuk chart (misalnya untuk Task Status)
+    const taskStatuses = ['Complete', 'To Do', 'In Progress'];
+    const taskValues = [
+        taskData.complete ?? 0,  // Menggunakan nilai dari backend, atau 0 jika tidak ada
+        taskData.to_do ?? 0,
+        taskData.in_progress ?? 0,
+    ];
 
-const dummyWeeklyProgress = [...Array(daysInMonth)].map((_, i) => {
-    const date = new Date(firstDayOfMonth.getTime());
-    date.setDate(i + 1);
-    return {
-        date: date.toISOString().slice(0, 10),
-        complete: Math.floor(Math.random() * 20) + 1,
-        overdue: Math.floor(Math.random() * 10) + 1,
-    };
-});
-
-export default function TaskChart({ data }) {
     const chartRef = useRef(null);
     const chartInstance = useRef(null);
-    const [aspectRatio, setAspectRatio] = useState(2); 
+    const [aspectRatio, setAspectRatio] = useState(2); // Menyesuaikan aspek rasio grafik
 
     const handleResize = () => {
         const screenWidth = window.innerWidth;
-        if (screenWidth >= 1024) { 
-            setAspectRatio(2);
-        } else if (screenWidth >= 640) { 
-            setAspectRatio(1);
+        if (screenWidth >= 1024) {
+            setAspectRatio(2); // Lebih besar untuk desktop
+        } else if (screenWidth >= 640) {
+            setAspectRatio(1); // Ukuran menengah untuk tablet
         } else {
-            setAspectRatio(1); 
+            setAspectRatio(1); // Ukuran kecil untuk mobile
         }
     };
 
     useEffect(() => {
-        handleResize(); 
+        handleResize(); // Menyesuaikan aspek rasio saat resize
         window.addEventListener('resize', handleResize);
         return () => {
             window.removeEventListener('resize', handleResize);
         };
     }, []);
 
-    const safeData = {
-        complete: data?.complete ?? dummyTaskData.complete,
-        overdue: data?.overdue ?? dummyTaskData.overdue,    
-    };
-
-    const safeWeeklyProgress = data?.weeklyProgress ?? dummyWeeklyProgress;
-    const weeklyDates = safeWeeklyProgress.map(item => item.date);
-    const weeklyComplete = safeWeeklyProgress.map(item => item.complete);
-    const weeklyOverdue = safeWeeklyProgress.map(item => item.overdue);
-
     useEffect(() => {
         if (chartRef.current) {
             const ctx = chartRef.current.getContext('2d');
             if (ctx) {
                 if (chartInstance.current) {
-                    chartInstance.current.destroy();
+                    chartInstance.current.destroy(); // Menghancurkan chart sebelumnya
                 }
 
                 chartInstance.current = new Chart(ctx, {
-                    type: 'line',
+                    type: 'bar', // Menggunakan grafik batang untuk task status
                     data: {
-                        labels: weeklyDates,
-                        datasets: [
-                            {
-                                label: 'Complete',
-                                data: weeklyComplete,
-                                borderColor: 'rgba(37, 99, 235, 1)',
-                                backgroundColor: 'rgba(37, 99, 235, 0.2)',
-                                fill: true,
-                            },
-                            {
-                                label: 'Overdue',
-                                data: weeklyOverdue,
-                                borderColor: 'rgba(239, 68, 68, 1)',
-                                backgroundColor: 'rgba(239, 68, 68, 0.2)',
-                                fill: true,
-                            },
-                        ],
+                        labels: taskStatuses, // Menampilkan status tugas
+                        datasets: [{
+                            label: 'Task Status',
+                            data: taskValues, // Data status tugas
+                            backgroundColor: [
+                                'rgba(37, 99, 235, 0.6)', // Complete
+                                'rgba(239, 68, 68, 0.6)', // To Do
+                                'rgba(34, 197, 94, 0.6)', // In Progress
+                            ],
+                            borderColor: [
+                                'rgba(37, 99, 235, 1)',
+                                'rgba(239, 68, 68, 1)',
+                                'rgba(34, 197, 94, 1)',
+                            ],
+                            borderWidth: 1,
+                        }],
                     },
                     options: {
-                        responsive: true,
-                        aspectRatio: aspectRatio, 
+                        responsive: true, // Responsif untuk ukuran layar
+                        aspectRatio: aspectRatio, // Menyesuaikan aspek rasio grafik
                         plugins: {
                             legend: { display: true },
-                            title: { display: true, text: 'Monthly Task Progress' },
+                            title: { display: true, text: 'Task Status Overview' },
                         },
                         scales: {
-                            x: { title: { display: true, text: 'Date' } },
+                            x: { title: { display: true, text: 'Task Status' } },
                             y: { beginAtZero: true, title: { display: true, text: 'Number of Tasks' } },
                         },
                     },
@@ -102,12 +83,15 @@ export default function TaskChart({ data }) {
 
         return () => {
             if (chartInstance.current) {
-                chartInstance.current.destroy();
+                chartInstance.current.destroy(); // Membersihkan chart saat komponen di-unmount
             }
         };
-    }, [safeWeeklyProgress, aspectRatio]); 
+    }, [taskValues, aspectRatio]);
 
     return (
-        <canvas ref={chartRef} />
+        <div className="container mx-auto p-4">
+            {/* Chart Container */}
+            <canvas ref={chartRef} />
+        </div>
     );
 }

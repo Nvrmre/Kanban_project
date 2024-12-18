@@ -29,7 +29,7 @@ export default function Setting () {
     return (
         <AuthenticatedLayout
             header={
-                <h2 className="text-xl font-semibold leading-tight text-blue-700 dark:text-gray-200">
+                <h2 className="text-xl font-semibold leading-tight text-blue-700 ">
                     Setting
                 </h2>
             }
@@ -37,17 +37,16 @@ export default function Setting () {
             <Head title="Setting" />
 
             <div className="py-12">
-                <div className="mx-auto max-w-7xl space-y-6 sm:px-6 lg:px-8">
-                    <div className="bg-white p-4 shadow sm:rounded-lg sm:p-8 dark:bg-gray-800">
-                        <h2 className="text-lg font-medium text-gray-900 dark:text-gray-100">
+                <div className="grid grid-cols-2 gap-6 mx-auto max-w-7xl sm:px-6 lg:px-8 ">
+                    <div className="bg-white p-4 shadow sm:rounded-lg sm:p-8 hover:outline-none hover:ring-2 hover:ring-blue-500 hover:ring-offset-2 transition duration-150 ease-in-out">
+                        <h2 className="text-lg font-medium text-gray-900 ">
                             Role Information
                         </h2>
-                        <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
+                        <p className="mt-1 text-sm text-gray-600 ">
                             Account profile role information. 
                         </p>
                             <form className="mt-6 space-y-6">
-                                <div>
-                                <InputLabel htmlFor="role" value="Role : " />
+                                    <InputLabel htmlFor="role" value="Role : " />
 
                                 <SelectOptionInput
                                     id="role"
@@ -58,7 +57,6 @@ export default function Setting () {
                                     // isFocused
                                     // autoComplete="role"
                                 />
-                                </div>
                                 
 
                                 <div className="flex items-center gap-4">
@@ -71,7 +69,7 @@ export default function Setting () {
                                         leave="transition ease-in-out"
                                         leaveTo="opacity-0"
                                     >
-                                        <p className="text-sm text-gray-600 dark:text-gray-400">
+                                        <p className="text-sm text-gray-600 ">
                                             Saved.
                                         </p>
                                     </Transition>
@@ -79,27 +77,28 @@ export default function Setting () {
                             </form>
                     </div>
 
-                    <div className="bg-white p-4 shadow sm:rounded-lg sm:p-8 dark:bg-gray-800">
-                        <h2 className="text-lg font-medium text-gray-900 dark:text-gray-100">
+                    <div className="bg-white p-4 shadow sm:rounded-lg sm:p-8 hover:outline-none hover:ring-2 hover:ring-blue-500 hover:ring-offset-2 transition duration-150 ease-in-out">
+                        <h2 className="text-lg font-medium text-gray-900 ">
                             Notification
                         </h2>
-                        <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
+                        <p className="mt-1 text-sm text-gray-600 ">
                             Account profile Notification duration. 
                         </p>
                             <form className="mt-6 space-y-6">
-                                <div>
-                                <InputLabel htmlFor="durasi" value="Notification Duration : " />
-
-                                <NumberInput
-                                    id="durasi"
-                                    className="mt-1 block w-full"
-                                    // value={data.name}
-                                    // onChange={(e) => setData('role', e.target.value)}
-                                    // required
-                                    // isFocused
-                                    // autoComplete="durasi"
-                                />
-                                </div>
+                                <InputLabel value="Notification Duration :" className="text-sm font-medium text-gray-700" />
+                                <select
+                                    className="w-25 border border-gray-300 rounded pe-7"
+                                    // value={task.notificationDuration || "6"}
+                                    // onChange={(e) => (task.notificationDuration = e.target.value)}
+                                >
+                                    <option value="">6 hours</option>
+                                    <option value="">12 hours</option>
+                                    <option value="">1 day</option>
+                                    <option value="">3 days</option>
+                                    <option value="">5 days</option>
+                                    <option value="">7 days</option>
+                                </select>
+                                
 
                                 <div className="flex items-center gap-4">
                                     <PrimaryButton disabled={processing}>Save</PrimaryButton>
@@ -111,7 +110,7 @@ export default function Setting () {
                                         leave="transition ease-in-out"
                                         leaveTo="opacity-0"
                                     >
-                                        <p className="text-sm text-gray-600 dark:text-gray-400">
+                                        <p className="text-sm text-gray-600 ">
                                             Saved.
                                         </p>
                                     </Transition>

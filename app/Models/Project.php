@@ -31,6 +31,7 @@ class Project extends Model
     {
         return $this->hasMany(Board::class, 'project_id'); // Menyebutkan project_id sebagai foreign key
     }
+    
 
     // Mendefinisikan relasi dengan tugas melalui board
     public function tasks()
