@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Task;
+use App\Models\Board;
 use App\Http\Requests\StoreTaskRequest;
 use App\Http\Requests\UpdateTaskRequest;
 use Illuminate\Support\Facades\Auth;
@@ -14,19 +15,22 @@ class TaskController extends Controller
      */
     public function index()
     {
-        $boardId = request('board_id'); // Board ID untuk filter
-        $status = request('status'); // Status filter (to_do, in_progress, done)
+        $boardId = request('board_id');
+        $status = request('status');
 
-        $tasks = Task::when($boardId, fn($query) => $query->where('board_id', $boardId))
-            ->when($status, fn($query) => $query->where('status', $status))
-            ->orderBy('priority', 'desc') // Sorting berdasarkan prioritas
+        $tasks = Task::when($boardId, fn($query) => $query->where('board_id', 2))
+            // ->when($status, fn($query) => $query->where('status', $status))
+            ->orderBy('priority', 'desc')
             ->paginate(10)
             ->withQueryString();
+
+        $board = Board::find($boardId);
 
         return inertia('Kanban/Index', [
         'tasks' => $tasks,  // Pass the tasks data to the Inertia view
         'boardId' => $boardId,  // Optionally pass the boardId filter to the frontend
         'status' => $status,  // Optionally pass the status filter to the frontend
+        'board' => $board,  // Pass the board data to the Inertia view
     ]);
     }
 

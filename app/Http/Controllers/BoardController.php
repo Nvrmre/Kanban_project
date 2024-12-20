@@ -15,7 +15,7 @@ class BoardController extends Controller
      * Display a listing of the boards with optional project filter.
      */
 
-        public function index()
+    public function index()
 {
     $status = request('status'); // Status filter (to_do, in_progress, done)
     $projectId = request('project_id'); // Project ID untuk filter

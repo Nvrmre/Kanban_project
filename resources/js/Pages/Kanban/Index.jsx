@@ -9,14 +9,14 @@ import EditCardModal from "@/Components/EditCardModal";
 import { Head } from "@inertiajs/react";
 import ErrorBoundary from "@/error";
 
-import { BsPersonFillAdd } from "react-icons/bs";   
+import { BsPersonFillAdd } from "react-icons/bs";
 import AddMemberModal from "@/Components/AddMemberModal";
 import PrimaryButton from "@/Components/PrimaryButton";
 
+function Board({ boards, tasks, boardId, projectId }) {
+    console.log("Boards:", boardId);
+    console.log("Project:", projectId);
 
-
-function Board({ projects, boards, id, tasks }) {
-    // Merge Tasks with Boards
     const mergedTasksByBoard = boards.reduce((acc, board) => {
         acc[board.name] = {
             id: board.id,
@@ -25,6 +25,14 @@ function Board({ projects, boards, id, tasks }) {
         };
         return acc;
     }, {});
+
+    boards.forEach((board) => {
+        console.log(`Tasks for board ${board}`);
+        const tasksForBoard = tasks.data.filter(
+            (task) => task.board_id === board.id
+        );
+        console.log(`Tasks for board ${board.name}:`, tasksForBoard);
+    });
 
     const columnOrder = boards.map((board) => board.name);
 
@@ -156,8 +164,7 @@ function Board({ projects, boards, id, tasks }) {
         closeColorModal();
     };
 
-
-    // delete modal 
+    // delete modal
     const openDeleteModal = (title) => {
         setModalTitle(title); // Set judul modal sesuai nama kolom atau task
         setIsDeleteModalOpen(true); // Buka modal
@@ -198,7 +205,7 @@ function Board({ projects, boards, id, tasks }) {
                         </div>
 
                         {/* MODAL ADD MEMBER KALO GA JADI DIPAKE DI DELETE AJA  */}
-                        {/* <div className=""> 
+                        {/* <div className="">
                             <PrimaryButton
                                 onClick={() => setIsAddMemberModalOpen(true)}
                                 className="mt-4"
@@ -207,8 +214,6 @@ function Board({ projects, boards, id, tasks }) {
                             </PrimaryButton>
                         </div> */}
                     </div>
-                    
-                    
 
                     <div className="mt-2 flex items-center space-x-2">
                         <span className="text-gray-600 ">Show Priority:</span>
@@ -271,14 +276,18 @@ function Board({ projects, boards, id, tasks }) {
                                                                 style={{
                                                                     backgroundColor:
                                                                         columnColors[
-                                                                            column.id
-                                                                        ] || "#3b82f6",  // Warna default biru
+                                                                            column
+                                                                                .id
+                                                                        ] ||
+                                                                        "#3b82f6", // Warna default biru
                                                                 }}
                                                             >
                                                                 {column.name}
                                                                 <button
                                                                     className="float-end text-gray-100 hover:text-gray-400"
-                                                                    onClick={(e) => {
+                                                                    onClick={(
+                                                                        e
+                                                                    ) => {
                                                                         e.stopPropagation(); // Prevent opening the modal
                                                                         openDeleteModal(
                                                                             `Delete Card: ${column.name}`
@@ -289,16 +298,18 @@ function Board({ projects, boards, id, tasks }) {
                                                                     <FaRegTrashAlt className="my-1 w-5 h-5" />
                                                                 </button>
                                                                 <button
-                                                                   className="float-end text-gray-100 hover:text-gray-400 me-2"
-                                                                   onClick={(e) => {
-                                                                       e.stopPropagation();
-                                                                       openColorModal(
-                                                                           column.id 
-                                                                        //    awalnya data.name tapi modalnya ga bisa di buka 
-                                                                       );
-                                                                   }}
+                                                                    className="float-end text-gray-100 hover:text-gray-400 me-2"
+                                                                    onClick={(
+                                                                        e
+                                                                    ) => {
+                                                                        e.stopPropagation();
+                                                                        openColorModal(
+                                                                            column.id
+                                                                            //    awalnya data.name tapi modalnya ga bisa di buka
+                                                                        );
+                                                                    }}
                                                                 >
-                                                                   <FaPen className="my-1 w-5 h-5" />
+                                                                    <FaPen className="my-1 w-5 h-5" />
                                                                 </button>
                                                             </div>
 
@@ -416,9 +427,11 @@ function Board({ projects, boards, id, tasks }) {
                         onClose={closeTaskModal}
                         task={selectedTask}
                     />
+
                     <AddTaskModal
                         isOpen={isAddTaskModalOpen}
                         onClose={() => setIsAddTaskModalOpen(false)}
+                        boards={boards}
                     />
 
                     <AddMemberModal
@@ -427,13 +440,13 @@ function Board({ projects, boards, id, tasks }) {
                     />
 
                     <DeleteModal
-                       isOpen={isDeleteModalOpen}
-                       onClose={closeDeleteModal}
-                       onDelete={() => {
-                           console.log("Delete action triggered");
-                           closeDeleteModal(); // Tutup modal setelah menghapus
-                       }}
-                       title={modalTitle}
+                        isOpen={isDeleteModalOpen}
+                        onClose={closeDeleteModal}
+                        onDelete={() => {
+                            console.log("Delete action triggered");
+                            closeDeleteModal(); // Tutup modal setelah menghapus
+                        }}
+                        title={modalTitle}
                     />
                     <EditCardModal
                         isOpen={isColorModalOpen}
