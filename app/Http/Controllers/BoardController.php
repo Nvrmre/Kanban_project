@@ -15,15 +15,19 @@ class BoardController extends Controller
      * Display a listing of the boards with optional project filter.
      */
 
-        public function index()
+        public function index($projectId = null)
 {
+
     $status = request('status'); // Status filter (to_do, in_progress, done)
-    $projectId = request('project_id'); // Project ID untuk filter
+    // $project_id = $projectId; 
+    //  dd([$projectId]);// Project ID untuk filter
 
     // Fetch boards with filters
-    $boards = Board::when($projectId, fn($query) => $query->where('project_id', $projectId))
-        ->with('project') // Sertakan data project untuk setiap board
-        ->get();
+    $boards = Board::when($projectId, fn($query) => $query->where('projects_id', $projectId))
+    ->with('project') // Sertakan data project untuk setiap board
+    ->get();
+
+
 
     // Ambil board_id dari board pertama jika ada
     $boardId = $boards->isNotEmpty() ? $boards->first()->id : null;
@@ -42,7 +46,7 @@ class BoardController extends Controller
         'status' => $status,
         'boards' => $boards,
         'projects' => Project::all(), // Untuk filter project di frontend
-        'id' => $projectId, // Untuk menyimpan project_id yang dipilih
+        'id' => $projectId, // Untuk menyimpan projects_id yang dipilih
     ]);
 }
 
@@ -92,12 +96,15 @@ class BoardController extends Controller
             ->orderBy('priority', 'desc') // Sorting berdasarkan prioritas
             ->get();
 
+            // dd([$tasks]);
+
         return Inertia::render('Boards/Show', [
             'board' => $board->load('project'), // Sertakan data project
             'tasks' => $tasks, // Daftar tugas yang terkait dengan board ini
             'statusOptions' => ['to_do', 'in_progress', 'done'],
             'priorityOptions' => ['low', 'medium', 'high'],
         ]);
+
     }
 
     /**

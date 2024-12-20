@@ -9,11 +9,9 @@ import EditCardModal from "@/Components/EditCardModal";
 import { Head } from "@inertiajs/react";
 import ErrorBoundary from "@/error";
 
-import { BsPersonFillAdd } from "react-icons/bs";   
+import { BsPersonFillAdd } from "react-icons/bs";
 import AddMemberModal from "@/Components/AddMemberModal";
 import PrimaryButton from "@/Components/PrimaryButton";
-
-
 
 function Board({ projects, boards, id, tasks }) {
     // Merge Tasks with Boards
@@ -44,6 +42,7 @@ function Board({ projects, boards, id, tasks }) {
     const [isAddMemberModalOpen, setIsAddMemberModalOpen] = useState(false);
 
     const [newBoardName, setNewBoardName] = useState("");
+    const [idProject, setProjectId] = useState("");
 
     // Drag-and-Drop Handler
     const onDragEnd = (result) => {
@@ -113,28 +112,29 @@ function Board({ projects, boards, id, tasks }) {
     //     setSelectedTask(task);
     //     setIsTaskModalOpen(true);
     // };
+    const projectId = id;
 
     // Add Board
-    const handleAddBoard = async (e) => {
+    const handleAddBoard = async (e, projectId) => {
         e.preventDefault();
-    
+
         // Pastikan nama board tidak kosong
         if (newBoardName.trim() === "") return;
-    
+
         const newColumnId = newBoardName.toLowerCase().replace(/\s+/g, "-");
         const newColumn = {
             id: newColumnId,
             name: newBoardName,
             tasks: [],
         };
-    
+
         try {
             // Kirim data ke backend menggunakan axios
-            const response = await axios.post('/boards', {
+            const response = await axios.post("/boards", {
                 name: newBoardName, // Nama board
-                projects_id: 1, // Kirim projects_id, misalnya menggunakan project_id 1
+                projects_id: projectId, // Kirim projects_id,
             });
-    
+
             // Cek apakah response berhasil
             if (response.status === 201) {
                 // Update state setelah board berhasil ditambahkan
@@ -142,20 +142,19 @@ function Board({ projects, boards, id, tasks }) {
                     ...prevColumns,
                     [newColumnId]: newColumn,
                 }));
-    
+
                 setColumnOrderState((prevOrder) => [...prevOrder, newColumnId]);
                 setNewBoardName("");
-                alert('Board created successfully');
+                alert("Board created successfully");
             } else {
-                alert('Failed to create board');
+                alert("Failed to create board");
             }
         } catch (error) {
-            console.error('Error saat menambah board:', error);
-            alert('Terjadi kesalahan saat menambah board');
+            console.error("Error saat menambah board:", error);
+            alert("Terjadi kesalahan saat menambah board");
         }
     };
-    
-    
+
     // Change Column Color
     const openColorModal = (columnId) => {
         setSelectedColumnId(columnId);
@@ -177,8 +176,7 @@ function Board({ projects, boards, id, tasks }) {
         closeColorModal();
     };
 
-
-    // delete modal 
+    // delete modal
     const openDeleteModal = (title) => {
         setModalTitle(title); // Set judul modal sesuai nama kolom atau task
         setIsDeleteModalOpen(true); // Buka modal
@@ -228,8 +226,6 @@ function Board({ projects, boards, id, tasks }) {
                             </PrimaryButton>
                         </div> */}
                     </div>
-                    
-                    
 
                     <div className="mt-2 flex items-center space-x-2">
                         <span className="text-gray-600 ">Show Priority:</span>
@@ -292,14 +288,18 @@ function Board({ projects, boards, id, tasks }) {
                                                                 style={{
                                                                     backgroundColor:
                                                                         columnColors[
-                                                                            column.id
-                                                                        ] || "#3b82f6",  // Warna default biru
+                                                                            column
+                                                                                .id
+                                                                        ] ||
+                                                                        "#3b82f6", // Warna default biru
                                                                 }}
                                                             >
                                                                 {column.name}
                                                                 <button
                                                                     className="float-end text-gray-100 hover:text-gray-400"
-                                                                    onClick={(e) => {
+                                                                    onClick={(
+                                                                        e
+                                                                    ) => {
                                                                         e.stopPropagation(); // Prevent opening the modal
                                                                         openDeleteModal(
                                                                             `Delete Card: ${column.name}`
@@ -310,16 +310,18 @@ function Board({ projects, boards, id, tasks }) {
                                                                     <FaRegTrashAlt className="my-1 w-5 h-5" />
                                                                 </button>
                                                                 <button
-                                                                   className="float-end text-gray-100 hover:text-gray-400 me-2"
-                                                                   onClick={(e) => {
-                                                                       e.stopPropagation();
-                                                                       openColorModal(
-                                                                           column.id 
-                                                                        //    awalnya data.name tapi modalnya ga bisa di buka 
-                                                                       );
-                                                                   }}
+                                                                    className="float-end text-gray-100 hover:text-gray-400 me-2"
+                                                                    onClick={(
+                                                                        e
+                                                                    ) => {
+                                                                        e.stopPropagation();
+                                                                        openColorModal(
+                                                                            column.id
+                                                                            //    awalnya data.name tapi modalnya ga bisa di buka
+                                                                        );
+                                                                    }}
                                                                 >
-                                                                   <FaPen className="my-1 w-5 h-5" />
+                                                                    <FaPen className="my-1 w-5 h-5" />
                                                                 </button>
                                                             </div>
 
@@ -402,7 +404,9 @@ function Board({ projects, boards, id, tasks }) {
                                     <div className="flex justify-center p-1">
                                         <form
                                             autoComplete="off"
-                                            onSubmit={handleAddBoard}
+                                            onSubmit={(e) =>
+                                                handleAddBoard(e, projectId)
+                                            }
                                         >
                                             <input
                                                 maxLength="20"
@@ -417,6 +421,7 @@ function Board({ projects, boards, id, tasks }) {
                                                     )
                                                 }
                                             />
+                                            
                                         </form>
                                     </div>
                                 </div>
@@ -448,13 +453,13 @@ function Board({ projects, boards, id, tasks }) {
                     />
 
                     <DeleteModal
-                       isOpen={isDeleteModalOpen}
-                       onClose={closeDeleteModal}
-                       onDelete={() => {
-                           console.log("Delete action triggered");
-                           closeDeleteModal(); // Tutup modal setelah menghapus
-                       }}
-                       title={modalTitle}
+                        isOpen={isDeleteModalOpen}
+                        onClose={closeDeleteModal}
+                        onDelete={() => {
+                            console.log("Delete action triggered");
+                            closeDeleteModal(); // Tutup modal setelah menghapus
+                        }}
+                        title={modalTitle}
                     />
                     <EditCardModal
                         isOpen={isColorModalOpen}
@@ -466,6 +471,5 @@ function Board({ projects, boards, id, tasks }) {
         </ErrorBoundary>
     );
 }
-
 
 export default Board;
