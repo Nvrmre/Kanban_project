@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { usePage } from '@inertiajs/react'; // Mengakses data dari Inertia
 import Chart from 'chart.js/auto';
 
-export default function TaskReport() {
+export default function TaskBarReport() {
     // Mengakses data yang dikirim dari backend melalui Inertia
     const { taskData } = usePage().props;
 
@@ -12,10 +12,9 @@ export default function TaskReport() {
         taskStatuses.push(i.toString());
     }
 
-    // Data jumlah task yang sudah selesai setiap hari
     const taskValues = [];
     for (let i = 1; i <= 31; i++) {
-        taskValues.push(taskData[`complete_day_${i}`] ?? 0);
+        taskValues.push(taskData[`overdue_day_${i}`] ?? 0);
     }
 
 
@@ -31,7 +30,7 @@ export default function TaskReport() {
     //         taskData.in_progress ?? 0,
     //     ];
 
-    const chartRef = useRef(null);
+    const chartBarRef = useRef(null);
     const chartInstance = useRef(null);
     const [aspectRatio, setAspectRatio] = useState(2); // Menyesuaikan aspek rasio grafik
 
@@ -55,8 +54,8 @@ export default function TaskReport() {
     }, []);
 
     useEffect(() => {
-        if (chartRef.current) {
-            const ctx = chartRef.current.getContext('2d');
+        if (chartBarRef.current) {
+            const ctx = chartBarRef.current.getContext('2d');
             if (ctx) {
                 if (chartInstance.current) {
                     chartInstance.current.destroy(); // Menghancurkan chart sebelumnya
@@ -67,13 +66,13 @@ export default function TaskReport() {
                     data: {
                         labels: taskStatuses, // Menampilkan status tugas
                         datasets: [{
-                            label: 'Task Complete',
+                            label: 'Task Overdue',
                             data: taskValues, // Data status tugas
                             backgroundColor: [
-                                'rgba(34, 197, 94, 0.6)', // In Progress/ Complete
+                                'rgba(197, 34, 34, 0.6)', //  overdue
                             ],
                             borderColor: [
-                                'rgba(34, 197, 94, 1)',
+                                'rgb(197, 34, 34)',
                             ],
                             borderWidth: 1,
                         }],
@@ -83,7 +82,7 @@ export default function TaskReport() {
                         aspectRatio: aspectRatio, // Menyesuaikan aspek rasio grafik
                         plugins: {
                             legend: { display: true },
-                            title: { display: true, text: 'Task Complete Overview' },
+                            title: { display: true, text: 'Task Overdue Overview' },
                         },
                         scales: {
                             x: { title: { display: true, text: 'Day' } },
@@ -104,7 +103,7 @@ export default function TaskReport() {
     return (
         <div className="container mx-auto p-4">
             {/* Chart Container */}
-            <canvas ref={chartRef} />
+            <canvas ref={chartBarRef} />
         </div>
     );
 }

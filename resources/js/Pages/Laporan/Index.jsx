@@ -4,6 +4,7 @@ import { saveAs } from 'file-saver';
 
 import TaskChart from '@/Components/TaskChart';
 import TaskPieChart from '@/Components/TaskPieChart';
+import TaskBarReport from '@/Components/TaskBarChart';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { FaFileDownload } from "react-icons/fa";
 import PrimaryButton from '@/Components/PrimaryButton';
@@ -48,6 +49,8 @@ export default function TaskReport() {
 
     const chartRef = useRef(null);
     const pieChartRef = useRef(null);
+    const chartBarRef = useRef(null);
+    
 
     // Function to download a specific chart
     const downloadChart = async (chartRef, fileName) => {
@@ -84,24 +87,24 @@ export default function TaskReport() {
 
             <div className="container mx-auto p-4">
             <h2 className="text-3xl font-extrabold leading-tight text-blue-600 mb-6">Task Report</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 ">
                 {/* Task Status Chart */}
-                <div ref={chartRef} className="bg-white p-6 rounded-lg shadow-md">
+                <div ref={chartRef} className="bg-white p-6 rounded-lg shadow-md hover:outline-none hover:ring-2 hover:ring-blue-500 hover:ring-offset-2 transition duration-150 ease-in-out">
                     <h3 className="text-lg font-semibold text-blue-700 mb-4">Task Status</h3>
                     <TaskChart data={taskStatusData} />
                     <PrimaryButton onClick={() => downloadChart(chartRef, 'task_status')} className="mt-4">
-                        <FaFileDownload />
+                        <FaFileDownload className='mr-2'/>
                         Download Task Status Chart
                     </PrimaryButton>
                 </div>
 
                 {/* Task Distribution Chart */}
-                <div ref={pieChartRef} className="bg-white p-6 rounded-lg shadow-md">
-                    <h3 className="text-lg font-semibold text-blue-700 mb-4">Task Distribution</h3>
-                    <TaskPieChart data={taskDistributionData} />
-                    <PrimaryButton onClick={() => downloadChart(pieChartRef, 'task_distribution')} className="mt-4">
-                        <FaFileDownload />
-                        Download Task Distribution Chart
+                <div ref={chartBarRef} className="bg-white p-6 rounded-lg shadow-md hover:outline-none hover:ring-2 hover:ring-blue-500 hover:ring-offset-2 transition duration-150 ease-in-out">
+                    <h3 className="text-lg font-semibold text-blue-700 mb-4">Task Status</h3>
+                    <TaskBarReport data={taskDistributionData} />
+                    <PrimaryButton onClick={() => downloadChart(chartBarRef, 'task_distribution')} className="mt-4">
+                        <FaFileDownload className='mr-2'/>
+                        Download Task Status Chart
                     </PrimaryButton>
                 </div>
             </div>
