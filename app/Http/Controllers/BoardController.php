@@ -46,7 +46,7 @@ class BoardController extends Controller
         'status' => $status,
         'boards' => $boards,
         'projects' => Project::all(), // Untuk filter project di frontend
-        'id' => $projectId, // Untuk menyimpan projects_id yang dipilih
+        'projectId' => $projectId, // Untuk menyimpan projects_id yang dipilih
     ]);
 }
 
@@ -134,11 +134,15 @@ class BoardController extends Controller
      * Remove the specified board from storage.
      */
     public function destroy(Board $board)
-    {
-        $projectId = $board->projects_id; // Simpan projects_id untuk redirect
-        $board->delete();
+{
+    // Then delete the board
+    // Delete all tasks associated with this board first
+    $board->tasks()->delete();
+    $board->delete();
+    
 
-        return redirect()->route('boards.index', ['projects_id' => $projectId]) // Gunakan projects_id
-            ->with('success', 'Board deleted successfully.');
-    }
+    return redirect()->route('boards.index', ['boardId' => $board->id])
+        ->with('success', 'Board deleted successfully');
+}
+
 }

@@ -2,7 +2,7 @@ import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import { useState, useEffect } from "react";
 import DeleteModal from "@/Components/DeleteModal";
 
-import { FaRegTrashAlt, FaEdit } from "react-icons/fa";
+import { FaRegTrashAlt, FaEdit, FaTrash } from "react-icons/fa";
 import { Head, Link, useForm, router } from "@inertiajs/react";
 import PrimaryButton from "@/Components/PrimaryButton";
 import TextInput from "@/Components/TextInput";
@@ -16,6 +16,8 @@ export default function Dashboard({ projects, session }) {
     console.log("projects:", projects);
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
     const [currentProjectId, setCurrentProjectId] = useState(null);
+    const [modalTitle, setModalTitle] = useState("");
+
     const [isEditing, setIsEditing] = useState(false);
     const [currentPage, setCurrentPage] = useState(projects.meta.current_page);
 
@@ -31,11 +33,14 @@ export default function Dashboard({ projects, session }) {
 
     const openDeleteModal = (id) => {
         setCurrentProjectId(id);
+        setModalTitle("Delete Project");
         setIsDeleteModalOpen(true);
     };
+    
 
     const closeDeleteModal = () => {
         setIsDeleteModalOpen(false);
+        setCurrentProjectId(null);
     };
 
     const { data, setData, post, processing, errors } = useForm({
@@ -84,18 +89,18 @@ export default function Dashboard({ projects, session }) {
     };
 
     const handleDelete = () => {
-        router.visit("/project/" + currentProjectId, {
+        console.log('Handling delete for project:', projectId);
+        
+        router.visit(`/project/${projectId}`, {
             method: "delete",
             preserveState: true,
-            onSuccess: (res) => {
-                closeDeleteModal();
-                showSuccessAlert("Project deleted successfully");
-            },
-            onError: (errors) => {
-                showErrorAlert("Error delete failed");
-            },
+            onSuccess: () => {
+                onClose();
+                window.location.reload();
+            }
         });
     };
+    
 
     const handlePageChange = (page) => {
         router.visit(`/dashboard?page=${page}`, {
@@ -244,12 +249,14 @@ export default function Dashboard({ projects, session }) {
                                                 </button>
                                                 <button
                                                     onClick={() =>
+                                                       // console.log('Clicking project:', project.id)
                                                         openDeleteModal(
                                                             project.id
                                                         )
                                                     }
+                                                    className="text-red-600 hover:text-red-900"
                                                 >
-                                                    <FaRegTrashAlt className="text-red-500 hover:text-red-700" />
+                                                    <FaTrash className="h-5 w-5" />
                                                 </button>
                                             </div>
                                         </div>
@@ -267,14 +274,14 @@ export default function Dashboard({ projects, session }) {
                         </div>
                     </div>
                 </div>
-
                 <DeleteModal
                     isOpen={isDeleteModalOpen}
                     onClose={closeDeleteModal}
-                    onDelete={handleDelete}
-                    title="Delete Project"
+                    projectId={currentProjectId}
+                    title={modalTitle}
                 />
             </AuthenticatedLayout>
         </>
     );
 }
+

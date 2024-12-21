@@ -2,34 +2,34 @@ import React, { useEffect, useRef, useState } from 'react';
 import { usePage } from '@inertiajs/react'; // Mengakses data dari Inertia
 import Chart from 'chart.js/auto';
 
-export default function TaskReport() {
-    // Mengakses data yang dikirim dari backend melalui Inertia
-    const { taskData } = usePage().props;
+// export default function TaskReport() {
+//     // Mengakses data yang dikirim dari backend melalui Inertia
+//     const { taskData } = usePage().props;
 
-    // Menyiapkan data untuk chart (misalnya untuk Task Status)
-    const taskStatuses = [];
-    for (let i = 1; i <= 31; i++) {
-        taskStatuses.push(i.toString());
-    }
+//     // Menyiapkan data untuk chart (misalnya untuk Task Status)
+//     const taskStatuses = [];
+//     for (let i = 1; i <= 31; i++) {
+//         taskStatuses.push(i.toString());
+//     }
 
-    // Data jumlah task yang sudah selesai setiap hari
-    const taskValues = [];
-    for (let i = 1; i <= 31; i++) {
-        taskValues.push(taskData[`complete_day_${i}`] ?? 0);
-    }
+//     // Data jumlah task yang sudah selesai setiap hari
+//     const taskValues = [];
+//     for (let i = 1; i <= 31; i++) {
+//         taskValues.push(taskData[`complete_day_${i}`] ?? 0);
+//     }
 
 
-    // export default function TaskReport() {
-    //     // Mengakses data yang dikirim dari backend melalui Inertia
-    //     const { taskData } = usePage().props;
+    export default function TaskReport() {
+        // Mengakses data yang dikirim dari backend melalui Inertia
+        const { taskData } = usePage().props;
     
-    //     // Menyiapkan data untuk chart (misalnya untuk Task Status)
-    //     const taskStatuses = ['Complete','To Do', 'In Progress'];
-    //     const taskValues = [
-    //         taskData.complete ?? 0,  // Menggunakan nilai dari backend, atau 0 jika tidak ada
-    //         taskData.to_do ?? 0,
-    //         taskData.in_progress ?? 0,
-    //     ];
+        // Menyiapkan data untuk chart (misalnya untuk Task Status)
+        const taskStatuses = ['Complete','To Do', 'In Progress'];
+        const taskValues = [
+            taskData.complete ?? 0,  // Menggunakan nilai dari backend, atau 0 jika tidak ada
+            taskData.to_do ?? 0,
+            taskData.in_progress ?? 0,
+        ];
 
     const chartRef = useRef(null);
     const chartInstance = useRef(null);

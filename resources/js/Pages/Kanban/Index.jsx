@@ -12,9 +12,9 @@ import ErrorBoundary from "@/error";
 import { BsPersonFillAdd } from "react-icons/bs";
 import AddMemberModal from "@/Components/AddMemberModal";
 import PrimaryButton from "@/Components/PrimaryButton";
+import axios from "axios";
 
-function Board({ projects, boards, id, tasks }) {
-    // Merge Tasks with Boards
+function Board({ boards, tasks, boardId, projectId }) {
     const mergedTasksByBoard = boards.reduce((acc, board) => {
         acc[board.name] = {
             id: board.id,
@@ -23,6 +23,14 @@ function Board({ projects, boards, id, tasks }) {
         };
         return acc;
     }, {});
+
+    boards.forEach((board) => {
+        //console.log(`Tasks for board ${board}`);
+        const tasksForBoard = tasks.data.filter(
+            (task) => task.board_id === board.id
+        );
+        //console.log(`Tasks for board ${board.name}:`, tasksForBoard);
+    });
 
     const columnOrder = boards.map((board) => board.name);
 
@@ -46,7 +54,7 @@ function Board({ projects, boards, id, tasks }) {
 
     // Drag-and-Drop Handler
     const onDragEnd = (result) => {
-        console.log(result);
+        // console.log(result);
 
         const { source, destination, type } = result;
 
@@ -112,46 +120,45 @@ function Board({ projects, boards, id, tasks }) {
     //     setSelectedTask(task);
     //     setIsTaskModalOpen(true);
     // };
-    const projectId = id;
+    // const projectId = id;
 
     // Add Board
     const handleAddBoard = async (e, projectId) => {
         e.preventDefault();
-
-        // Pastikan nama board tidak kosong
-        if (newBoardName.trim() === "") return;
-
-        const newColumnId = newBoardName.toLowerCase().replace(/\s+/g, "-");
-        const newColumn = {
-            id: newColumnId,
+        console.log("Creating board with:", {
             name: newBoardName,
-            tasks: [],
-        };
+            projects_id: projectId,
+        });
 
         try {
-            // Kirim data ke backend menggunakan axios
-            const response = await axios.post("/boards", {
-                name: newBoardName, // Nama board
-                projects_id: projectId, // Kirim projects_id,
+            const response = await axios.post(route("boards.store"), {
+                name: newBoardName,
+                projects_id: projectId, // This will now have the correct value
             });
 
-            // Cek apakah response berhasil
             if (response.status === 201) {
-                // Update state setelah board berhasil ditambahkan
+                const newColumn = {
+                    id: response.data.board.id,
+                    name: newBoardName,
+                    tasks: [],
+                };
+
                 setColumns((prevColumns) => ({
                     ...prevColumns,
-                    [newColumnId]: newColumn,
+                    [newBoardName]: newColumn,
                 }));
 
-                setColumnOrderState((prevOrder) => [...prevOrder, newColumnId]);
+                setColumnOrderState((prevOrder) => [
+                    ...prevOrder,
+                    newBoardName,
+                ]);
                 setNewBoardName("");
-                alert("Board created successfully");
-            } else {
-                alert("Failed to create board");
             }
         } catch (error) {
-            console.error("Error saat menambah board:", error);
-            alert("Terjadi kesalahan saat menambah board");
+            console.log("Request payload:", {
+                name: newBoardName,
+                projects_id: projectId,
+            });
         }
     };
 
@@ -177,9 +184,10 @@ function Board({ projects, boards, id, tasks }) {
     };
 
     // delete modal
-    const openDeleteModal = (title) => {
-        setModalTitle(title); // Set judul modal sesuai nama kolom atau task
-        setIsDeleteModalOpen(true); // Buka modal
+    const openDeleteModal = (title, boardId) => {
+        setModalTitle(title);
+        setSelectedColumnId(boardId); // Make sure this is set
+        setIsDeleteModalOpen(true);
     };
 
     const closeDeleteModal = () => {
@@ -217,7 +225,7 @@ function Board({ projects, boards, id, tasks }) {
                         </div>
 
                         {/* MODAL ADD MEMBER KALO GA JADI DIPAKE DI DELETE AJA  */}
-                        {/* <div className=""> 
+                        {/* <div className="">
                             <PrimaryButton
                                 onClick={() => setIsAddMemberModalOpen(true)}
                                 className="mt-4"
@@ -300,11 +308,11 @@ function Board({ projects, boards, id, tasks }) {
                                                                     onClick={(
                                                                         e
                                                                     ) => {
-                                                                        e.stopPropagation(); // Prevent opening the modal
+                                                                        e.stopPropagation();
                                                                         openDeleteModal(
-                                                                            `Delete Card: ${column.name}`
-                                                                        );
-                                                                        // deleteTask(columnId, task.id);
+                                                                            `Delete Board: ${column.name}`,
+                                                                            column.id
+                                                                        ); // Pass column.id here
                                                                     }}
                                                                 >
                                                                     <FaRegTrashAlt className="my-1 w-5 h-5" />
@@ -421,7 +429,6 @@ function Board({ projects, boards, id, tasks }) {
                                                     )
                                                 }
                                             />
-                                            
                                         </form>
                                     </div>
                                 </div>
@@ -442,9 +449,56 @@ function Board({ projects, boards, id, tasks }) {
                         onClose={closeTaskModal}
                         task={selectedTask}
                     />
+
                     <AddTaskModal
                         isOpen={isAddTaskModalOpen}
                         onClose={() => setIsAddTaskModalOpen(false)}
+                        boards={boards}
+                        onTaskCreated={(response) => {
+                            // Get task data from response
+                            const newTask = response.data || response;
+                            console.log("New task data:", newTask);
+
+                            // Update columns with new task
+                            const boardName = boards.find(
+                                (b) => b.id === newTask.board_id
+                            )?.name;
+                            if (boardName && columns[boardName]) {
+                                setColumns((prevColumns) => ({
+                                    ...prevColumns,
+                                    [boardName]: {
+                                        ...prevColumns[boardName],
+                                        tasks: [
+                                            ...prevColumns[boardName].tasks,
+                                            newTask,
+                                        ],
+                                    },
+                                }));
+                            }
+                        }}
+                    />
+
+                    <AddTaskModal
+                        isOpen={isAddTaskModalOpen}
+                        onClose={() => setIsAddTaskModalOpen(false)}
+                        boards={boards}
+                        onTaskCreated={(newTask) => {
+                            const boardName = boards.find(
+                                (b) => b.id === parseInt(newTask.board_id)
+                            )?.name;
+                            if (boardName && columns[boardName]) {
+                                setColumns((prevColumns) => ({
+                                    ...prevColumns,
+                                    [boardName]: {
+                                        ...prevColumns[boardName],
+                                        tasks: [
+                                            ...prevColumns[boardName].tasks,
+                                            newTask,
+                                        ],
+                                    },
+                                }));
+                            }
+                        }}
                     />
 
                     <AddMemberModal
@@ -455,10 +509,7 @@ function Board({ projects, boards, id, tasks }) {
                     <DeleteModal
                         isOpen={isDeleteModalOpen}
                         onClose={closeDeleteModal}
-                        onDelete={() => {
-                            console.log("Delete action triggered");
-                            closeDeleteModal(); // Tutup modal setelah menghapus
-                        }}
+                        boardId={selectedColumnId} // Pass the selectedColumnId here
                         title={modalTitle}
                     />
                     <EditCardModal

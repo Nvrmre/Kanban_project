@@ -100,19 +100,16 @@ const TaskModal = ({ isOpen, onClose, task }) => {
                     <div>
                         <h2 className="text-lg font-semibold text-gray-700">
                             Assign Task to Team Member:
-                        </h2>   
-                        <select
-                            className="w-full border border-gray-300 rounded p-2 mt-1"
-                        >
+                        </h2>
+                        <select className="w-full border border-gray-300 rounded p-2 mt-1">
                             {/* SEMENTARA PAKE JS NANTI BISA DI GANTI DROPWODN BIASA DI PANGGIL NAMA ATO ID MEMBER */}
-                            {members.map((member, index) => (
+                            {/* {members.map((member, index) => (
                                 <option key={index} value={member.name}>
                                     {member.name}
                                 </option>
-                            ))}
+                            ))} */}
                         </select>
                     </div>
-                    
 
                     {/* Checklist */}
                     <div>

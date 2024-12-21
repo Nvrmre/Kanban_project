@@ -24,7 +24,8 @@ Route::resource('project', ProjectController::class);
 Route::resource('task', TaskController::class);
 Route::resource('boards', BoardController::class);
 
-Route::get('/kanban/{project_id?}', [BoardController::class, 'index'])->name('kanban.index');
+
+Route::get('/kanban/{projectId?}', [BoardController::class, 'index'])->name('kanban.index');
 
 // Rute Testing
 Route::get('/users/test', [UserController::class, 'test'])->name('users.test');

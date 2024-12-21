@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Task;
+use App\Models\Board;
 use App\Http\Requests\StoreTaskRequest;
 use App\Http\Requests\UpdateTaskRequest;
 use Illuminate\Support\Facades\Auth;
@@ -15,19 +16,22 @@ class TaskController extends Controller
      */
     public function index()
     {
-        $boardId = request('board_id'); // Board ID untuk filter
-        $status = request('status'); // Status filter (to_do, in_progress, done)
+        $boardId = request('board_id');
+        $status = request('status');
 
-        $tasks = Task::when($boardId, fn($query) => $query->where('board_id', $boardId))
-            ->when($status, fn($query) => $query->where('status', $status))
-            ->orderBy('priority', 'desc') // Sorting berdasarkan prioritas
+        $tasks = Task::when($boardId, fn($query) => $query->where('board_id', 2))
+            // ->when($status, fn($query) => $query->where('status', $status))
+            ->orderBy('priority', 'desc')
             ->paginate(10)
             ->withQueryString();
+
+        $board = Board::find($boardId);
 
         return inertia('Kanban/Index', [
         'tasks' => $tasks,  // Pass the tasks data to the Inertia view
         'boardId' => $boardId,  // Optionally pass the boardId filter to the frontend
         'status' => $status,  // Optionally pass the status filter to the frontend
+        'board' => $board,  // Pass the board data to the Inertia view
     ]);
     }
 
@@ -47,15 +51,17 @@ class TaskController extends Controller
      * Menyimpan tugas baru.
      */
     public function store(StoreTaskRequest $request)
-    {
-        $data = $request->validated();
-        $data['assigned_id'] = Auth::id(); // Assign ke user yang sedang login
+{
+    $data = $request->validated();
+    $data['assigned_id'] = Auth::id();
+    $data['status'] = $data['status'] ?? 'to_do';
+    $data['priority'] = strtolower($data['priority']);
 
-        Task::create($data);
+    Task::create($data);
 
-        return redirect()->route('task.index', ['board_id' => $data['board_id']])
-            ->with('success', 'Tugas berhasil dibuat.');
-    }
+    return redirect()->route('kanban.index')
+        ->with('success', 'Task created successfully');
+}
 
     /**
      * Menampilkan detail tugas.
@@ -105,21 +111,21 @@ class TaskController extends Controller
     }
 
     public function report() {
-        // Mengambil jumlah tugas berdasarkan status
         $taskData = Task::selectRaw('
             SUM(CASE WHEN status = "done" THEN 1 ELSE 0 END) AS complete,
             SUM(CASE WHEN status = "to_do" THEN 1 ELSE 0 END) AS to_do,
             SUM(CASE WHEN status = "in_progress" THEN 1 ELSE 0 END) AS in_progress
         ')->first();
-
+    
         $taskDistribution = [
             'complete' => $taskData->complete ?? 0,
-            'overdue' => $taskData->to_do ?? 0 // Anda bisa menyesuaikan status ini
+            'overdue' => $taskData->to_do ?? 0
         ];
-        // Kirim data ke frontend menggunakan Inertia
+    
         return Inertia::render('Laporan/Index', [
             'taskData' => $taskData,
-            'taskDistribution' => $taskDistribution, // Mengirimkan data ke pie chart
+            'taskDistribution' => $taskDistribution,
         ]);
     }
+    
 }

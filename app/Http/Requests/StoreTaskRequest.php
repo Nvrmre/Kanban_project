@@ -22,10 +22,13 @@ class StoreTaskRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => ['required', 'max:255'],
-            'description' => ['string'],
-            'due_date' => ['nullable', 'date'],
-
+            'name' => 'required|string',
+            'description' => 'nullable|string',
+            'board_id' => 'required|integer|exists:boards,id',
+            'priority' => 'required|in:low,medium,high',
+            'status' => 'required|in:to_do,in_progress,done',
+            'due_date' => 'required|date',
+            'notification_duration' => 'required|in:6 hours,12 hours,1 day,3 days,5 days,7 days'
         ];
     }
 }

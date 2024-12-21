@@ -121,16 +121,23 @@ public function show($id)
     /**
      * Remove the specified resource from storage.
         */
-    public function destroy($id)
-    {
-
-
-         $project = Project::findOrFail($id);
-         $project->delete();
-
-
-    return redirect()->route('dashboard') // Ganti dengan nama route yang sesuai
-        ->with('success', 'Project deleted successfully.');
-
-    }
+        public function destroy($id)
+        {
+            $project = Project::findOrFail($id);
+            
+            // Delete related tasks first
+            foreach ($project->boards as $board) {
+                $board->tasks()->delete();
+            }
+            
+            // Delete related boards
+            $project->boards()->delete();
+            
+            // Finally delete the project
+            $project->delete();
+        
+            return redirect()->route('dashboard')
+                ->with('success', 'Project deleted successfully.');
+        }
+        
 }
