@@ -1,6 +1,10 @@
 import React, { useState } from "react";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import DeleteModal from "@/Components/DeleteModal";
+import { FaTimes } from "react-icons/fa";
+import InputLabel from "@/Components/InputLabel";
+import { IoMdSend } from "react-icons/io";
+import DangerButton from "@/Components/DangerButton";
 
 const TaskModal = ({ isOpen, onClose, task }) => {
     // Add a guard clause if task is null
@@ -9,6 +13,7 @@ const TaskModal = ({ isOpen, onClose, task }) => {
     const [checklist, setChecklist] = useState(task.checklist || []);
     const [newTask, setNewTask] = useState("");
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+    const [newComment, setNewComment] = useState("");
 
     // Handle the drag-and-drop logic
     const handleDragEnd = (result) => {
@@ -42,6 +47,19 @@ const TaskModal = ({ isOpen, onClose, task }) => {
         setChecklist(updatedChecklist);
     };
 
+    // comments
+    const addComment = (e) => {
+        e.preventDefault();
+        if (newComment.trim() !== "") {
+            task.comments.push({
+                id: `c${task.comments.length + 1}`,
+                name: "You",
+                text: newComment,
+            });
+            setNewComment("");
+        }
+    };
+
     return (
         <div className="fixed inset-0 bg-black bg-opacity-40 flex justify-center items-center z-50">
             <div className="bg-white w-full max-w-4xl p-6 rounded-lg shadow-lg relative max-h-[80vh] overflow-y-auto">
@@ -50,7 +68,7 @@ const TaskModal = ({ isOpen, onClose, task }) => {
                     className="absolute top-4 right-4 text-gray-500 hover:text-gray-700"
                     onClick={onClose}
                 >
-                    ✖
+                    <FaTimes className="text-2xl" />
                 </button>
 
                 {/* Modal Content */}
@@ -63,6 +81,34 @@ const TaskModal = ({ isOpen, onClose, task }) => {
                         <p className="text-xl font-bold text-gray-900 mt-1">
                             {task.title}
                         </p>
+                    </div>
+
+                    {/* Due Date */}
+                    <div>
+                        <h2 className="text-lg font-semibold text-gray-700">
+                            DUE DATE:
+                        </h2>
+                        <input
+                            type="date"
+                            value={task.dueDate || ""}
+                            onChange={(e) => (task.dueDate = e.target.value)}
+                            className="w-25 border border-gray-300 rounded p-2 mt-1"
+                        />
+                    </div>
+
+                    {/* Asignasi tugas kepada anggota tim */}
+                    <div>
+                        <h2 className="text-lg font-semibold text-gray-700">
+                            Assign Task to Team Member:
+                        </h2>
+                        <select className="w-full border border-gray-300 rounded p-2 mt-1">
+                            {/* SEMENTARA PAKE JS NANTI BISA DI GANTI DROPWODN BIASA DI PANGGIL NAMA ATO ID MEMBER */}
+                            {/* {members.map((member, index) => (
+                                <option key={index} value={member.name}>
+                                    {member.name}
+                                </option>
+                            ))} */}
+                        </select>
                     </div>
 
                     {/* Checklist */}
@@ -122,7 +168,7 @@ const TaskModal = ({ isOpen, onClose, task }) => {
                                                             }
                                                             className="text-red-500 hover:text-red-700"
                                                         >
-                                                            ✖
+                                                            <FaTimes className="text-2xl" />
                                                         </button>
                                                     </div>
                                                 )}
@@ -190,11 +236,51 @@ const TaskModal = ({ isOpen, onClose, task }) => {
 
                     {/* Delete Button */}
                     <div>
-                        <button className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
-                        onClick={() => setIsDeleteModalOpen(true)}
+                        <DangerButton
+                            className="bg-red-500 text-white px-4 py-2 rounded"
+                            onClick={() => setIsDeleteModalOpen(true)}
                         >
                             Delete Task
-                        </button>
+                        </DangerButton>
+                    </div>
+
+                    {/* Comments */}
+                    <div>
+                        <h2 className="text-lg font-semibold text-gray-700">
+                            COMMENTS:
+                        </h2>
+                        <div className="space-y-2 mt-2">
+                            {/* {task.comments.map((comment) => (
+                                <div
+                                    key={comment.id}
+                                    className="bg-gray-100 p-2 rounded shadow"
+                                >
+                                    <strong className="text-blue-600">
+                                        {comment.name}:
+                                    </strong>{" "}
+                                    <span>{comment.text}</span>
+                                </div>
+                            ))} */}
+                        </div>
+                        <form
+                            className="mt-3 flex items-center space-x-2"
+                            onSubmit={addComment}
+                        >
+                            <input
+                                type="text"
+                                placeholder="Add a comment"
+                                value={newComment}
+                                onChange={(e) => setNewComment(e.target.value)}
+                                className="flex-1 border border-gray-300 rounded p-2"
+                            />
+                            <button
+                                type="submit"
+                                className="flex items-center bg-blue-500 text-white font-semibold px-4 py-2 rounded hover:bg-blue-600"
+                            >
+                                Send
+                                <IoMdSend className="ms-2" />
+                            </button>
+                        </form>
                     </div>
                 </div>
             </div>

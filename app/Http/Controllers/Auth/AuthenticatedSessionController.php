@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use Inertia\Response;
+use Illuminate\Support\Facades\Cache;
 
 class AuthenticatedSessionController extends Controller
 {
@@ -29,11 +30,38 @@ class AuthenticatedSessionController extends Controller
      */
     public function store(LoginRequest $request): RedirectResponse
     {
+        // Autentikasi user
         $request->authenticate();
 
+        // Regenerasi sesi untuk keamanan
         $request->session()->regenerate();
 
-        return redirect()->intended(route('dashboard', absolute: false));
+        // Simpan data user ke tabel `cache`
+        $user = Auth::user();
+
+        // Tentukan waktu kedaluwarsa
+        $expiration = now()->addMinutes(30)->timestamp; // Waktu kedaluwarsa 30 menit ke depan
+
+        // Simpan data user ke dalam cache dengan waktu kedaluwarsa
+        Cache::store('database')->put(
+            'user_' . $user->id,
+            [
+                'id' => $user->id,
+                'name' => $user->name,
+                'email' => $user->email,
+                'role' => $user->role,
+            ],
+            $expiration // Menggunakan timestamp untuk expiration
+        );
+
+        // Redirect sesuai role
+        if ($user->role === 'admin') {
+            return redirect()->route('admin.dashboard');
+        } elseif ($user->role === 'user') {
+            return redirect()->route('user.dashboard');
+        }
+
+        return redirect()->route('dashboard');
     }
 
     /**
@@ -41,6 +69,13 @@ class AuthenticatedSessionController extends Controller
      */
     public function destroy(Request $request): RedirectResponse
     {
+        // Logout
+        $user = Auth::user();
+        if ($user) {
+            // Hapus data user dari tabel `cache`
+            Cache::store('database')->forget('user_' . $user->id);
+        }
+
         Auth::guard('web')->logout();
 
         $request->session()->invalidate();

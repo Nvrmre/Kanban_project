@@ -15,11 +15,14 @@ return new class extends Migration
             $table->id(); // Primary key
             $table->string('name'); // Nama board
             $table->longText('description')->nullable(); // Deskripsi board
-            $table->enum('priority', ['low', 'medium', 'high']); // Prioritas (gunakan huruf kecil untuk konsistensi)
-            $table->enum('status', ['to_do', 'in_progress', 'done']); // Status (gunakan snake_case untuk konsistensi)
+            $table->enum('priority', ['low', 'medium', 'high']); // Prioritas
+            $table->enum('status', ['to_do', 'in_progress', 'done']); // Status
             $table->foreignId('assigned_id')->constrained('users')->onDelete('cascade'); // Foreign key ke tabel users
-            $table->foreignId('board_id')->constrained('projects')->onDelete('cascade'); // Foreign key ke tabel boards
-            $table->date('due_date')->nullable(); // Tipe data due_date diperbaiki menjadi date
+            $table->foreignId('board_id')->constrained('boards'); // Foreign key ke tabel boards
+            $table->date('due_date')->nullable(); // Tanggal batas waktu
+            $table->enum('notification_duration', [
+                '6 hours', '12 hours', '1 day', '3 days', '5 days', '7 days'
+            ])->nullable(); // Kolom untuk durasi notifikasi
             $table->timestamps(); // Kolom created_at dan updated_at
         });
     }

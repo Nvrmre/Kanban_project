@@ -8,100 +8,11 @@ import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import EditCardModal from "@/Components/EditCardModal";
 import { Head, Link, useForm, router } from "@inertiajs/react";
 
-const initialColumns = {
-    backlog: {
-        id: "backlog",
-        name: "Backlog",
-        tasks: [
-            {
-                id: "1",
-                title: "Welcome to Agilix 🙌",
-                description:
-                    "Agilix is a Board planner that helps you to focus on what matters most.",
-                priority: "Low",
-                status: "Backlog",
-                dateAdded: "11/28/2024",
-                checklist: [],
-                comments: [
-                    { id: "c1", name: "John Doe", text: "Great start!" },
-                    {
-                        id: "c2",
-                        name: "Jane Smith",
-                        text: "I like this feature!",
-                    },
-                ],
-            },
-            {
-                id: "2",
-                title: "Add a task checklist",
-                description: "Tasks can have multiple steps to complete.",
-                priority: "Medium",
-                status: "Backlog",
-                dateAdded: "11/28/2024",
-                checklist: [
-                    { id: "a", text: "Define the task", completed: false },
-                    {
-                        id: "b",
-                        text: "Implement the feature",
-                        completed: false,
-                    },
-                ],
-                comments: [
-                    { id: "c4", name: "Bob Lee", text: "Looks good so far." },
-                ],
-            },
-        ],
-    },
-    waiting: {
-        id: "waiting",
-        name: "Waiting",
-        tasks: [
-            {
-                id: "3",
-                title: "You can add detailed Descriptions.",
-                description: "",
-                priority: "High",
-                status: "Waiting",
-                dateAdded: "11/28/2024",
-                checklist: [],
-                comments: [],
-            },
-            {
-                id: "4",
-                title: "Break tasks into steps",
-                description: "",
-                priority: "Medium",
-                status: "Waiting",
-                dateAdded: "11/28/2024",
-                checklist: [
-                    { id: "c", text: "Step 1", completed: true },
-                    { id: "d", text: "Step 2", completed: false },
-                    { id: "e", text: "Step 3", completed: false },
-                ],
-                comments: [
-                    { id: "c4", name: "Bob Lee", text: "Looks good so far." },
-                ],
-            },
-        ],
-    },
-    done: {
-        id: "done",
-        name: "Done",
-        tasks: [],
-    },
-};
-
 function Board({ projects, boards, id, tasks }) {
     console.log(projects);
     console.log("board", boards);
     console.log("id", id);
     console.log("tasks", tasks);
-    const [columns, setColumns] = useState(initialColumns);
-    const [columnOrder, setColumnOrder] = useState([
-        "backlog",
-        "waiting",
-        "done",
-    ]);
 
     // State untuk modal TaskModal
     const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
@@ -274,31 +185,6 @@ function Board({ projects, boards, id, tasks }) {
         );
     };
 
-    const fetchData = async () => {
-        console.log("fetch data");
-        try {
-            router.visit("/task/" + boards[0].id, {
-                method: "get",
-                preserveState: true,
-                onSuccess: (res) => {
-                    console.log("res", res);
-                    // closeDeleteModal();
-                    // showSuccessAlert("Project deleted successfully");
-                },
-                onError: (errors) => {
-                    console.log(errors);
-                    // showErrorAlert("Error delete failed");
-                },
-            });
-        } catch (error) {
-            console.log(error);
-        }
-    };
-
-    useEffect(() => {
-        fetchData();
-    }, []);
-
     return (
         <AuthenticatedLayout>
             <Head title="Board" />
@@ -365,15 +251,16 @@ function Board({ projects, boards, id, tasks }) {
                                 ref={provided.innerRef}
                                 className="flex space-x-6 mt-4 overflow-x-auto"
                             >
-                                {columnOrder.map((columnId, index) => {
-                                    const column = columns[columnId];
+                                {boards.map((data, index) => {
+                                    const column = tasks.data;
+                                    console.log("column2", column);
                                     return (
                                         <Draggable
-                                            draggableId={columnId}
+                                            draggableId={data.name}
                                             index={index}
-                                            key={columnId}
+                                            key={data.name}
                                         >
-                                            {(provided) => (
+                                            {(provided, snapshot) => (
                                                 <div
                                                     {...provided.draggableProps}
                                                     ref={provided.innerRef}
@@ -389,8 +276,7 @@ function Board({ projects, boards, id, tasks }) {
                                                                 ] || "#3b82f6", // Warna default biru
                                                         }}
                                                     >
-                                                        {column.name}
-
+                                                        {data.name}
                                                         <button
                                                             className="float-end text-gray-100 hover:text-gray-400"
                                                             onClick={(e) => {
@@ -403,22 +289,20 @@ function Board({ projects, boards, id, tasks }) {
                                                         >
                                                             <FaRegTrashAlt className="my-1 w-5 h-5" />
                                                         </button>
-
                                                         <button
                                                             className="float-end text-gray-100 hover:text-gray-400 me-2"
                                                             onClick={(e) => {
                                                                 e.stopPropagation();
                                                                 openColorModal(
-                                                                    columnId
+                                                                    data.name
                                                                 );
                                                             }}
                                                         >
                                                             <FaPen className="my-1 w-5 h-5" />
                                                         </button>
                                                     </div>
-
                                                     <Droppable
-                                                        droppableId={columnId}
+                                                        droppableId={data.name}
                                                         type="TASK"
                                                     >
                                                         {(provided) => (
@@ -428,14 +312,13 @@ function Board({ projects, boards, id, tasks }) {
                                                                     provided.innerRef
                                                                 }
                                                                 className={`min-h-0 p-2 border rounded ${
-                                                                    column.tasks
-                                                                        .length ===
+                                                                    column.length ==
                                                                     0
                                                                         ? "border-dashed border-transparent"
                                                                         : "border-transparent"
                                                                 }`}
                                                             >
-                                                                {column.tasks.map(
+                                                                {column.map(
                                                                     (
                                                                         task,
                                                                         index
@@ -448,15 +331,15 @@ function Board({ projects, boards, id, tasks }) {
                                                                                 selectedPriority;
                                                                         return (
                                                                             <Draggable
-                                                                                draggableId={
+                                                                                draggableId={String(
                                                                                     task.id
-                                                                                }
+                                                                                )}
                                                                                 index={
                                                                                     index
                                                                                 }
-                                                                                key={
+                                                                                key={String(
                                                                                     task.id
-                                                                                }
+                                                                                )}
                                                                             >
                                                                                 {(
                                                                                     provided,
@@ -488,14 +371,14 @@ function Board({ projects, boards, id, tasks }) {
                                                                                         <div className="flex justify-between ">
                                                                                             <span className="ml-2">
                                                                                                 {
-                                                                                                    task.title
+                                                                                                    task.name
                                                                                                 }
                                                                                             </span>
                                                                                             {renderPriorityIcon(
                                                                                                 task.priority
                                                                                             )}
                                                                                         </div>
-                                                                                        {task
+                                                                                        {/* {task
                                                                                             .checklist
                                                                                             .length >
                                                                                             0 && (
@@ -504,7 +387,7 @@ function Board({ projects, boards, id, tasks }) {
                                                                                                     task.checklist
                                                                                                 )}
                                                                                             </div>
-                                                                                        )}
+                                                                                        )} */}
                                                                                     </div>
                                                                                 )}
                                                                             </Draggable>

@@ -1,9 +1,14 @@
-import ApplicationLogo from '@/Components/ApplicationLogo';
-import Dropdown from '@/Components/Dropdown';
-import NavLink from '@/Components/NavLink';
-import ResponsiveNavLink from '@/Components/ResponsiveNavLink';
-import { Link, usePage } from '@inertiajs/react';
-import { useState } from 'react';
+import ApplicationLogo from "@/Components/ApplicationLogo";
+import Dropdown from "@/Components/Dropdown";
+import NavLink from "@/Components/NavLink";
+import ResponsiveNavLink from "@/Components/ResponsiveNavLink";
+import { Link, usePage } from "@inertiajs/react";
+import { useState } from "react";
+import { FaUser ,FaRegUser, FaHome } from "react-icons/fa";
+import { PiKanbanFill } from "react-icons/pi";
+import { HiDocumentReport } from "react-icons/hi";
+import { IoSettingsSharp, IoLogOutSharp  } from "react-icons/io5";
+
 
 export default function AuthenticatedLayout({ header, children }) {
     const user = usePage().props.auth.user;
@@ -16,25 +21,43 @@ export default function AuthenticatedLayout({ header, children }) {
             <nav className="border-b border-gray-100 bg-blue-500 dark:border-gray-700 dark:bg-gray-800">
                 <div className="text-gray-100 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                     <div className="flex h-16 justify-between">
-                        <div className="flex">
-                            <div className="flex shrink-0 items-center">
+                        <div className="flex shrink-0 items-center ">
                                 <Link href="/">
-                                    <ApplicationLogo className="block h-9 w-auto fill-current text-gray-100 dark:text-gray-200" />
+                                    <ApplicationLogo className="block h-9 w-auto fill-current text-gray-100" />
                                 </Link>
-                            </div>
+                                <h1 className="flex text-2xl font-bold">KANBAN</h1>  {/* logo */}
+                                   
+                        </div>
 
+                        <div className="flex ">
                             <div className="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
                                 <NavLink
-                                    href={route('dashboard')}
-                                    active={route().current('dashboard')}
+                                    href={route("dashboard")}
+                                    active={route().current("dashboard")}
                                 >
+                                    <FaHome className="text-lg me-2"/>
                                     Dashboard
                                 </NavLink>
                                 <NavLink
-                                    // href={route('kanban.index')}
-                                    // active={route().current('kanban.index')}
+                                    href={route("kanban.index")}
+                                    active={route().current("kanban.index")}
                                 >
+                                    <PiKanbanFill className="text-lg me-2" /> 
                                     Kanban
+                                </NavLink>
+                                <NavLink
+                                    href={route("laporan.index")}
+                                    active={route().current("laporan.index")}
+                                >
+                                    <HiDocumentReport className="text-lg me-2" />
+                                    Laporan
+                                </NavLink>
+                                <NavLink
+                                    href={route("setting.index")}
+                                    active={route().current("setting.index")}
+                                >
+                                    <IoSettingsSharp className="text-lg me-2"/>
+                                    Setting
                                 </NavLink>
                             </div>
                         </div>
@@ -46,8 +69,9 @@ export default function AuthenticatedLayout({ header, children }) {
                                         <span className="inline-flex rounded-md">
                                             <button
                                                 type="button"
-                                                className="inline-flex items-center rounded-md border border-transparent bg-white px-3 py-2 text-sm font-medium leading-4 text-gray-500 transition duration-150 ease-in-out hover:text-gray-700 focus:outline-none dark:bg-gray-800 dark:text-gray-400 dark:hover:text-gray-300"
+                                                className="inline-flex items-center rounded-md border border-transparent bg-white px-3 py-2 text-sm font-medium leading-4 text-gray-500 transition duration-150 ease-in-out hover:text-blue-600 hover:font-bold focus:outline-none"
                                             >
+                                                <FaUser className="me-2"/>
                                                 {user.name}
 
                                                 <svg
@@ -68,12 +92,12 @@ export default function AuthenticatedLayout({ header, children }) {
 
                                     <Dropdown.Content>
                                         <Dropdown.Link
-                                            href={route('profile.edit')}
+                                            href={route("profile.edit")}
                                         >
                                             Profile
                                         </Dropdown.Link>
                                         <Dropdown.Link
-                                            href={route('logout')}
+                                            href={route("logout")}
                                             method="post"
                                             as="button"
                                         >
@@ -88,10 +112,10 @@ export default function AuthenticatedLayout({ header, children }) {
                             <button
                                 onClick={() =>
                                     setShowingNavigationDropdown(
-                                        (previousState) => !previousState,
+                                        (previousState) => !previousState
                                     )
                                 }
-                                className="inline-flex items-center justify-center rounded-md p-2 text-gray-400 transition duration-150 ease-in-out hover:bg-gray-100 hover:text-gray-500 focus:bg-gray-100 focus:text-gray-500 focus:outline-none dark:text-gray-500 dark:hover:bg-gray-900 dark:hover:text-gray-400 dark:focus:bg-gray-900 dark:focus:text-gray-400"
+                                className="inline-flex items-center justify-center rounded-md p-2 text-white transition duration-150 ease-in-out hover:bg-gray-100 hover:text-blue-500 focus:bg-gray-100 focus:text-blue-500 focus:outline-none"
                             >
                                 <svg
                                     className="h-6 w-6"
@@ -102,8 +126,8 @@ export default function AuthenticatedLayout({ header, children }) {
                                     <path
                                         className={
                                             !showingNavigationDropdown
-                                                ? 'inline-flex'
-                                                : 'hidden'
+                                                ? "inline-flex"
+                                                : "hidden"
                                         }
                                         strokeLinecap="round"
                                         strokeLinejoin="round"
@@ -113,8 +137,8 @@ export default function AuthenticatedLayout({ header, children }) {
                                     <path
                                         className={
                                             showingNavigationDropdown
-                                                ? 'inline-flex'
-                                                : 'hidden'
+                                                ? "inline-flex"
+                                                : "hidden"
                                         }
                                         strokeLinecap="round"
                                         strokeLinejoin="round"
@@ -129,38 +153,65 @@ export default function AuthenticatedLayout({ header, children }) {
 
                 <div
                     className={
-                        (showingNavigationDropdown ? 'block' : 'hidden') +
-                        ' sm:hidden'
+                        (showingNavigationDropdown ? "block" : "hidden") +
+                        " sm:hidden"
                     }
                 >
-                    <div className="space-y-1 pb-3 pt-2">
+                    <div className="space-y-1 pb-3 pt-2 ">
                         <ResponsiveNavLink
-                            href={route('dashboard')}
-                            active={route().current('dashboard')}
+                            href={route("dashboard")}
+                            active={route().current("dashboard")}
                         >
+                            <FaHome className="me-2"/>
                             Dashboard
+                        </ResponsiveNavLink>
+
+                        <ResponsiveNavLink
+                            href={route("kanban.index")}
+                            active={route().current("kanban.index")}
+                        >
+                            <PiKanbanFill className="text-lg me-2" /> 
+                            Kanban
+                        </ResponsiveNavLink>
+
+                        <ResponsiveNavLink
+                            href={route("laporan.index")}
+                            active={route().current("laporan.index")}
+                        >
+                            <HiDocumentReport className="text-lg me-2" />
+                            Laporan
+                        </ResponsiveNavLink>
+
+                        <ResponsiveNavLink
+                            href={route("setting.index")}
+                            active={route().current("setting.index")}
+                        >
+                            <IoSettingsSharp className="text-lg me-2"/>
+                            Setting
                         </ResponsiveNavLink>
                     </div>
 
                     <div className="border-t border-gray-200 pb-1 pt-4 dark:border-gray-600">
-                        <div className="px-4">
-                            <div className="text-base font-medium text-gray-800 dark:text-gray-200">
+                        <div className="grid grid-rows-2 items-center justify-center px-4">
+                            <div className="flex items-center justify-center text-base text-gray-50 font-semibold">
                                 {user.name}
                             </div>
-                            <div className="text-sm font-medium text-gray-500">
+                            <div className="text-sm font-small text-white">
                                 {user.email}
                             </div>
                         </div>
 
                         <div className="mt-3 space-y-1">
-                            <ResponsiveNavLink href={route('profile.edit')}>
+                            <ResponsiveNavLink href={route("profile.edit")}>
+                                <FaUser className="me-2"/>
                                 Profile
                             </ResponsiveNavLink>
                             <ResponsiveNavLink
                                 method="post"
-                                href={route('logout')}
+                                href={route("logout")}
                                 as="button"
                             >
+                                <IoLogOutSharp className="me-2 text-xl"/>
                                 Log Out
                             </ResponsiveNavLink>
                         </div>
@@ -180,4 +231,3 @@ export default function AuthenticatedLayout({ header, children }) {
         </div>
     );
 }
-
