@@ -15,40 +15,33 @@ class BoardController extends Controller
      * Display a listing of the boards with optional project filter.
      */
 
-        public function index($projectId = null)
-{
-
-    $status = request('status'); // Status filter (to_do, in_progress, done)
-    // $project_id = $projectId; 
-    //  dd([$projectId]);// Project ID untuk filter
-
-    // Fetch boards with filters
-    $boards = Board::when($projectId, fn($query) => $query->where('projects_id', $projectId))
-    ->with('project') // Sertakan data project untuk setiap board
-    ->get();
-
-
-
-    // Ambil board_id dari board pertama jika ada
-    $boardId = $boards->isNotEmpty() ? $boards->first()->id : null;
-
-    // Fetch tasks with filters, menggunakan board_id yang diambil dari data boards
-    $tasks = Task::when($boardId, fn($query) => $query->where('board_id', $boardId))
-        ->when($status, fn($query) => $query->where('status', $status))
-        ->orderBy('priority', 'desc') // Sorting berdasarkan prioritas
-        ->paginate(10)
-        ->withQueryString();
-
-    // Return Inertia view with both tasks and boards data
-    return inertia('Kanban/Index', [
-        'tasks' => $tasks,
-        'boardId' => $boardId, // Pass the boardId to frontend
-        'status' => $status,
-        'boards' => $boards,
-        'projects' => Project::all(), // Untuk filter project di frontend
-        'projectId' => $projectId, // Untuk menyimpan projects_id yang dipilih
-    ]);
-}
+     public function index($projectId = null)
+     {
+         $projectId = $projectId ?? request('projects_id'); // Ambil dari request jika ada
+         $status = request('status');
+     
+         $boards = Board::when($projectId, fn($query) => $query->where('projects_id', $projectId))
+             ->with('project')
+             ->get();
+     
+         $boardId = $boards->isNotEmpty() ? $boards->first()->id : null;
+     
+         $tasks = Task::when($boardId, fn($query) => $query->where('board_id', $boardId))
+             ->when($status, fn($query) => $query->where('status', $status))
+             ->orderBy('priority', 'desc')
+             ->paginate(10)
+             ->withQueryString();
+     
+         return inertia('Kanban/Index', [
+             'tasks' => $tasks,
+             'boardId' => $boardId,
+             'status' => $status,
+             'boards' => $boards,
+             'projects' => Project::all(),
+             'projectId' => $projectId,
+         ]);
+     }
+     
 
 
 

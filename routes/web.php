@@ -5,6 +5,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\TaskController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\CommentController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -58,6 +59,8 @@ Route::get('/project/{project}', function ($project) {
         'project' => \App\Models\Project::with('boards.tasks')->findOrFail($project),
     ]);
 })->name('project.show');
+Route::post('/tasks/{taskId}/comments', [CommentController::class, 'store'])->name('comments.store');
+
 
 
 require __DIR__ . '/auth.php';
