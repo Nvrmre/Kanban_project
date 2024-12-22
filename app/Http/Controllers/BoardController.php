@@ -128,14 +128,16 @@ class BoardController extends Controller
      */
     public function destroy(Board $board)
 {
-    // Then delete the board
-    // Delete all tasks associated with this board first
+    // Hapus semua task yang terkait dengan board ini
     $board->tasks()->delete();
-    $board->delete();
-    
 
-    return redirect()->route('boards.index', ['boardId' => $board->id])
+    // Hapus board itu sendiri
+    $board->delete();
+
+    // Redirect kembali ke halaman boards dengan projects_id yang sesuai
+    return redirect()->route('boards.index', ['projects_id' => $board->projects_id])
         ->with('success', 'Board deleted successfully');
 }
+
 
 }
