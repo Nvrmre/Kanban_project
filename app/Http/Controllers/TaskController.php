@@ -89,14 +89,22 @@ class TaskController extends Controller
     /**
      * Memperbarui tugas yang ada.
      */
-    public function update(UpdateTaskRequest $request, Task $task)
-    {
-        $data = $request->validated();
-        $task->update($data);
+   public function update(UpdateTaskRequest $request, Task $task, $boardId)
+{
+    $data = $request->validated();
 
-        return redirect()->route('task.index', ['board_id' => $task->board_id])
-            ->with('success', 'Tugas berhasil diperbarui.');
+    // If board_id is provided, update it
+    if ($boardId) {
+        $task->board_id = $boardId;
     }
+
+    // Update other task data
+    $task->update($data);
+
+    return redirect()->route('task.index', ['board_id' => $task->board_id])
+        ->with('success', 'Tugas berhasil diperbarui.');
+}
+
 
     /**
      * Menghapus tugas.
@@ -116,16 +124,16 @@ class TaskController extends Controller
             SUM(CASE WHEN status = "to_do" THEN 1 ELSE 0 END) AS to_do,
             SUM(CASE WHEN status = "in_progress" THEN 1 ELSE 0 END) AS in_progress
         ')->first();
-    
+
         $taskDistribution = [
             'complete' => $taskData->complete ?? 0,
             'overdue' => $taskData->to_do ?? 0
         ];
-    
+
         return Inertia::render('Laporan/Index', [
             'taskData' => $taskData,
             'taskDistribution' => $taskDistribution,
         ]);
     }
-    
+
 }

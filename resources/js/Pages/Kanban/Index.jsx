@@ -7,7 +7,7 @@ import { FaRegTrashAlt, FaPen } from "react-icons/fa";
 import { MdFormatColorFill } from "react-icons/md";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import EditCardModal from "@/Components/EditCardModal";
-import { Head } from "@inertiajs/react";
+import { Head, router } from "@inertiajs/react";
 import ErrorBoundary from "@/error";
 
 import { BsPersonFillAdd } from "react-icons/bs";
@@ -27,11 +27,11 @@ function Board({ boards, tasks, boardId, projectId }) {
     }, {});
 
     boards.forEach((board) => {
-        //console.log(`Tasks for board ${board}`);
         const tasksForBoard = tasks.data.filter(
             (task) => task.board_id === board.id
         );
-        //console.log(`Tasks for board ${board.name}:`, tasksForBoard);
+        // console.log(`Tasks for board ${board}`);
+        console.log(`Tasks for board ${board.name}:`, tasksForBoard);
     });
 
     const columnOrder = boards.map((board) => board.name);
@@ -56,8 +56,6 @@ function Board({ boards, tasks, boardId, projectId }) {
     const [dataEditBoard, setDataEditBoard] = useState([]);
 
     const onDragEnd = (result) => {
-        // console.log(result);
-
         const { source, destination, type } = result;
 
         if (!destination) return;
@@ -70,7 +68,12 @@ function Board({ boards, tasks, boardId, projectId }) {
         } else {
             const sourceColumn = columns[source.droppableId];
             const destinationColumn = columns[destination.droppableId];
-
+            console.log("Drag result:", result);
+            console.log("Drag start result:", source.droppableId);
+            console.log("Drag end result:", destination.droppableId);
+            // router.visit(
+            //     route("boards.index", { boardId: destination.droppableId })
+            // );
             // Same column task reorder
             if (source.droppableId === destination.droppableId) {
                 const newTasks = [...sourceColumn.tasks];
@@ -122,14 +125,6 @@ function Board({ boards, tasks, boardId, projectId }) {
         setSelectedTask(null);
     };
 
-    // AddMember Modal Handlers
-    // const openAddMemberModal = (member) => {
-    //     setSelectedTask(task);
-    //     setIsTaskModalOpen(true);
-    // };
-    // const projectId = id;
-
-    // Add Board
     const handleAddBoard = async (e, projectId) => {
         e.preventDefault();
         console.log("Creating board with:", {
@@ -207,238 +202,16 @@ function Board({ boards, tasks, boardId, projectId }) {
     const renderPriorityIcon = (priority) => {
         return (
             <div
-                className={`absolute top-0 left-0 h-full w-2 rounded-lg${priority === "High"
+                className={`absolute top-0 left-0 h-full w-2 rounded-lg${
+                    priority === "High"
                         ? "bg-red-500"
                         : priority === "Medium"
-                            ? "bg-yellow-500"
-                            : "bg-green-500"
-                    }`}
+                        ? "bg-yellow-500"
+                        : "bg-green-500"
+                }`}
             ></div>
         );
     };
-    // <<<<<<< HEAD
-
-    //     const renderChecklist = (checklist) => {
-    //         const completedCount = checklist.filter(
-    //             (item) => item.completed
-    //         ).length;
-    //         return (
-    //             <div className="flex items-center space-x-1 text-sm text-gray-500">
-    //                 <span>☑️</span>
-    //                 <span>
-    //                     {completedCount}/{checklist.length}
-    //                 </span>
-    //             </div>
-    //         );
-    //     };
-
-    //     return (
-    //         <div className="p-6 bg-gray-100 min-h-screen">
-    //             <h1 className="text-xl font-semibold text-gray-700">
-    //                 Boards / Main Board
-    //             </h1>
-    //             <div className="mt-2 flex items-center space-x-2">
-    //                 <span className="text-gray-600">Show Priority:</span>
-    //                 <button className="px-3 py-1 text-sm bg-blue-500 text-white rounded">
-    //                     All
-    //                 </button>
-    //                 <button className="px-3 py-1 text-sm bg-gray-200 text-gray-700 rounded">
-    //                     Hard
-    //                 </button>
-    //                 <button className="px-3 py-1 text-sm bg-gray-200 text-gray-700 rounded">
-    //                     Medium
-    //                 </button>
-    //                 <button className="px-3 py-1 text-sm bg-gray-200 text-gray-700 rounded">
-    //                     Low
-    //                 </button>
-    //             </div>
-
-    //             <DragDropContext onDragEnd={onDragEnd}>
-    //                 <Droppable
-    //                     droppableId="all-columns"
-    //                     direction="horizontal"
-    //                     type="COLUMN"
-    //                 >
-    //                     {(provided) => (
-    //                         <div
-    //                             {...provided.droppableProps}
-    //                             ref={provided.innerRef}
-    //                             className="flex space-x-6 mt-4 overflow-x-auto"
-    //                         >
-    //                             {columnOrder.map((columnId, index) => {
-    //                                 const column = columns[columnId];
-    //                                 return (
-    //                                     <Draggable
-    //                                         draggableId={columnId}
-    //                                         index={index}
-    //                                         key={columnId}
-    //                                     >
-    //                                         {(provided) => (
-    //                                             <div
-    //                                                 {...provided.draggableProps}
-    //                                                 ref={provided.innerRef}
-    //                                                 className="bg-white rounded shadow p-4 w-96 transition-transform duration-200 h-fit"
-    //                                             >
-    //                                                 <div
-    //                                                     {...provided.dragHandleProps}
-    //                                                     className="mb-3 text-lg font-semibold text-gray-100 cursor-move w-full bg-blue-500 p-2 rounded"
-    //                                                 >
-    //                                                     {column.name}
-    //                                                     <button
-    //                                                         className="float-end text-gray-100 hover:text-gray-400"
-    //                                                         onClick={(e) => {
-    //                                                             e.stopPropagation(); // Prevent opening the modal
-    //                                                             openDeleteModal(
-    //                                                                 `Delete Card: ${column.name}`
-    //                                                             );
-    //                                                             // deleteTask(columnId, task.id);
-    //                                                         }}
-    //                                                     >
-    //                                                         <FaRegTrashAlt className="my-1 w-5 h-5" />
-    //                                                     </button>
-    //                                                 </div>
-
-    //                                                 <Droppable
-    //                                                     droppableId={columnId}
-    //                                                     type="TASK"
-    //                                                 >
-    //                                                     {(provided) => (
-    //                                                         <div
-    //                                                             {...provided.droppableProps}
-    //                                                             ref={
-    //                                                                 provided.innerRef
-    //                                                             }
-    //                                                             className={`min-h-0 p-2 border rounded ${
-    //                                                                 column.tasks
-    //                                                                     .length ===
-    //                                                                 0
-    //                                                                     ? "border-dashed border-transparent"
-    //                                                                     : "border-transparent"
-    //                                                             }`}
-    //                                                         >
-    //                                                             {column.tasks.map(
-    //                                                                 (
-    //                                                                     task,
-    //                                                                     index
-    //                                                                 ) => (
-    //                                                                     <Draggable
-    //                                                                         draggableId={
-    //                                                                             task.id
-    //                                                                         }
-    //                                                                         index={
-    //                                                                             index
-    //                                                                         }
-    //                                                                         key={
-    //                                                                             task.id
-    //                                                                         }
-    //                                                                     >
-    //                                                                         {(
-    //                                                                             provided,
-    //                                                                             snapshot
-    //                                                                         ) => (
-    //                                                                             <div
-    //                                                                                 ref={
-    //                                                                                     provided.innerRef
-    //                                                                                 }
-    //                                                                                 {...provided.draggableProps}
-    //                                                                                 {...provided.dragHandleProps}
-    //                                                                                 className={`relative bg-gray-50 p-3 rounded shadow mb-3 cursor-pointer transition-transform duration-200 ${
-    //                                                                                     snapshot.isDragging
-    //                                                                                         ? "bg-blue-100 scale-105"
-    //                                                                                         : ""
-    //                                                                                 }`}
-    //                                                                                 onClick={() =>
-    //                                                                                     openTaskModal(
-    //                                                                                         task
-    //                                                                                     )
-    //                                                                                 }
-    //                                                                             >
-    //                                                                                 <div className="flex justify-between ">
-    //                                                                                     <span className="ml-2">
-    //                                                                                         {
-    //                                                                                             task.title
-    //                                                                                         }
-    //                                                                                     </span>
-    //                                                                                     {renderPriorityIcon(
-    //                                                                                         task.priority
-    //                                                                                     )}
-    //                                                                                 </div>
-    //                                                                                 {task
-    //                                                                                     .checklist
-    //                                                                                     .length >
-    //                                                                                     0 && (
-    //                                                                                     <div className="ml-2">
-    //                                                                                         {renderChecklist(
-    //                                                                                             task.checklist
-    //                                                                                         )}
-    //                                                                                     </div>
-    //                                                                                 )}
-    //                                                                             </div>
-    //                                                                         )}
-    //                                                                     </Draggable>
-    //                                                                 )
-    //                                                             )}
-    //                                                             {
-    //                                                                 provided.placeholder
-    //                                                             }
-    //                                                         </div>
-    //                                                     )}
-    //                                                 </Droppable>
-    //                                             </div>
-    //                                         )}
-    //                                     </Draggable>
-    //                                 );
-    //                             })}
-    //                             {provided.placeholder}
-    //                             <div className="flex justify-center p-1">
-    //                                 {/* form add task card ketika dienter maka akan membuat task card  */}
-    //                                 <form autoComplete="off" className="">
-    //                                     <input
-    //                                         maxLength="20"
-    //                                         className="truncate bg-white placeholder-indigo-500 text-indigo-800 bg-indigo-50 px-2 outline-none py-1 rounded-sm ring-1 focus:ring-indigo-500"
-    //                                         type="text"
-    //                                         name="newCol"
-    //                                         placeholder="Add a new Task Card"
-    //                                     />
-    //                                 </form>
-    //                             </div>
-    //                         </div>
-    //                     )}
-    //                 </Droppable>
-    //             </DragDropContext>
-
-    //             <button
-    //                 className="fixed bottom-4 right-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full text-3xl"
-    //                 onClick={openAddTaskModal}
-    //             >
-    //                 +
-    //             </button>
-
-    //             <TaskModal
-    //                 isOpen={isTaskModalOpen}
-    //                 onClose={closeTaskModal}
-    //                 task={selectedTask}
-    //             />
-    //             <AddTaskModal
-    //                 isOpen={isAddTaskModalOpen}
-    //                 onClose={closeAddTaskModal}
-    //             />
-
-    //             <DeleteModal
-    //                 isOpen={isDeleteModalOpen}
-    //                 onClose={closeDeleteModal}
-    //                 onDelete={() => {
-    //                     console.log("Delete action triggered");
-    //                     closeDeleteModal(); // Tutup modal setelah menghapus
-    //                 }}
-    //                 title={modalTitle}
-    //             />
-    //         </div>
-    //     );
-    // }
-
-    // export default Kanban;
-    // =======
 
     return (
         <ErrorBoundary>
@@ -452,16 +225,6 @@ function Board({ boards, tasks, boardId, projectId }) {
                                 Boards / Main Project
                             </h1>
                         </div>
-
-                        {/* MODAL ADD MEMBER KALO GA JADI DIPAKE DI DELETE AJA  */}
-                        {/* <div className="">
-                            <PrimaryButton
-                                onClick={() => setIsAddMemberModalOpen(true)}
-                                className="mt-4"
-                            >
-                                <BsPersonFillAdd className="text-lg mr-2" /> Share
-                            </PrimaryButton>
-                        </div> */}
                     </div>
 
                     <div className="mt-2 flex items-center space-x-2">
@@ -469,10 +232,11 @@ function Board({ boards, tasks, boardId, projectId }) {
                         {["All", "high", "medium", "low"].map((priority) => (
                             <button
                                 key={priority}
-                                className={`px-3 py-1 text-sm font-semibold ${selectedPriority === priority
+                                className={`px-3 py-1 text-sm font-semibold ${
+                                    selectedPriority === priority
                                         ? "bg-blue-500 text-white"
                                         : "bg-gray-200 text-gray-700"
-                                    } rounded`}
+                                } rounded`}
                                 onClick={() => handlePriorityClick(priority)}
                             >
                                 {priority}
@@ -499,15 +263,17 @@ function Board({ boards, tasks, boardId, projectId }) {
                                                 selectedPriority === "All"
                                                     ? column.tasks
                                                     : column.tasks.filter(
-                                                        (task) =>
-                                                            task.priority ==
-                                                            selectedPriority
-                                                    );
+                                                          (task) =>
+                                                              task.priority ==
+                                                              selectedPriority
+                                                      );
 
                                             return (
                                                 <Draggable
                                                     key={column.id}
-                                                    draggableId={column.name}
+                                                    draggableId={String(
+                                                        column.id
+                                                    )}
                                                     index={index}
                                                 >
                                                     {(provided) => (
@@ -524,8 +290,8 @@ function Board({ boards, tasks, boardId, projectId }) {
                                                                 style={{
                                                                     backgroundColor:
                                                                         columnColors[
-                                                                        column
-                                                                            .id
+                                                                            column
+                                                                                .id
                                                                         ] ||
                                                                         "#3b82f6", // Warna default biru
                                                                 }}
@@ -573,9 +339,9 @@ function Board({ boards, tasks, boardId, projectId }) {
                                                             </div>
 
                                                             <Droppable
-                                                                droppableId={
-                                                                    column.name
-                                                                }
+                                                                droppableId={String(
+                                                                    column.id
+                                                                )}
                                                                 type="TASK"
                                                             >
                                                                 {(provided) => (
@@ -595,9 +361,9 @@ function Board({ boards, tasks, boardId, projectId }) {
                                                                                     key={
                                                                                         task.id
                                                                                     }
-                                                                                    draggableId={String(
-                                                                                        task.id
-                                                                                    )}
+                                                                                    draggableId={
+                                                                                        task.name
+                                                                                    }
                                                                                     index={
                                                                                         index
                                                                                     }

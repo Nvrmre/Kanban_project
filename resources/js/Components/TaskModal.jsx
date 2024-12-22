@@ -7,6 +7,7 @@ import { IoMdSend } from "react-icons/io";
 import DangerButton from "@/Components/DangerButton";
 
 const TaskModal = ({ isOpen, onClose, task }) => {
+    console.log("adasd", task);
     // Add a guard clause if task is null
     if (!isOpen || !task) return null;
 

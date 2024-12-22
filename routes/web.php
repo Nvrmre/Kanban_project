@@ -21,6 +21,7 @@ Route::put('/project/{project}', [ProjectController::class, 'update'])->middlewa
 
 
 Route::resource('project', ProjectController::class);
+Route::put('/tasks/{task}', [TaskController::class, 'update'])->name('task.update');
 
 Route::resource('task', TaskController::class);
 Route::resource('boards', BoardController::class);
