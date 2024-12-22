@@ -23,6 +23,7 @@ class UpdateBoardRequest extends FormRequest
     {
         return [
             //
+             'name' => 'required|string|max:255',
         ];
     }
 }

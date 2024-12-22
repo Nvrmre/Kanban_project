@@ -4,6 +4,7 @@ import TaskModal from "@/Components/TaskModal";
 import AddTaskModal from "@/Components/AddTaskModal";
 import DeleteModal from "@/Components/DeleteModal";
 import { FaRegTrashAlt, FaPen } from "react-icons/fa";
+import { MdFormatColorFill } from "react-icons/md";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import EditCardModal from "@/Components/EditCardModal";
 import { Head } from "@inertiajs/react";
@@ -13,6 +14,7 @@ import { BsPersonFillAdd } from "react-icons/bs";
 import AddMemberModal from "@/Components/AddMemberModal";
 import PrimaryButton from "@/Components/PrimaryButton";
 import axios from "axios";
+import EditNameBoard from "@/Components/EditBoard";
 
 function Board({ boards, tasks, boardId, projectId }) {
     const mergedTasksByBoard = boards.reduce((acc, board) => {
@@ -44,15 +46,15 @@ function Board({ boards, tasks, boardId, projectId }) {
     const [selectedTask, setSelectedTask] = useState(null);
     const [isAddTaskModalOpen, setIsAddTaskModalOpen] = useState(false);
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+    const [modalEditBoard, setModalEditBoard] = useState(false);
     const [modalTitle, setModalTitle] = useState("");
     const [isColorModalOpen, setIsColorModalOpen] = useState(false);
     const [selectedColumnId, setSelectedColumnId] = useState(null);
     const [isAddMemberModalOpen, setIsAddMemberModalOpen] = useState(false);
 
     const [newBoardName, setNewBoardName] = useState("");
-    const [idProject, setProjectId] = useState("");
+    const [dataEditBoard, setDataEditBoard] = useState([]);
 
-    // Drag-and-Drop Handler
     const onDragEnd = (result) => {
         // console.log(result);
 
@@ -102,6 +104,11 @@ function Board({ boards, tasks, boardId, projectId }) {
                 });
             }
         }
+    };
+
+    const editBoard = (value) => {
+        setDataEditBoard(value);
+        setModalEditBoard(true);
     };
 
     // Task Modal Handlers
@@ -209,6 +216,229 @@ function Board({ boards, tasks, boardId, projectId }) {
             ></div>
         );
     };
+    // <<<<<<< HEAD
+
+    //     const renderChecklist = (checklist) => {
+    //         const completedCount = checklist.filter(
+    //             (item) => item.completed
+    //         ).length;
+    //         return (
+    //             <div className="flex items-center space-x-1 text-sm text-gray-500">
+    //                 <span>☑️</span>
+    //                 <span>
+    //                     {completedCount}/{checklist.length}
+    //                 </span>
+    //             </div>
+    //         );
+    //     };
+
+    //     return (
+    //         <div className="p-6 bg-gray-100 min-h-screen">
+    //             <h1 className="text-xl font-semibold text-gray-700">
+    //                 Boards / Main Board
+    //             </h1>
+    //             <div className="mt-2 flex items-center space-x-2">
+    //                 <span className="text-gray-600">Show Priority:</span>
+    //                 <button className="px-3 py-1 text-sm bg-blue-500 text-white rounded">
+    //                     All
+    //                 </button>
+    //                 <button className="px-3 py-1 text-sm bg-gray-200 text-gray-700 rounded">
+    //                     Hard
+    //                 </button>
+    //                 <button className="px-3 py-1 text-sm bg-gray-200 text-gray-700 rounded">
+    //                     Medium
+    //                 </button>
+    //                 <button className="px-3 py-1 text-sm bg-gray-200 text-gray-700 rounded">
+    //                     Low
+    //                 </button>
+    //             </div>
+
+    //             <DragDropContext onDragEnd={onDragEnd}>
+    //                 <Droppable
+    //                     droppableId="all-columns"
+    //                     direction="horizontal"
+    //                     type="COLUMN"
+    //                 >
+    //                     {(provided) => (
+    //                         <div
+    //                             {...provided.droppableProps}
+    //                             ref={provided.innerRef}
+    //                             className="flex space-x-6 mt-4 overflow-x-auto"
+    //                         >
+    //                             {columnOrder.map((columnId, index) => {
+    //                                 const column = columns[columnId];
+    //                                 return (
+    //                                     <Draggable
+    //                                         draggableId={columnId}
+    //                                         index={index}
+    //                                         key={columnId}
+    //                                     >
+    //                                         {(provided) => (
+    //                                             <div
+    //                                                 {...provided.draggableProps}
+    //                                                 ref={provided.innerRef}
+    //                                                 className="bg-white rounded shadow p-4 w-96 transition-transform duration-200 h-fit"
+    //                                             >
+    //                                                 <div
+    //                                                     {...provided.dragHandleProps}
+    //                                                     className="mb-3 text-lg font-semibold text-gray-100 cursor-move w-full bg-blue-500 p-2 rounded"
+    //                                                 >
+    //                                                     {column.name}
+    //                                                     <button
+    //                                                         className="float-end text-gray-100 hover:text-gray-400"
+    //                                                         onClick={(e) => {
+    //                                                             e.stopPropagation(); // Prevent opening the modal
+    //                                                             openDeleteModal(
+    //                                                                 `Delete Card: ${column.name}`
+    //                                                             );
+    //                                                             // deleteTask(columnId, task.id);
+    //                                                         }}
+    //                                                     >
+    //                                                         <FaRegTrashAlt className="my-1 w-5 h-5" />
+    //                                                     </button>
+    //                                                 </div>
+
+    //                                                 <Droppable
+    //                                                     droppableId={columnId}
+    //                                                     type="TASK"
+    //                                                 >
+    //                                                     {(provided) => (
+    //                                                         <div
+    //                                                             {...provided.droppableProps}
+    //                                                             ref={
+    //                                                                 provided.innerRef
+    //                                                             }
+    //                                                             className={`min-h-0 p-2 border rounded ${
+    //                                                                 column.tasks
+    //                                                                     .length ===
+    //                                                                 0
+    //                                                                     ? "border-dashed border-transparent"
+    //                                                                     : "border-transparent"
+    //                                                             }`}
+    //                                                         >
+    //                                                             {column.tasks.map(
+    //                                                                 (
+    //                                                                     task,
+    //                                                                     index
+    //                                                                 ) => (
+    //                                                                     <Draggable
+    //                                                                         draggableId={
+    //                                                                             task.id
+    //                                                                         }
+    //                                                                         index={
+    //                                                                             index
+    //                                                                         }
+    //                                                                         key={
+    //                                                                             task.id
+    //                                                                         }
+    //                                                                     >
+    //                                                                         {(
+    //                                                                             provided,
+    //                                                                             snapshot
+    //                                                                         ) => (
+    //                                                                             <div
+    //                                                                                 ref={
+    //                                                                                     provided.innerRef
+    //                                                                                 }
+    //                                                                                 {...provided.draggableProps}
+    //                                                                                 {...provided.dragHandleProps}
+    //                                                                                 className={`relative bg-gray-50 p-3 rounded shadow mb-3 cursor-pointer transition-transform duration-200 ${
+    //                                                                                     snapshot.isDragging
+    //                                                                                         ? "bg-blue-100 scale-105"
+    //                                                                                         : ""
+    //                                                                                 }`}
+    //                                                                                 onClick={() =>
+    //                                                                                     openTaskModal(
+    //                                                                                         task
+    //                                                                                     )
+    //                                                                                 }
+    //                                                                             >
+    //                                                                                 <div className="flex justify-between ">
+    //                                                                                     <span className="ml-2">
+    //                                                                                         {
+    //                                                                                             task.title
+    //                                                                                         }
+    //                                                                                     </span>
+    //                                                                                     {renderPriorityIcon(
+    //                                                                                         task.priority
+    //                                                                                     )}
+    //                                                                                 </div>
+    //                                                                                 {task
+    //                                                                                     .checklist
+    //                                                                                     .length >
+    //                                                                                     0 && (
+    //                                                                                     <div className="ml-2">
+    //                                                                                         {renderChecklist(
+    //                                                                                             task.checklist
+    //                                                                                         )}
+    //                                                                                     </div>
+    //                                                                                 )}
+    //                                                                             </div>
+    //                                                                         )}
+    //                                                                     </Draggable>
+    //                                                                 )
+    //                                                             )}
+    //                                                             {
+    //                                                                 provided.placeholder
+    //                                                             }
+    //                                                         </div>
+    //                                                     )}
+    //                                                 </Droppable>
+    //                                             </div>
+    //                                         )}
+    //                                     </Draggable>
+    //                                 );
+    //                             })}
+    //                             {provided.placeholder}
+    //                             <div className="flex justify-center p-1">
+    //                                 {/* form add task card ketika dienter maka akan membuat task card  */}
+    //                                 <form autoComplete="off" className="">
+    //                                     <input
+    //                                         maxLength="20"
+    //                                         className="truncate bg-white placeholder-indigo-500 text-indigo-800 bg-indigo-50 px-2 outline-none py-1 rounded-sm ring-1 focus:ring-indigo-500"
+    //                                         type="text"
+    //                                         name="newCol"
+    //                                         placeholder="Add a new Task Card"
+    //                                     />
+    //                                 </form>
+    //                             </div>
+    //                         </div>
+    //                     )}
+    //                 </Droppable>
+    //             </DragDropContext>
+
+    //             <button
+    //                 className="fixed bottom-4 right-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full text-3xl"
+    //                 onClick={openAddTaskModal}
+    //             >
+    //                 +
+    //             </button>
+
+    //             <TaskModal
+    //                 isOpen={isTaskModalOpen}
+    //                 onClose={closeTaskModal}
+    //                 task={selectedTask}
+    //             />
+    //             <AddTaskModal
+    //                 isOpen={isAddTaskModalOpen}
+    //                 onClose={closeAddTaskModal}
+    //             />
+
+    //             <DeleteModal
+    //                 isOpen={isDeleteModalOpen}
+    //                 onClose={closeDeleteModal}
+    //                 onDelete={() => {
+    //                     console.log("Delete action triggered");
+    //                     closeDeleteModal(); // Tutup modal setelah menghapus
+    //                 }}
+    //                 title={modalTitle}
+    //             />
+    //         </div>
+    //     );
+    // }
+
+    // export default Kanban;
+    // =======
 
     return (
         <ErrorBoundary>
@@ -326,6 +556,17 @@ function Board({ boards, tasks, boardId, projectId }) {
                                                                             //    awalnya data.name tapi modalnya ga bisa di buka
                                                                         );
                                                                     }}
+                                                                >
+                                                                    <MdFormatColorFill className="my-1 w-5 h-5" />
+                                                                </button>
+
+                                                                <button
+                                                                    className="float-end text-gray-100 hover:text-gray-400 me-2"
+                                                                    onClick={() =>
+                                                                        editBoard(
+                                                                            column
+                                                                        )
+                                                                    }
                                                                 >
                                                                     <FaPen className="my-1 w-5 h-5" />
                                                                 </button>
@@ -497,6 +738,12 @@ function Board({ boards, tasks, boardId, projectId }) {
                                 }));
                             }
                         }}
+                    />
+
+                    <EditNameBoard
+                        isOpen={modalEditBoard}
+                        onClose={() => setModalEditBoard(false)}
+                        boards={dataEditBoard}
                     />
 
                     <AddMemberModal
