@@ -5,6 +5,7 @@ import { FaTimes } from "react-icons/fa";
 import InputLabel from "@/Components/InputLabel";
 import { IoMdSend } from "react-icons/io";
 import DangerButton from "@/Components/DangerButton";
+import { router } from "@inertiajs/react";
 
 const TaskModal = ({ isOpen, onClose, task }) => {
     console.log("adasd", task);
@@ -50,15 +51,32 @@ const TaskModal = ({ isOpen, onClose, task }) => {
 
     // comments
     const addComment = (e) => {
+        console.log("task loo", task);
+        console.log("newComment", newComment);
         e.preventDefault();
-        if (newComment.trim() !== "") {
-            task.comments.push({
-                id: `c${task.comments.length + 1}`,
-                name: "You",
-                text: newComment,
-            });
-            setNewComment("");
-        }
+
+        router.visit(`/comment/${task.id}`, {
+            method: "post",
+            data: {
+                comment: newComment,
+                board_id: task.id,
+            },
+            onSuccess: () => {
+                console.log("Comment added successfully", newComment);
+                setNewComment("");
+            },
+            onError: (errors) => {
+                console.log("Error adding comment", errors);
+            },
+        });
+
+        // if (newComment.trim() !== "") {
+        //     task.comments.push({
+        //         id: task.id,
+        //         text: newComment,
+        //     });
+        //     setNewComment("");
+        // }
     };
 
     return (

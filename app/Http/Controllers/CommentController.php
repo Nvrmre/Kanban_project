@@ -7,6 +7,7 @@ use App\Models\Task;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use App\Http\Resources\CommentResource;
+use App\Http\Requests\StoreCommentRequest;
 use Illuminate\Support\Facades\Auth;
 
 class CommentController extends Controller
@@ -29,25 +30,41 @@ class CommentController extends Controller
 }
 
 
+public function show($taskId)
+{
+    $task = Task::findOrFail($taskId);
+    $comments = Comment::where('tasks_id', $taskId)
+        ->with('user')
+        ->latest()
+        ->get();
+
+    return Inertia::render('Kanban/Index', [
+        'task' => $task,
+        'comments' => CommentResource::collection($comments),
+    ]);
+}
+
     /**
      * Store a new comment for a task.
      */
-    public function store(Request $request, $taskId)
+    public function store(StoreCommentRequest $request, $taskId)
 {
     $validated = $request->validate([
         'comment' => 'required|string|max:500',
     ]);
 
-    $task = Task::findOrFail($taskId);
+    // $task = Task::findOrFail($taskId);
 
     // Menyimpan komentar baru
-    $comment = $task->comments()->create([
-        'user_id' => Auth::id(),
+    $comment = Comment::create([
+        'users_id' => Auth::id(),
         'comment' => $validated['comment'],
+        'tasks_id' => $taskId,
+
     ]);
 
     // Mengembalikan response JSON dengan komentar baru
-    return response()->json(new CommentResource($comment), 201);
+    // return response()->json(new CommentResource($comment), 201);
 }
 
 

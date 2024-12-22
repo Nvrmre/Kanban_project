@@ -6,8 +6,10 @@ use Inertia\Inertia;
 use App\Models\Board;
 use App\Models\Task;
 use App\Models\Project;
+use App\Models\Comment;
 use App\Http\Requests\StoreBoardRequest;
 use App\Http\Requests\UpdateBoardRequest;
+
 
 class BoardController extends Controller
 {
@@ -19,19 +21,20 @@ class BoardController extends Controller
      {
          $projectId = $projectId ?? request('projects_id'); // Ambil dari request jika ada
          $status = request('status');
-     
+
          $boards = Board::when($projectId, fn($query) => $query->where('projects_id', $projectId))
              ->with('project')
              ->get();
-     
+
          $boardId = $boards->isNotEmpty() ? $boards->first()->id : null;
-     
-         $tasks = Task::when($boardId, fn($query) => $query->where('board_id', $boardId))
-             ->when($status, fn($query) => $query->where('status', $status))
-             ->orderBy('priority', 'desc')
-             ->paginate(10)
-             ->withQueryString();
-     
+
+         $tasks = Task::when($boardId, fn($query) => $query->whereIn('board_id', $boards->pluck('id')))
+    ->when($status, fn($query) => $query->where('status', $status))
+    ->orderBy('priority', 'desc')
+    ->paginate(10)
+    ->withQueryString();
+
+
          return inertia('Kanban/Index', [
              'tasks' => $tasks,
              'boardId' => $boardId,
@@ -41,7 +44,7 @@ class BoardController extends Controller
              'projectId' => $projectId,
          ]);
      }
-     
+
 
 
 
@@ -65,20 +68,20 @@ class BoardController extends Controller
             'name' => 'required|string|max:255',
             'projects_id' => 'required|exists:projects,id', // Validasi projects_id
         ]);
-    
+
         // Menyimpan board baru
         $board = Board::create([
             'name' => $request->name,
             'projects_id' => $request->projects_id, // Gunakan projects_id
-        
+
         ]);
-    
+
         return response()->json([
             'message' => 'Board created successfully',
             'board' => $board
         ], 201); // Status code 201: Created
     }
-    
+
 
     /**
      * Display the specified board along with its tasks.
@@ -126,17 +129,17 @@ class BoardController extends Controller
     /**
      * Remove the specified board from storage.
      */
-    public function destroy(Board $board)
+    public function destroy(Board $board )
 {
-    // Hapus semua task yang terkait dengan board ini
-    $board->tasks()->delete();
+    // Menghapus komentar yang terkait dengan tugas
+    Comment::where('task_id', $taskId)->delete();
 
-    // Hapus board itu sendiri
-    $board->delete();
+    // Menghapus tugas setelah komentar dihapus
+    Task::where('id', $taskId)->delete();
 
     // Redirect kembali ke halaman boards dengan projects_id yang sesuai
-    return redirect()->route('boards.index', ['projects_id' => $board->projects_id])
-        ->with('success', 'Board deleted successfully');
+    // return redirect()->route('boards.index', ['projects_id' => $board->projects_id])
+    //     ->with('success', 'Board deleted successfully');
 }
 
 

@@ -10,20 +10,20 @@ class Comment extends Model
     use HasFactory;
 
     protected $fillable = [
-        'user_id',
-        'task_id',
+        'users_id',
+        'tasks_id',
         'comment',
     ];
 
     // Relasi ke User
     public function user()
     {
-        return $this->belongsTo(User::class, 'user_id');
+        return $this->belongsTo(User::class, 'users_id');
     }
 
     // Relasi ke Task
     public function task()
     {
-        return $this->belongsTo(Task::class, 'task_id');
+        return $this->belongsTo(Task::class, 'tasks_id');
     }
 }

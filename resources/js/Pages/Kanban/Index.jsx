@@ -16,7 +16,9 @@ import PrimaryButton from "@/Components/PrimaryButton";
 import axios from "axios";
 import EditNameBoard from "@/Components/EditBoard";
 
-function Board({ boards, tasks, boardId, projectId }) {
+function Board({ boards, tasks, boardId, projectId, comments }) {
+    console.log("Commnets:", comments);
+    console.log("Boards:", tasks);
     const mergedTasksByBoard = boards.reduce((acc, board) => {
         acc[board.name] = {
             id: board.id,
@@ -30,8 +32,6 @@ function Board({ boards, tasks, boardId, projectId }) {
         const tasksForBoard = tasks.data.filter(
             (task) => task.board_id === board.id
         );
-        // console.log(`Tasks for board ${board}`);
-        console.log(`Tasks for board ${board.name}:`, tasksForBoard);
     });
 
     const columnOrder = boards.map((board) => board.name);
@@ -57,6 +57,8 @@ function Board({ boards, tasks, boardId, projectId }) {
 
     const onDragEnd = (result) => {
         const { source, destination, type } = result;
+        const draggableId = result.draggableId;
+        const taskId = draggableId.replace("taskId-", ""); // Removes the "asd" prefix
 
         if (!destination) return;
 
@@ -68,12 +70,22 @@ function Board({ boards, tasks, boardId, projectId }) {
         } else {
             const sourceColumn = columns[source.droppableId];
             const destinationColumn = columns[destination.droppableId];
+
             console.log("Drag result:", result);
+            console.log("Draglable id:", taskId);
             console.log("Drag start result:", source.droppableId);
             console.log("Drag end result:", destination.droppableId);
-            // router.visit(
-            //     route("boards.index", { boardId: destination.droppableId })
-            // );
+            router.visit(`/tasks/${taskId}/${destination.droppableId}`, {
+                method: "put",
+                data: { task: taskId, boardId: destination.droppableId },
+                onSuccess: (data) => {
+                    console.log("Board updated successfully", data);
+                    onClose();
+                },
+                onError: (errors) => {
+                    console.log("Validation errors:", errors);
+                },
+            });
             // Same column task reorder
             if (source.droppableId === destination.droppableId) {
                 const newTasks = [...sourceColumn.tasks];
@@ -271,9 +283,7 @@ function Board({ boards, tasks, boardId, projectId }) {
                                             return (
                                                 <Draggable
                                                     key={column.id}
-                                                    draggableId={String(
-                                                        column.id
-                                                    )}
+                                                    draggableId={column.name}
                                                     index={index}
                                                 >
                                                     {(provided) => (
@@ -361,9 +371,9 @@ function Board({ boards, tasks, boardId, projectId }) {
                                                                                     key={
                                                                                         task.id
                                                                                     }
-                                                                                    draggableId={
-                                                                                        task.name
-                                                                                    }
+                                                                                    draggableId={`taskId-${String(
+                                                                                        task.id
+                                                                                    )}`}
                                                                                     index={
                                                                                         index
                                                                                     }
@@ -467,29 +477,6 @@ function Board({ boards, tasks, boardId, projectId }) {
                             // Update columns with new task
                             const boardName = boards.find(
                                 (b) => b.id === newTask.board_id
-                            )?.name;
-                            if (boardName && columns[boardName]) {
-                                setColumns((prevColumns) => ({
-                                    ...prevColumns,
-                                    [boardName]: {
-                                        ...prevColumns[boardName],
-                                        tasks: [
-                                            ...prevColumns[boardName].tasks,
-                                            newTask,
-                                        ],
-                                    },
-                                }));
-                            }
-                        }}
-                    />
-
-                    <AddTaskModal
-                        isOpen={isAddTaskModalOpen}
-                        onClose={() => setIsAddTaskModalOpen(false)}
-                        boards={boards}
-                        onTaskCreated={(newTask) => {
-                            const boardName = boards.find(
-                                (b) => b.id === parseInt(newTask.board_id)
                             )?.name;
                             if (boardName && columns[boardName]) {
                                 setColumns((prevColumns) => ({
