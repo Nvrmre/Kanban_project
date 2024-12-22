@@ -131,15 +131,33 @@ class BoardController extends Controller
      */
     public function destroy(Board $board )
 {
-    // Menghapus komentar yang terkait dengan tugas
-    Comment::where('task_id', $taskId)->delete();
+    // // // Menghapus komentar yang terkait dengan tugas
+    // // Comment::where('task_id', $taskId)->delete();
 
-    // Menghapus tugas setelah komentar dihapus
-    Task::where('id', $taskId)->delete();
+    // // // Menghapus tugas setelah komentar dihapus
+    // // Task::where('id', $taskId)->delete();
 
-    // Redirect kembali ke halaman boards dengan projects_id yang sesuai
+    // // Redirect kembali ke halaman boards dengan projects_id yang sesuai
     // return redirect()->route('boards.index', ['projects_id' => $board->projects_id])
     //     ->with('success', 'Board deleted successfully');
+
+
+    // Hapus semua tugas yang terkait dengan board ini
+    $tasks = Task::where('board_id', $board->id)->get();
+    
+    foreach ($tasks as $task) {
+        // Hapus komentar yang terkait dengan setiap tugas
+        Comment::where('task_id', $task->id)->delete();
+        
+        // Hapus tugasnya sendiri
+        $task->delete();
+    }
+
+    // Setelah semua tugas dan komentarnya terhapus, hapus board
+    $board->delete();
+
+    return redirect()->route('boards.index', ['projects_id' => $board->projects_id])
+        ->with('success', 'Board deleted successfully');
 }
 
 

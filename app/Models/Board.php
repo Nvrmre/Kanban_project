@@ -24,8 +24,10 @@ class Board extends Model
     
 
     // Relasi board dengan tugas
+    
     public function tasks()
-    {
-        return $this->hasMany(Task::class);
-    }
+{
+    return $this->hasMany(Task::class, 'board_id')->cascadeOnDelete();
+}
+
 }
