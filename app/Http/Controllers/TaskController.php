@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Task;
 use App\Models\Board;
+use App\Models\Comment;
 use App\Http\Requests\StoreTaskRequest;
 use App\Http\Requests\UpdateTaskRequest;
 use Illuminate\Support\Facades\Auth;
@@ -25,11 +26,14 @@ class TaskController extends Controller
 
     $tasks = Task::when($boardId, fn($query) => $query->whereIn('board_id', $boards->pluck('id')))
 
-
-        // ->when($status, fn($query) => $query->where('status', $status))
         ->orderBy('priority', 'desc')
         ->paginate(10)
         ->withQueryString();
+
+      $comments = Comment::where('tasks_id', $tasks->pluck('id'))
+        ->with('user')
+        ->latest()
+        ->get();
 
     $board = Board::find($boardId);
 
@@ -38,6 +42,7 @@ class TaskController extends Controller
         'boardId' => $boardId,
         'status' => $status,
         'board' => $board,
+        'comments' => $comments,
     ]);
 }
 
@@ -66,8 +71,9 @@ class TaskController extends Controller
 
     Task::create($data);
 
-    return redirect()->route('kanban.index')
-        ->with('success', 'Task created successfully');
+
+    // return redirect()->route('kanban.index')
+    //     ->with('success', 'Task created successfully');
 }
 
     /**
@@ -96,14 +102,21 @@ class TaskController extends Controller
     /**
      * Memperbarui tugas yang ada.
      */
-    public function update(UpdateTaskRequest $request, Task $task)
-    {
-        $data = $request->validated();
-        $task->update($data);
+   public function update(UpdateTaskRequest $request, Task $task, $boardId)
+{
+    $data = $request->validated();
 
-        return redirect()->route('task.index', ['board_id' => $task->board_id])
-            ->with('success', 'Tugas berhasil diperbarui.');
+    // If board_id is provided, update it
+    if ($boardId) {
+        $task->board_id = $boardId;
     }
+
+    // Update other task data
+    $task->update($data);
+
+
+}
+
 
     /**
      * Menghapus tugas.
@@ -123,16 +136,16 @@ class TaskController extends Controller
             SUM(CASE WHEN status = "to_do" THEN 1 ELSE 0 END) AS to_do,
             SUM(CASE WHEN status = "in_progress" THEN 1 ELSE 0 END) AS in_progress
         ')->first();
-    
+
         $taskDistribution = [
             'complete' => $taskData->complete ?? 0,
             'overdue' => $taskData->to_do ?? 0
         ];
-    
+
         return Inertia::render('Laporan/Index', [
             'taskData' => $taskData,
             'taskDistribution' => $taskDistribution,
         ]);
     }
-    
+
 }

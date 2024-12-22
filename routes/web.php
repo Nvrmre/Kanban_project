@@ -21,6 +21,13 @@ Route::put('/project/{project}', [ProjectController::class, 'update'])->middlewa
 
 
 Route::resource('project', ProjectController::class);
+Route::put('/tasks/{task}/{boardId}', [TaskController::class, 'update'])->name('task.update');
+
+// For adding a comment to a specific task
+Route::post('comment/{taskId}', [CommentController::class, 'store']);
+
+Route::resource('comment', CommentController::class);
+
 
 Route::resource('task', TaskController::class);
 Route::resource('boards', BoardController::class);
