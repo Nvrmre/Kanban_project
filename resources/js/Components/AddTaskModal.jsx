@@ -3,6 +3,7 @@ import { FaTimes } from "react-icons/fa";
 import TextInput from "@/Components/TextInput";
 import InputError from "@/Components/InputError";
 import { useForm } from "@inertiajs/react";
+import PrimaryButton from "@/Components/PrimaryButton";
 
 const AddTaskModal = ({ isOpen, onClose, boards, onTaskCreated }) => {
     const { data, setData, post, errors } = useForm({
@@ -206,12 +207,13 @@ const AddTaskModal = ({ isOpen, onClose, boards, onTaskCreated }) => {
                         <InputError message={errors.description} />
                     </div>
 
-                    <button
+                    
+                    <PrimaryButton
                         type="submit"
-                        className="w-full bg-purple-500 text-white py-2 px-4 rounded hover:bg-purple-600 transition"
+                        className="w-full justify-center text-white py-2 px-4 rounded 0 transition"
                     >
                         Add Task
-                    </button>
+                    </PrimaryButton>
                 </form>
             </div>
         </div>

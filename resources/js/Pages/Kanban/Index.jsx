@@ -200,13 +200,12 @@ function Board({ boards, tasks, boardId, projectId }) {
     const renderPriorityIcon = (priority) => {
         return (
             <div
-                className={`absolute top-0 left-0 h-full w-2 rounded-lg${
-                    priority === "High"
+                className={`absolute top-0 left-0 h-full w-2 rounded-lg${priority === "High"
                         ? "bg-red-500"
                         : priority === "Medium"
-                        ? "bg-yellow-500"
-                        : "bg-green-500"
-                }`}
+                            ? "bg-yellow-500"
+                            : "bg-green-500"
+                    }`}
             ></div>
         );
     };
@@ -240,11 +239,10 @@ function Board({ boards, tasks, boardId, projectId }) {
                         {["All", "high", "medium", "low"].map((priority) => (
                             <button
                                 key={priority}
-                                className={`px-3 py-1 text-sm font-semibold ${
-                                    selectedPriority === priority
+                                className={`px-3 py-1 text-sm font-semibold ${selectedPriority === priority
                                         ? "bg-blue-500 text-white"
                                         : "bg-gray-200 text-gray-700"
-                                } rounded`}
+                                    } rounded`}
                                 onClick={() => handlePriorityClick(priority)}
                             >
                                 {priority}
@@ -271,10 +269,10 @@ function Board({ boards, tasks, boardId, projectId }) {
                                                 selectedPriority === "All"
                                                     ? column.tasks
                                                     : column.tasks.filter(
-                                                          (task) =>
-                                                              task.priority ==
-                                                              selectedPriority
-                                                      );
+                                                        (task) =>
+                                                            task.priority ==
+                                                            selectedPriority
+                                                    );
 
                                             return (
                                                 <Draggable
@@ -296,8 +294,8 @@ function Board({ boards, tasks, boardId, projectId }) {
                                                                 style={{
                                                                     backgroundColor:
                                                                         columnColors[
-                                                                            column
-                                                                                .id
+                                                                        column
+                                                                            .id
                                                                         ] ||
                                                                         "#3b82f6", // Warna default biru
                                                                 }}

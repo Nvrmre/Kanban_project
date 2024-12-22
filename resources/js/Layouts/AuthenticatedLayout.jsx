@@ -5,7 +5,6 @@ import ResponsiveNavLink from "@/Components/ResponsiveNavLink";
 import { Link, usePage } from "@inertiajs/react";
 import { useState } from "react";
 import { FaUser ,FaRegUser, FaHome } from "react-icons/fa";
-import { PiKanbanFill } from "react-icons/pi";
 import { HiDocumentReport } from "react-icons/hi";
 import { IoSettingsSharp, IoLogOutSharp  } from "react-icons/io5";
 
@@ -21,12 +20,19 @@ export default function AuthenticatedLayout({ header, children }) {
             <nav className="border-b border-gray-100 bg-blue-500 dark:border-gray-700 dark:bg-gray-800">
                 <div className="text-gray-100 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                     <div className="flex h-16 justify-between">
-                        <div className="flex shrink-0 items-center ">
-                                <Link href="/">
-                                    <ApplicationLogo className="block h-9 w-auto fill-current text-gray-100" />
-                                </Link>
-                                <h1 className="flex text-2xl font-bold">KANBAN</h1>  {/* logo */}
-                                   
+                        <div className="flex shrink-0 ">
+                            <NavLink
+                                // href={route("kanban.index")}
+                                active={route().current("kanban.index")}
+                                className={
+                                    route().current("kanban.index")
+                                        ? "active-class rounded-lg ring-2 ring-offset-2 "
+                                        : "cursor-default"
+                                }
+                            >
+                                <ApplicationLogo className="block h-9 w-auto fill-current text-gray-100" />
+                                    <h1 className="flex text-2xl font-bold">KANBAN</h1>  {/* logo */}
+                            </NavLink>       
                         </div>
 
                         <div className="flex ">
@@ -38,13 +44,7 @@ export default function AuthenticatedLayout({ header, children }) {
                                     <FaHome className="text-lg me-2"/>
                                     Dashboard
                                 </NavLink>
-                                <NavLink
-                                    href={route("kanban.index")}
-                                    active={route().current("kanban.index")}
-                                >
-                                    <PiKanbanFill className="text-lg me-2" /> 
-                                    Kanban
-                                </NavLink>
+
                                 <NavLink
                                     href={route("laporan.index")}
                                     active={route().current("laporan.index")}
@@ -164,14 +164,6 @@ export default function AuthenticatedLayout({ header, children }) {
                         >
                             <FaHome className="me-2"/>
                             Dashboard
-                        </ResponsiveNavLink>
-
-                        <ResponsiveNavLink
-                            href={route("kanban.index")}
-                            active={route().current("kanban.index")}
-                        >
-                            <PiKanbanFill className="text-lg me-2" /> 
-                            Kanban
                         </ResponsiveNavLink>
 
                         <ResponsiveNavLink

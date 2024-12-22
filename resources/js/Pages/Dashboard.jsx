@@ -220,7 +220,7 @@ export default function Dashboard({ projects, session }) {
                                                     <p className="text-sm text-gray-600 truncate max-w-full">
                                                         {project.description}
                                                     </p>
-                                                    <div className="flex justify-between text-xs text-gray-500">
+                                                    <div className="flex justify-between mt-0.5 text-xs text-gray-500">
                                                         <p>
                                                             Date Added:{" "}
                                                             {project.dateAdded}
@@ -232,18 +232,17 @@ export default function Dashboard({ projects, session }) {
                                                             }
                                                         </p>
                                                     </div>
-                                                    <p className="text-sm text-gray-600">
+                                                    <p className="mt-0.5 text-sm text-gray-600">
                                                         Click to view
                                                     </p>
                                                 </div>
                                             </Link>
 
-                                            <div className="ml-2 flex-shrink-0">
+                                            <div className="flex-shrink-0 space-x-2">
                                                 <button
                                                     onClick={() =>
                                                         handleEdit(project)
                                                     }
-                                                    className="mr-2"
                                                 >
                                                     <FaEdit className="text-blue-500 hover:text-blue-700" />
                                                 </button>
@@ -256,7 +255,7 @@ export default function Dashboard({ projects, session }) {
                                                     }
                                                     className="text-red-600 hover:text-red-900"
                                                 >
-                                                    <FaTrash className="h-5 w-5" />
+                                                    <FaTrash className="text-red-500 hover:text-red-700" />
                                                 </button>
                                             </div>
                                         </div>

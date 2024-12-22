@@ -32,9 +32,7 @@ const AddMemberModal = ({ isOpen, onClose }) => {
 
     return (
         <div className="fixed inset-0 bg-black bg-opacity-40 flex justify-center items-center z-50">
-            {/* Modal Container */}
             <div className="bg-white w-full max-w-lg p-6 rounded-lg shadow-lg relative">
-                {/* Close Button */}
                 <button
                     className="absolute top-4 right-4 text-gray-500 hover:text-gray-700"
                     onClick={onClose}
@@ -42,14 +40,12 @@ const AddMemberModal = ({ isOpen, onClose }) => {
                     <FaTimes className="text-2xl" />
                 </button>
 
-                {/* Modal Title */}
                 <h2 className="text-xl font-bold text-gray-800 mb-4">
                     Share Project
                 </h2>
 
                 {/* Form */}
                 <form className="space-y-4" onSubmit={handleAddMember}>
-                    {/* Title */}
                     <div className="flex flex-row space-x-1">
                         <TextInput
                             type="text"
