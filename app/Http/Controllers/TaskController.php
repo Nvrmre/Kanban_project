@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+
 use App\Models\Task;
 use App\Models\Board;
 use App\Http\Requests\StoreTaskRequest;
@@ -15,25 +16,31 @@ class TaskController extends Controller
      * Menampilkan daftar tugas berdasarkan board dan status.
      */
     public function index()
-    {
-        $boardId = request('board_id');
-        $status = request('status');
+{
+    $boardId = request('board_id');
+    $status = request('status');
 
-        $tasks = Task::when($boardId, fn($query) => $query->where('board_id', 2))
-            // ->when($status, fn($query) => $query->where('status', $status))
-            ->orderBy('priority', 'desc')
-            ->paginate(10)
-            ->withQueryString();
+    // Get boards based on some condition (e.g., project or board ID)
+    $boards = Board::when($boardId, fn($query) => $query->where('id', $boardId))->get();
 
-        $board = Board::find($boardId);
+    $tasks = Task::when($boardId, fn($query) => $query->whereIn('board_id', $boards->pluck('id')))
 
-        return inertia('Kanban/Index', [
-        'tasks' => $tasks,  // Pass the tasks data to the Inertia view
-        'boardId' => $boardId,  // Optionally pass the boardId filter to the frontend
-        'status' => $status,  // Optionally pass the status filter to the frontend
-        'board' => $board,  // Pass the board data to the Inertia view
+
+        // ->when($status, fn($query) => $query->where('status', $status))
+        ->orderBy('priority', 'desc')
+        ->paginate(10)
+        ->withQueryString();
+
+    $board = Board::find($boardId);
+
+    return inertia('Kanban/Index', [
+        'tasks' => $tasks,
+        'boardId' => $boardId,
+        'status' => $status,
+        'board' => $board,
     ]);
-    }
+}
+
 
     /**
      * Menampilkan form untuk membuat tugas baru di board tertentu.

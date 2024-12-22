@@ -26,11 +26,12 @@ class BoardController extends Controller
      
          $boardId = $boards->isNotEmpty() ? $boards->first()->id : null;
      
-         $tasks = Task::when($boardId, fn($query) => $query->where('board_id', $boardId))
-             ->when($status, fn($query) => $query->where('status', $status))
-             ->orderBy('priority', 'desc')
-             ->paginate(10)
-             ->withQueryString();
+         $tasks = Task::when($boardId, fn($query) => $query->whereIn('board_id', $boards->pluck('id')))
+    ->when($status, fn($query) => $query->where('status', $status))
+    ->orderBy('priority', 'desc')
+    ->paginate(10)
+    ->withQueryString();
+
      
          return inertia('Kanban/Index', [
              'tasks' => $tasks,
