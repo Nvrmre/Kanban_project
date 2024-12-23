@@ -9,7 +9,14 @@ use App\Http\Controllers\CommentController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
-Route::redirect('/', '/dashboard');
+Route::get('/', function () {
+    // Jika user sudah login, arahkan ke dashboard
+    if (auth()->check()) {
+        return redirect()->route('dashboard');
+    }
+    // Jika user belum login, tampilkan halaman landing
+    return Inertia::render('Welcome');
+})->name('Welcome');
 
 
 Route::middleware(['auth', 'verified'])->group(function () {
