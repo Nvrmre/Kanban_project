@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Models\Comment;
 use App\Models\Task;
-use Illuminate\Http\Request;
 use Inertia\Inertia;
 use App\Http\Resources\CommentResource;
 use App\Http\Requests\StoreCommentRequest;
@@ -17,15 +16,13 @@ class CommentController extends Controller
      */
     public function index($taskId)
 {
-    $task = Task::findOrFail($taskId);
-    $comments = Comment::where('task_id', $taskId)
-        ->with('user')
-        ->latest()
-        ->get();
+    $task = Task::with(['comments.user', 'board'])
+        ->whereHas('board', fn($query) => $query->where('id', request('board_id')))
+        ->findOrFail($taskId);
 
     return Inertia::render('Kanban/Index', [
         'task' => $task,
-        'comments' => CommentResource::collection($comments),
+        'comments' => CommentResource::collection($task->comments),
     ]);
 }
 
@@ -49,39 +46,39 @@ public function show($taskId)
      */
     public function store(StoreCommentRequest $request, $taskId)
 {
-    $validated = $request->validate([
-        'comment' => 'required|string|max:500',
-    ]);
+    $task = Task::whereHas('board', fn($query) => $query->where('id', request('board_id')))
+        ->findOrFail($taskId);
 
-    // $task = Task::findOrFail($taskId);
+    $validated = $request->validated();
 
-    // Menyimpan komentar baru
-    $comment = Comment::create([
+    $comment = $task->comments()->create([
         'users_id' => Auth::id(),
         'comment' => $validated['comment'],
-        'tasks_id' => $taskId,
-
     ]);
 
-    // Mengembalikan response JSON dengan komentar baru
-    // return response()->json(new CommentResource($comment), 201);
+    return back()->with('success', 'Comment added successfully.');
 }
+
 
 
     /**
      * Delete a comment.
      */
     public function destroy($id)
-    {
-        $comment = Comment::findOrFail($id);
+{
+    $comment = Comment::with('task.board')->findOrFail($id);
 
-        // Ensure the user can only delete their own comments
-        if (Auth::id() !== $comment->user_id) {
-            abort(403, 'Unauthorized to delete this comment.');
-        }
-
-        $comment->delete();
-
-        return back()->with('success', 'Comment deleted successfully.');
+    if ($comment->task->board->id !== request('board_id')) {
+        abort(403, 'Unauthorized access.');
     }
+
+    if (Auth::id() !== $comment->users_id) {
+        abort(403, 'Unauthorized to delete this comment.');
+    }
+
+    $comment->delete();
+
+    return back()->with('success', 'Comment deleted successfully.');
+}
+
 }
