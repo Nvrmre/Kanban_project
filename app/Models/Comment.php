@@ -15,15 +15,15 @@ class Comment extends Model
         'comment',
     ];
 
-    // Relasi ke User
     public function user()
     {
-        return $this->belongsTo(User::class, 'users_id');
+        return $this->belongsTo(User::class, 'user_id');
     }
-
-    // Relasi ke Task
+    
     public function task()
     {
-        return $this->belongsTo(Task::class, 'tasks_id');
+        return $this->belongsTo(Task::class, 'task_id');
     }
+    
+    
 }

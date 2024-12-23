@@ -11,7 +11,7 @@ class StoreCommentRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return true;
+        return true; // Anda bisa menambahkan logika otorisasi jika perlu
     }
 
     /**
@@ -22,7 +22,7 @@ class StoreCommentRequest extends FormRequest
     public function rules(): array
     {
         return [
-
+            'comment' => ['required', 'string', 'max:1000'], // Aturan untuk komentar: wajib, string, dan maksimal 1000 karakter
         ];
     }
 }

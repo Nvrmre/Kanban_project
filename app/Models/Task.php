@@ -48,9 +48,11 @@ class Task extends Model
         return $this->belongsTo(Board::class);
     }
 
-     public function comments()
-    {
-        return $this->hasMany(Comment::class);
-    }
+    
+    public function comments()
+{
+    return $this->hasMany(Comment::class, 'tasks_id');
+}
+
 
 }
