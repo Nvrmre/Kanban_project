@@ -6,7 +6,6 @@ import { useForm } from "@inertiajs/react";
 import { router } from "@inertiajs/react";
 
 const EditBoard = ({ isOpen, onClose, boards }) => {
-    console.log("Boards:2", boards.id);
     const { data, setData, post, errors } = useForm({
         name: "",
     });

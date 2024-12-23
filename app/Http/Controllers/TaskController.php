@@ -105,7 +105,7 @@ class TaskController extends Controller
    public function update(UpdateTaskRequest $request, Task $task, $boardId)
 {
     $data = $request->validated();
-    
+
     // If board_id is provided, update it
     if ($boardId) {
         $task->board_id = $boardId;
@@ -126,8 +126,8 @@ class TaskController extends Controller
         $boardId = $task->board_id; // Simpan board ID untuk redirect
         $task->delete();
 
-        return redirect()->route('task.index', ['board_id' => $boardId])
-            ->with('success', 'Tugas berhasil dihapus.');
+        // return redirect()->route('task.index', ['board_id' => $boardId])
+        //     ->with('success', 'Tugas berhasil dihapus.');
     }
 
     public function report() {

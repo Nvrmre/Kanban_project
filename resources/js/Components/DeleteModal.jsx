@@ -1,38 +1,54 @@
 import { Transition } from "@headlessui/react";
-import { router } from '@inertiajs/react';
+import { router } from "@inertiajs/react";
 
-export default function DeleteModal({ isOpen, onClose, onDelete, title, boardId, projectId }) {
-    
-        const handleDelete = () => {
-            if (boardId) {
-                router.visit(`/boards/${boardId}`, {
-                    method: "delete",
-                    preserveState: true,
-                    onSuccess: () => {
-                        onClose();
-                        window.location.reload();
-                    },
-                    onError: () => {
-                        console.log("Error deleting board");
-                    },
-                });
-            } else if (projectId) {
-                router.visit(`/project/${projectId}`, {
-                    method: "delete",
-                    preserveState: true,
-                    onSuccess: () => {
-                        onClose();
-                        window.location.reload();
-                    },
-                    onError: () => {
-                        console.log("Error deleting project");
-                    },
-                });
-            }
-        };
-    
-    
-    
+export default function DeleteModal({
+    isOpen,
+    onClose,
+    onDelete,
+    title,
+    boardId,
+    projectId,
+    taskId,
+}) {
+    const handleDelete = () => {
+        if (taskId) {
+            router.visit(`/task/${taskId}`, {
+                method: "delete",
+                preserveState: true,
+                onSuccess: () => {
+                    onClose();
+                    window.location.reload();
+                },
+                onError: () => {
+                    console.log("Error deleting task");
+                },
+            });
+        } else if (boardId) {
+            router.visit(`/boards/${boardId}`, {
+                method: "delete",
+                preserveState: true,
+                onSuccess: () => {
+                    onClose();
+                    window.location.reload();
+                },
+                onError: () => {
+                    console.log("Error deleting board");
+                },
+            });
+        } else if (projectId) {
+            router.visit(`/project/${projectId}`, {
+                method: "delete",
+                preserveState: true,
+                onSuccess: () => {
+                    onClose();
+                    window.location.reload();
+                },
+                onError: () => {
+                    console.log("Error deleting project");
+                },
+            });
+        }
+    };
 
     if (!isOpen) return null;
 
@@ -74,5 +90,4 @@ export default function DeleteModal({ isOpen, onClose, onDelete, title, boardId,
             </div>
         </Transition>
     );
-
 }

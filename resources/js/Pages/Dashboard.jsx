@@ -36,7 +36,6 @@ export default function Dashboard({ projects, session }) {
         setModalTitle("Delete Project");
         setIsDeleteModalOpen(true);
     };
-    
 
     const closeDeleteModal = () => {
         setIsDeleteModalOpen(false);
@@ -89,18 +88,17 @@ export default function Dashboard({ projects, session }) {
     };
 
     const handleDelete = () => {
-        console.log('Handling delete for project:', projectId);
-        
+        console.log("Handling delete for project:", projectId);
+
         router.visit(`/project/${projectId}`, {
             method: "delete",
             preserveState: true,
             onSuccess: () => {
                 onClose();
                 window.location.reload();
-            }
+            },
         });
     };
-    
 
     const handlePageChange = (page) => {
         router.visit(`/dashboard?page=${page}`, {
@@ -248,7 +246,7 @@ export default function Dashboard({ projects, session }) {
                                                 </button>
                                                 <button
                                                     onClick={() =>
-                                                       // console.log('Clicking project:', project.id)
+                                                        // console.log('Clicking project:', project.id)
                                                         openDeleteModal(
                                                             project.id
                                                         )
@@ -283,4 +281,3 @@ export default function Dashboard({ projects, session }) {
         </>
     );
 }
-
