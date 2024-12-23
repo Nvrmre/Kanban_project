@@ -77,7 +77,7 @@ function Board({ boards, tasks, boardId, projectId, comments }) {
             console.log("Drag end result:", destination.droppableId);
             router.visit(`/tasks/${taskId}/${destination.droppableId}`, {
                 method: "put",
-                data: { task: taskId, boardId: destination.droppableId },
+                data: { task: taskId },
                 onSuccess: (data) => {
                     console.log("Board updated successfully", data);
                     onClose();

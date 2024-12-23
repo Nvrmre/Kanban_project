@@ -8,6 +8,7 @@ use App\Models\Board;
 use App\Models\Comment;
 use App\Http\Requests\StoreTaskRequest;
 use App\Http\Requests\UpdateTaskRequest;
+use App\Http\Requests\UpdateTaskBoardRequest;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 
@@ -102,7 +103,22 @@ class TaskController extends Controller
     /**
      * Memperbarui tugas yang ada.
      */
-   public function update(UpdateTaskRequest $request, Task $task, $boardId)
+   public function update(UpdateTaskRequest $request, $id  )
+{
+
+    $validatedData = $request->validated();
+     dd($request->all());
+
+    // dd($validatedData);
+
+
+    // // Update the task with the validated data
+    // $task->update($validatedData);
+
+
+}
+
+ public function update_board(UpdateTaskBoardRequest $request, Task $task, $boardId)
 {
     $data = $request->validated();
 
