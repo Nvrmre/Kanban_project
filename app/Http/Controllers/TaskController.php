@@ -105,7 +105,7 @@ class TaskController extends Controller
    public function update(UpdateTaskRequest $request, Task $task, $boardId)
 {
     $data = $request->validated();
-
+    
     // If board_id is provided, update it
     if ($boardId) {
         $task->board_id = $boardId;

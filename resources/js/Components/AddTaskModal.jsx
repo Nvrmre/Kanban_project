@@ -20,7 +20,7 @@ const AddTaskModal = ({ isOpen, onClose, boards, onTaskCreated }) => {
         e.preventDefault();
         post(route("task.store"), {
             onSuccess: (response) => {
-                console.log('Complete task data:', data);
+                console.log("Complete task data:", data);
                 // Pass the complete form data including board_id
                 onTaskCreated({
                     id: Date.now(), // Temporary ID for new task
@@ -29,7 +29,7 @@ const AddTaskModal = ({ isOpen, onClose, boards, onTaskCreated }) => {
                     priority: data.priority,
                     status: data.status,
                     description: data.description,
-                    due_date: data.due_date
+                    due_date: data.due_date,
                 });
                 onClose();
             },
@@ -38,7 +38,6 @@ const AddTaskModal = ({ isOpen, onClose, boards, onTaskCreated }) => {
             },
         });
     };
-    
 
     if (!isOpen) return null;
 
@@ -207,7 +206,6 @@ const AddTaskModal = ({ isOpen, onClose, boards, onTaskCreated }) => {
                         <InputError message={errors.description} />
                     </div>
 
-                    
                     <PrimaryButton
                         type="submit"
                         className="w-full justify-center text-white py-2 px-4 rounded 0 transition"
