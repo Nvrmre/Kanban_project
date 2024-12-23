@@ -120,10 +120,10 @@ class BoardController extends Controller
     public function update(UpdateBoardRequest $request, Board $board)
     {
         // Pastikan untuk memperbarui board dengan projects_id yang benar
+
         $board->update($request->validated());
 
-        return redirect()->route('boards.index', ['projects_id' => $board->projects_id]) // Gunakan projects_id
-            ->with('success', 'Board updated successfully.');
+
     }
 
     /**
@@ -144,11 +144,11 @@ class BoardController extends Controller
 
     // Hapus semua tugas yang terkait dengan board ini
     $tasks = Task::where('board_id', $board->id)->get();
-    
+
     foreach ($tasks as $task) {
         // Hapus komentar yang terkait dengan setiap tugas
         Comment::where('task_id', $task->id)->delete();
-        
+
         // Hapus tugasnya sendiri
         $task->delete();
     }

@@ -22,13 +22,7 @@ class UpdateTaskBoardRequest extends FormRequest
     public function rules(): array
     {
         return [
-  'name' => ['required', 'string', 'max:255'],
-        'description' => ['required', 'string'],
-        'priority' => ['required', 'string', 'in:low,medium,high'],
-        'status' => ['required', 'string', 'in:to_do,in_progress,done'],
-        'assigned_id' => ['required', 'integer', 'exists:users,id'],
-        'board_id' => ['required', 'integer', 'exists:boards,id'],
-        'due_date' => ['nullable', 'date'],
+
         ];
     }
 }

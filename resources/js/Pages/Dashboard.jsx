@@ -49,7 +49,7 @@ export default function Dashboard({ projects, session }) {
 
     const handleCreateOrEditProject = (e) => {
         e.preventDefault();
-        console.log("data:", data);
+        console.log("data:", currentProjectId);
         if (isEditing) {
             router.put(
                 `/project/${currentProjectId}`,

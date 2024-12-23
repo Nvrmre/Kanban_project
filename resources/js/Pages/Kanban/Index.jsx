@@ -18,7 +18,7 @@ import EditNameBoard from "@/Components/EditBoard";
 
 function Board({ boards, tasks, boardId, projectId, comments }) {
     console.log("Commnets:", comments);
-    console.log("Boards:", tasks);
+    console.log("Baruuuu:", tasks);
     const mergedTasksByBoard = boards.reduce((acc, board) => {
         acc[board.name] = {
             id: board.id,
@@ -128,6 +128,7 @@ function Board({ boards, tasks, boardId, projectId, comments }) {
 
     // Task Modal Handlers
     const openTaskModal = (task) => {
+        console.log("Taske", task);
         setSelectedTask(task);
         setIsTaskModalOpen(true);
     };

@@ -101,12 +101,13 @@ public function show($id)
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateProjectRequest $request, Project $project) 
+    public function update(UpdateProjectRequest $request, Project $project)
     {
 
-         $this->authorize('update', Project::class);
+
 
         // Validasi dan update proyek
+
         $validated = $request->validated();
         $validated['updated_by'] = Auth::id(); // Menambahkan updated_by
 
@@ -114,7 +115,7 @@ public function show($id)
 
 
 
-        return redirect()->route('projects.index')->with('success', 'Project updated successfully.');
+
 
     }
 
@@ -124,20 +125,20 @@ public function show($id)
         public function destroy($id)
         {
             $project = Project::findOrFail($id);
-            
+
             // Delete related tasks first
             foreach ($project->boards as $board) {
                 $board->tasks()->delete();
             }
-            
+
             // Delete related boards
             $project->boards()->delete();
-            
+
             // Finally delete the project
             $project->delete();
-        
+
             return redirect()->route('dashboard')
                 ->with('success', 'Project deleted successfully.');
         }
-        
+
 }

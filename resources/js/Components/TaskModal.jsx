@@ -4,7 +4,7 @@ import DeleteModal from "@/Components/DeleteModal";
 import { FaTimes, FaSave, FaTrash, FaEdit } from "react-icons/fa";
 import InputLabel from "@/Components/InputLabel";
 import { IoMdSend } from "react-icons/io";
-import { router, useForm } from "@inertiajs/react";
+import { router } from "@inertiajs/react";
 import DangerButton from "@/Components/DangerButton";
 import PrimaryButton from "@/Components/PrimaryButton";
 
@@ -13,7 +13,7 @@ const TaskModal = ({ isOpen, onClose, task }) => {
     // Add a guard clause if task is null
     if (!isOpen || !task) return null;
 
-    const { data, setData, post, errors } = useForm({
+    const [data, setData] = useState({
         name: "",
         description: "",
         due_date: "",
@@ -21,16 +21,20 @@ const TaskModal = ({ isOpen, onClose, task }) => {
         status: "",
         created_at: "",
     });
+
+    // Update state when task prop changes
     useEffect(() => {
         if (task) {
-            setData("name", task?.name || ""); // Set the initial value for 'name'
-            setData("description", task?.description || ""); // Set the initial value for 'description'
-            setData("due_date", task?.due_date || ""); // Set the initial value for 'due_date'
-            setData("priority", task?.priority || ""); // Set the initial value for 'priority'
-            setData("status", task?.status || ""); // Set the initial value for 'status'
-            setData("created_at", task?.created_at || ""); // Set the initial value for 'created_at'
+            setData({
+                name: task.name || "",
+                description: task.description || "",
+                due_date: task.due_date || "",
+                priority: task.priority || "",
+                status: task.status || "",
+                created_at: task.created_at || "",
+            });
         }
-    }, [isOpen]);
+    }, [isOpen, task]);
 
     const [checklist, setChecklist] = useState(task.checklist || []);
     const [newTask, setNewTask] = useState("");
@@ -101,16 +105,10 @@ const TaskModal = ({ isOpen, onClose, task }) => {
 
     const handleEdit = (e) => {
         e.preventDefault();
-        console.log("Complete task data:", data);
-        router.visit(`/task/${task.id}`, {
-            method: "put",
-            data: {
-                name: "Task Name", // Ini hardcoded
-                description: "Task Description", // Ini hardcoded
-                due_date: "2024-12-31", // Ini hardcoded
-                priority: "High", // Ini hardcoded
-                status: "In Progress", // Ini hardcoded
-            },
+
+        router.put(`/task/${task.id}`, {
+            ...data,
+
             onSuccess: () => {
                 console.log("Task updated successfully", task);
                 onClose();
@@ -119,6 +117,8 @@ const TaskModal = ({ isOpen, onClose, task }) => {
                 console.log("Error updating task", errors);
             },
         });
+        onClose();
+        window.location.reload();
     };
 
     return (
@@ -143,210 +143,199 @@ const TaskModal = ({ isOpen, onClose, task }) => {
                             {data.name}
                         </p>
                     </div>
-                    <form className="space-y-4" onSubmit={handleEdit}>
-                        {/* Due Date */}
-                        <div>
-                            <h2 className="text-lg font-semibold text-gray-700">
-                                DUE DATE:
-                            </h2>
-                            <input
-                                type="date"
-                                value={data.due_date || ""}
-                                onChange={(e) =>
-                                    setData((prevData) => ({
-                                        ...prevData,
-                                        due_date: e.target.value,
-                                    }))
-                                }
-                                className="w-25 border border-gray-300 rounded p-2 mt-1"
-                            />
-                        </div>
 
-                        {/* Asignasi tugas kepada anggota tim */}
-                        <div>
-                            <h2 className="text-lg font-semibold text-gray-700">
-                                Assign Task to Team Member:
-                            </h2>
-                            <select className="w-full border border-gray-300 rounded p-2 mt-1">
-                                {/* SEMENTARA PAKE JS NANTI BISA DI GANTI DROPWODN BIASA DI PANGGIL NAMA ATO ID MEMBER */}
-                                {/* {members.map((member, index) => (
+                    {/* Due Date */}
+                    <div>
+                        <h2 className="text-lg font-semibold text-gray-700">
+                            DUE DATE:
+                        </h2>
+                        <input
+                            type="date"
+                            value={data.due_date || ""}
+                            onChange={(e) =>
+                                setData({ ...data, due_date: e.target.value })
+                            }
+                            className="w-25 border border-gray-300 rounded p-2 mt-1"
+                        />
+                    </div>
+
+                    {/* Asignasi tugas kepada anggota tim */}
+                    <div>
+                        <h2 className="text-lg font-semibold text-gray-700">
+                            Assign Task to Team Member:
+                        </h2>
+                        <select className="w-full border border-gray-300 rounded p-2 mt-1">
+                            {/* SEMENTARA PAKE JS NANTI BISA DI GANTI DROPWODN BIASA DI PANGGIL NAMA ATO ID MEMBER */}
+                            {/* {members.map((member, index) => (
                                     <option key={index} value={member.name}>
                                         {member.name}
                                     </option>
                                 ))} */}
-                            </select>
-                        </div>
+                        </select>
+                    </div>
 
-                        {/* Checklist */}
-                        <div>
-                            <h2 className="text-lg font-semibold text-gray-700">
-                                CHECKLIST:
-                            </h2>
-                            <DragDropContext onDragEnd={handleDragEnd}>
-                                <Droppable droppableId="checklist">
-                                    {(provided) => (
-                                        <div
-                                            ref={provided.innerRef}
-                                            {...provided.droppableProps}
-                                            className="mt-2 space-y-2"
-                                        >
-                                            {checklist.map((item, index) => (
-                                                <Draggable
-                                                    key={index}
-                                                    draggableId={`item-${index}`}
-                                                    index={index}
-                                                >
-                                                    {(provided) => (
-                                                        <div
-                                                            ref={
-                                                                provided.innerRef
-                                                            }
-                                                            {...provided.draggableProps}
-                                                            {...provided.dragHandleProps}
-                                                            className="flex items-center justify-between bg-gray-100 p-2 rounded cursor-move"
-                                                        >
-                                                            <div className="flex items-center">
-                                                                <input
-                                                                    type="checkbox"
-                                                                    checked={
-                                                                        item.completed
-                                                                    }
-                                                                    onChange={() =>
-                                                                        toggleComplete(
-                                                                            index
-                                                                        )
-                                                                    }
-                                                                    className="mr-2"
-                                                                />
-                                                                <span
-                                                                    className={
-                                                                        item.completed
-                                                                            ? "line-through text-gray-500"
-                                                                            : ""
-                                                                    }
-                                                                >
-                                                                    {item.text}
-                                                                </span>
-                                                            </div>
-                                                            <button
-                                                                onClick={() =>
-                                                                    deleteItem(
+                    {/* Checklist */}
+                    <div>
+                        <h2 className="text-lg font-semibold text-gray-700">
+                            CHECKLIST:
+                        </h2>
+                        <DragDropContext onDragEnd={handleDragEnd}>
+                            <Droppable droppableId="checklist">
+                                {(provided) => (
+                                    <div
+                                        ref={provided.innerRef}
+                                        {...provided.droppableProps}
+                                        className="mt-2 space-y-2"
+                                    >
+                                        {checklist.map((item, index) => (
+                                            <Draggable
+                                                key={index}
+                                                draggableId={`item-${index}`}
+                                                index={index}
+                                            >
+                                                {(provided) => (
+                                                    <div
+                                                        ref={provided.innerRef}
+                                                        {...provided.draggableProps}
+                                                        {...provided.dragHandleProps}
+                                                        className="flex items-center justify-between bg-gray-100 p-2 rounded cursor-move"
+                                                    >
+                                                        <div className="flex items-center">
+                                                            <input
+                                                                type="checkbox"
+                                                                checked={
+                                                                    item.completed
+                                                                }
+                                                                onChange={() =>
+                                                                    toggleComplete(
                                                                         index
                                                                     )
                                                                 }
-                                                                className="text-red-500 hover:text-red-700"
+                                                                className="mr-2"
+                                                            />
+                                                            <span
+                                                                className={
+                                                                    item.completed
+                                                                        ? "line-through text-gray-500"
+                                                                        : ""
+                                                                }
                                                             >
-                                                                <FaTimes className="text-2xl" />
-                                                            </button>
+                                                                {item.text}
+                                                            </span>
                                                         </div>
-                                                    )}
-                                                </Draggable>
-                                            ))}
-                                            {provided.placeholder}
-                                        </div>
-                                    )}
-                                </Droppable>
-                            </DragDropContext>
-                            <input
-                                type="text"
-                                placeholder="Add a sub task"
-                                value={newTask}
-                                onChange={(e) => setNewTask(e.target.value)}
-                                onKeyDown={addChecklistItem}
-                                className="w-full border border-gray-300 rounded p-2 mt-2"
-                            />
-                        </div>
+                                                        <button
+                                                            onClick={() =>
+                                                                deleteItem(
+                                                                    index
+                                                                )
+                                                            }
+                                                            className="text-red-500 hover:text-red-700"
+                                                        >
+                                                            <FaTimes className="text-2xl" />
+                                                        </button>
+                                                    </div>
+                                                )}
+                                            </Draggable>
+                                        ))}
+                                        {provided.placeholder}
+                                    </div>
+                                )}
+                            </Droppable>
+                        </DragDropContext>
+                        <input
+                            type="text"
+                            placeholder="Add a sub task"
+                            value={newTask}
+                            onChange={(e) => setNewTask(e.target.value)}
+                            onKeyDown={addChecklistItem}
+                            className="w-full border border-gray-300 rounded p-2 mt-2"
+                        />
+                    </div>
 
-                        {/* Description */}
+                    {/* Description */}
+                    <div>
+                        <h2 className="text-lg font-semibold text-gray-700">
+                            DESCRIPTION:
+                        </h2>
+                        <textarea
+                            className="w-full border border-gray-300 rounded p-2 mt-1"
+                            rows="3"
+                            defaultValue={data.description}
+                            onChange={(e) =>
+                                setData({
+                                    ...data,
+                                    description: e.target.value,
+                                })
+                            }
+                        ></textarea>
+                    </div>
+
+                    {/* Additional Info */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
                             <h2 className="text-lg font-semibold text-gray-700">
-                                DESCRIPTION:
+                                PRIORITY:
                             </h2>
-                            <textarea
-                                className="w-full border border-gray-300 rounded p-2 mt-1"
-                                rows="3"
-                                defaultValue={data.description}
+                            <select
+                                value={data.priority}
+                                defaultChecked={data.priority}
                                 onChange={(e) =>
-                                    setData((prevData) => ({
-                                        ...prevData,
-                                        description: e.target.value,
-                                    }))
+                                    setData({
+                                        ...data,
+                                        priority: e.target.value,
+                                    })
                                 }
-                            ></textarea>
+                                className="w-full border border-gray-300 rounded p-2 mt-1"
+                            >
+                                <option value="high">High</option>
+                                <option value="medium">Medium</option>
+                                <option value="low">Low</option>
+                            </select>
                         </div>
-
-                        {/* Additional Info */}
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div>
-                                <h2 className="text-lg font-semibold text-gray-700">
-                                    PRIORITY:
-                                </h2>
-                                <select
-                                    value={data.priority}
-                                    defaultChecked={data.priority}
-                                    onChange={(e) =>
-                                        setData((prevData) => ({
-                                            ...prevData,
-                                            priority: e.target.value,
-                                        }))
-                                    }
-                                    className="w-full border border-gray-300 rounded p-2 mt-1"
-                                >
-                                    <option value="high">High</option>
-                                    <option value="medium">Medium</option>
-                                    <option value="low">Low</option>
-                                </select>
-                            </div>
-                            <div>
-                                <h2 className="text-lg font-semibold text-gray-700">
-                                    STATUS:
-                                </h2>
-                                <select
-                                    value={data.status}
-                                    defaultChecked={data.status}
-                                    onChange={(e) =>
-                                        setData((prevData) => ({
-                                            ...prevData,
-                                            status: e.target.value,
-                                        }))
-                                    }
-                                    className="w-full border border-gray-300 rounded p-2 mt-1"
-                                >
-                                    <option value="to_do">To Do</option>
-                                    <option value="in_progress">
-                                        In Progress
-                                    </option>
-                                    <option value="done">Complete</option>
-                                </select>
-                            </div>
-                        </div>
-
-                        {/* Date Added */}
-                        <div className="flex gap-2 items-center">
+                        <div>
                             <h2 className="text-lg font-semibold text-gray-700">
-                                DATE ADDED:
+                                STATUS:
                             </h2>
-                            <p className="text-gray-700">{task.created_at}</p>
+                            <select
+                                value={data.status}
+                                defaultChecked={data.status}
+                                onChange={(e) =>
+                                    setData({ ...data, status: e.target.value })
+                                }
+                                className="w-full border border-gray-300 rounded p-2 mt-1"
+                            >
+                                <option value="to_do">To Do</option>
+                                <option value="in_progress">In Progress</option>
+                                <option value="done">Complete</option>
+                            </select>
                         </div>
+                    </div>
 
-                        {/* buttons */}
-                        <div className="flex items-center space-x-2 mt-2">
-                            {/* Save Button */}
-                            {/* <PrimaryButton>
+                    {/* Date Added */}
+                    <div className="flex gap-2 items-center">
+                        <h2 className="text-lg font-semibold text-gray-700">
+                            DATE ADDED:
+                        </h2>
+                        <p className="text-gray-700">{task.created_at}</p>
+                    </div>
+
+                    {/* buttons */}
+                    <div className="flex items-center space-x-2 mt-2">
+                        {/* Save Button */}
+                        {/* <PrimaryButton>
                                 <FaSave className="mr-2" /> Save
                             </PrimaryButton> */}
 
-                            {/* Delete Button */}
-                            <DangerButton
-                                onClick={() => setIsDeleteModalOpen(true)}
-                            >
-                                <FaTrash className="mr-2" /> Delete
-                            </DangerButton>
-                            <PrimaryButton type="submit">
-                                <FaEdit className="mr-2" /> Save
-                            </PrimaryButton>
-                        </div>
-                    </form>
+                        {/* Delete Button */}
+                        <DangerButton
+                            onClick={() => setIsDeleteModalOpen(true)}
+                        >
+                            <FaTrash className="mr-2" /> Delete
+                        </DangerButton>
+                        <PrimaryButton type="submit" onClick={handleEdit}>
+                            <FaEdit className="mr-2" /> Save
+                        </PrimaryButton>
+                    </div>
 
                     {/* Comments */}
                     <div>
