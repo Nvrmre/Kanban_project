@@ -8,6 +8,8 @@ use App\Models\Board;
 use App\Models\Comment;
 use App\Http\Requests\StoreTaskRequest;
 use App\Http\Requests\UpdateTaskRequest;
+use App\Http\Requests\UpdateTaskBoardRequest;
+
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 
@@ -102,10 +104,20 @@ class TaskController extends Controller
     /**
      * Memperbarui tugas yang ada.
      */
-   public function update(UpdateTaskRequest $request, Task $task, $boardId)
+   public function update(UpdateTaskRequest $request, Task $task)
 {
     $data = $request->validated();
-    
+
+
+    $task->update($data);
+
+}
+
+
+ public function update_board(UpdateTaskBoardRequest $request, Task $task, $boardId)
+{
+    $data = $request->validated();
+
     // If board_id is provided, update it
     if ($boardId) {
         $task->board_id = $boardId;
@@ -126,8 +138,8 @@ class TaskController extends Controller
         $boardId = $task->board_id; // Simpan board ID untuk redirect
         $task->delete();
 
-        return redirect()->route('task.index', ['board_id' => $boardId])
-            ->with('success', 'Tugas berhasil dihapus.');
+        // return redirect()->route('task.index', ['board_id' => $boardId])
+        //     ->with('success', 'Tugas berhasil dihapus.');
     }
 
     public function report() {

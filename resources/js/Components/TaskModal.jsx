@@ -1,7 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import DeleteModal from "@/Components/DeleteModal";
-import { FaTimes, FaSave, FaTrash } from "react-icons/fa";
+import { FaTimes, FaSave, FaTrash, FaEdit } from "react-icons/fa";
 import InputLabel from "@/Components/InputLabel";
 import { IoMdSend } from "react-icons/io";
 import { router } from "@inertiajs/react";
@@ -9,9 +9,32 @@ import DangerButton from "@/Components/DangerButton";
 import PrimaryButton from "@/Components/PrimaryButton";
 
 const TaskModal = ({ isOpen, onClose, task }) => {
-    console.log("adasd", task);
+    console.log("Taskkkk", task);
     // Add a guard clause if task is null
     if (!isOpen || !task) return null;
+
+    const [data, setData] = useState({
+        name: "",
+        description: "",
+        due_date: "",
+        priority: "",
+        status: "",
+        created_at: "",
+    });
+
+    // Update state when task prop changes
+    useEffect(() => {
+        if (task) {
+            setData({
+                name: task.name || "",
+                description: task.description || "",
+                due_date: task.due_date || "",
+                priority: task.priority || "",
+                status: task.status || "",
+                created_at: task.created_at || "",
+            });
+        }
+    }, [isOpen, task]);
 
     const [checklist, setChecklist] = useState(task.checklist || []);
     const [newTask, setNewTask] = useState("");
@@ -80,6 +103,24 @@ const TaskModal = ({ isOpen, onClose, task }) => {
         // }
     };
 
+    const handleEdit = (e) => {
+        e.preventDefault();
+
+        router.put(`/task/${task.id}`, {
+            ...data,
+
+            onSuccess: () => {
+                console.log("Task updated successfully", task);
+                onClose();
+            },
+            onError: (errors) => {
+                console.log("Error updating task", errors);
+            },
+        });
+        onClose();
+        window.location.reload();
+    };
+
     return (
         <div className="fixed inset-0 bg-black bg-opacity-40 flex justify-center items-center z-50">
             <div className="bg-white w-full max-w-4xl p-6 rounded-lg shadow-lg relative max-h-[80vh] overflow-y-auto">
@@ -94,12 +135,12 @@ const TaskModal = ({ isOpen, onClose, task }) => {
                 {/* Modal Content */}
                 <div className="space-y-6">
                     {/* Title */}
-                    <div>
+                    <div className="flex gap-2 items-center">
                         <h2 className="text-lg font-semibold text-gray-700">
                             TITLE:
                         </h2>
-                        <p className="text-xl font-bold text-gray-900 mt-1">
-                            {task.title}
+                        <p className="text-xl font-bold text-gray-900 ">
+                            {data.name}
                         </p>
                     </div>
 
@@ -110,8 +151,10 @@ const TaskModal = ({ isOpen, onClose, task }) => {
                         </h2>
                         <input
                             type="date"
-                            value={task.dueDate || ""}
-                            onChange={(e) => (task.dueDate = e.target.value)}
+                            value={data.due_date || ""}
+                            onChange={(e) =>
+                                setData({ ...data, due_date: e.target.value })
+                            }
                             className="w-25 border border-gray-300 rounded p-2 mt-1"
                         />
                     </div>
@@ -217,7 +260,13 @@ const TaskModal = ({ isOpen, onClose, task }) => {
                         <textarea
                             className="w-full border border-gray-300 rounded p-2 mt-1"
                             rows="3"
-                            defaultValue={task.description}
+                            defaultValue={data.description}
+                            onChange={(e) =>
+                                setData({
+                                    ...data,
+                                    description: e.target.value,
+                                })
+                            }
                         ></textarea>
                     </div>
 
@@ -228,12 +277,19 @@ const TaskModal = ({ isOpen, onClose, task }) => {
                                 PRIORITY:
                             </h2>
                             <select
-                                defaultValue={task.priority}
+                                value={data.priority}
+                                defaultChecked={data.priority}
+                                onChange={(e) =>
+                                    setData({
+                                        ...data,
+                                        priority: e.target.value,
+                                    })
+                                }
                                 className="w-full border border-gray-300 rounded p-2 mt-1"
                             >
-                                <option value="High">High</option>
-                                <option value="Medium">Medium</option>
-                                <option value="Low">Low</option>
+                                <option value="high">High</option>
+                                <option value="medium">Medium</option>
+                                <option value="low">Low</option>
                             </select>
                         </div>
                         <div>
@@ -241,25 +297,26 @@ const TaskModal = ({ isOpen, onClose, task }) => {
                                 STATUS:
                             </h2>
                             <select
-                                defaultValue={task.priority}
+                                value={data.status}
+                                defaultChecked={data.status}
+                                onChange={(e) =>
+                                    setData({ ...data, status: e.target.value })
+                                }
                                 className="w-full border border-gray-300 rounded p-2 mt-1"
                             >
                                 <option value="to_do">To Do</option>
                                 <option value="in_progress">In Progress</option>
                                 <option value="done">Complete</option>
                             </select>
-                            {/* <span className="inline-block bg-blue-100 text-blue-600 text-sm px-2 py-1 rounded">
-                                    {task.status}
-                                </span> */}
                         </div>
                     </div>
 
                     {/* Date Added */}
-                    <div>
+                    <div className="flex gap-2 items-center">
                         <h2 className="text-lg font-semibold text-gray-700">
                             DATE ADDED:
                         </h2>
-                        <p className="text-gray-600">{task.dateAdded}</p>
+                        <p className="text-gray-700">{task.created_at}</p>
                     </div>
 
                     {/* buttons */}
@@ -275,6 +332,9 @@ const TaskModal = ({ isOpen, onClose, task }) => {
                         >
                             <FaTrash className="mr-2" /> Delete
                         </DangerButton>
+                        <PrimaryButton type="submit" onClick={handleEdit}>
+                            <FaEdit className="mr-2" /> Save
+                        </PrimaryButton>
                     </div>
 
                     {/* Comments */}
@@ -321,6 +381,7 @@ const TaskModal = ({ isOpen, onClose, task }) => {
                 isOpen={isDeleteModalOpen}
                 onClose={() => setIsDeleteModalOpen(false)} // Close DeleteModal
                 title="Delete Task"
+                taskId={task.id}
             />
         </div>
     );
