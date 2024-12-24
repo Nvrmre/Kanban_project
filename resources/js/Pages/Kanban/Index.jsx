@@ -136,6 +136,7 @@ function Board({ boards, tasks, boardId, projectId, comments, projects}) {
     // Task Modal Handlers
     const openTaskModal = (task) => {
         console.log("Taske", task);
+        console.log("Taske", task);
         setSelectedTask(task);
         setIsTaskModalOpen(true);
     };

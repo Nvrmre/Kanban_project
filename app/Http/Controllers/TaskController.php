@@ -148,6 +148,8 @@ class TaskController extends Controller
 
         // return redirect()->route('task.index', ['board_id' => $boardId])
         //     ->with('success', 'Tugas berhasil dihapus.');
+        // return redirect()->route('task.index', ['board_id' => $boardId])
+        //     ->with('success', 'Tugas berhasil dihapus.');
     }
 
     public function report()

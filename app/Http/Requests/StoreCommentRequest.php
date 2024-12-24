@@ -12,6 +12,7 @@ class StoreCommentRequest extends FormRequest
     public function authorize(): bool
     {
         return true; // Anda bisa menambahkan logika otorisasi jika perlu
+        return true; // Anda bisa menambahkan logika otorisasi jika perlu
     }
 
     /**

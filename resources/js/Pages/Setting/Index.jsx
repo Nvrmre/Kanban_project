@@ -56,7 +56,7 @@ export default function Setting() {
 
     const handleNotificationSubmit = (e) => {
         e.preventDefault();
-        post(route("settings.notification.update"), {
+        post(route("settings.updateNotification"), {
             preserveScroll: true,
             onSuccess: () => reset(),
         });
@@ -171,7 +171,7 @@ export default function Setting() {
                             Configure notification duration preferences.
                         </p>
                         <form
-                            onSubmit={handleNotificationSubmit}
+                            onSubmit={handleSubmit}
                             className="mt-6 space-y-6"
                         >
                             <InputLabel

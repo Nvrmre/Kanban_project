@@ -90,7 +90,7 @@ const TaskModal = ({ isOpen, onClose, task }) => {
 
     return (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-            <div className="bg-white p-6 rounded-lg w-full max-w-md sm:max-w-lg lg:max-w-xl">
+            <div className="bg-white p-6 rounded-lg w-full max-w-md sm:max-w-lg lg:max-w-xl max-h-[80vh] overflow-y-auto">
                 <div className="flex justify-between items-center mb-4">
                     <h2 className="text-2xl font-bold text-gray-800">Task Details</h2>
                     <button onClick={onClose} className="text-gray-500 hover:text-gray-800">
@@ -231,9 +231,7 @@ const TaskModal = ({ isOpen, onClose, task }) => {
                             </select>
                         ) : (
                             <p className="text-sm text-gray-700">
-                                {task.assignedUser
-                                    ? task.assignedUser.name
-                                    : "No user assigned"}
+                                {task.assigned_id}
                             </p>
                         )}
                     </div>

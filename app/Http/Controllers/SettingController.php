@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 
 class SettingController extends Controller
@@ -35,9 +36,13 @@ class SettingController extends Controller
 
         // Find the user by email
         $user = User::where('email', $validated['email'])->first();
-
+       
         // Update user's role
-        $user->update(['role' => $validated['role']]);
+        $user->update([
+            'role' => $validated['role'],
+            'notification_duration' => $validated['notification_duration']
+        ]);
+
 
         // If you have additional logic for notifications, update here
 
@@ -47,15 +52,15 @@ class SettingController extends Controller
 
     // public function updateNotification(Request $request)
     // {
-    //     // Validate notification duration
+    //     // Validate notification duration input
     //     $validated = $request->validate([
     //         'notification_duration' => 'required|integer|in:6,12,24,72,120,168',
     //     ]);
-    //     // Update user's notification duration
-    //     auth()->user()->update(['notification_duration' => $validated['notification_duration']]);
 
+    //     // Update the user's notification duration
+    //     $user = 
+
+    //     // Redirect back to the settings page with a success message
     //     return redirect()->route('setting.index')->with('success', 'Notification settings updated successfully!');
     // }
-
-
 }

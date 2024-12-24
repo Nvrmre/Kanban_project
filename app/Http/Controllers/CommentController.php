@@ -27,7 +27,7 @@ class CommentController extends Controller
             'users' => User::all(),
             'task' => $task,
             'comments' => CommentResource::collection($task->comments),
-           
+
         ]);
     }
 
@@ -36,10 +36,10 @@ class CommentController extends Controller
     {
         $task = Task::findOrFail($taskId);
         $comments = Comment::whereIn('task_id', $task->pluck('id')->flatten())
-        ->with('user')
-        ->latest()
-        ->get();
- 
+            ->with('user')
+            ->latest()
+            ->get();
+
 
         return Inertia::render('Kanban/Index', [
             'users' => User::all(),
@@ -63,10 +63,11 @@ class CommentController extends Controller
         Comment::create([
             'comment' => $request->comment,
             'task_id' => $request->task_id,
-            'user_id' =>$request->user_id,
+            'user_id' => $request->user_id,
         ]);
         return redirect()->route('kanban.index', $task->id)->with('success', 'Comment added successfully!');
     }
+
 
 
 
@@ -84,6 +85,10 @@ class CommentController extends Controller
         if (Auth::id() !== $comment->users_id) {
             abort(403, 'Unauthorized to delete this comment.');
         }
+
+        $comment->delete();
+
+        return back()->with('success', 'Comment deleted successfully.');
 
         $comment->delete();
 
