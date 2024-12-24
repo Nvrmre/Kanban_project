@@ -2,11 +2,9 @@ import React, { useEffect } from "react";
 import { FaTimes } from "react-icons/fa";
 import TextInput from "@/Components/TextInput";
 import InputError from "@/Components/InputError";
-import { useForm } from "@inertiajs/react";
-import { router } from "@inertiajs/react";
+import { router, useForm } from "@inertiajs/react";
 
 const EditBoard = ({ isOpen, onClose, boards }) => {
-    console.log("Boards:2", boards.id);
     const { data, setData, post, errors } = useForm({
         name: "",
     });

@@ -14,6 +14,7 @@ const AddTaskModal = ({ isOpen, onClose, boards, onTaskCreated }) => {
         status: "to_do",
         due_date: "",
         notification_duration: "1 day",
+        assigned_id: "",
     });
 
     const handleSubmit = (e) => {

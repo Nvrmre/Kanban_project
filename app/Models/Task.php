@@ -23,6 +23,11 @@ class Task extends Model
     /**
      * Mutator untuk due_date agar selalu tersimpan dengan format yang benar.
      */
+    public function assignedUser()
+    {
+        return $this->belongsTo(User::class, 'assigned_id');
+    }
+
     public function setDueDateAttribute($value)
     {
         $this->attributes['due_date'] = \Carbon\Carbon::parse($value)->format('Y-m-d');
@@ -48,9 +53,15 @@ class Task extends Model
         return $this->belongsTo(Board::class);
     }
 
-     public function comments()
-    {
-        return $this->hasMany(Comment::class);
-    }
 
+    public function comments()
+    {
+        return $this->hasMany(Comment::class, 'task_id');
+    }
+    protected static function booted()
+    {
+        static::deleting(function ($task) {
+            $task->comments()->delete();
+        });
+    }
 }

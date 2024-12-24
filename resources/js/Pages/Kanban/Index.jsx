@@ -7,7 +7,7 @@ import { FaRegTrashAlt, FaPen } from "react-icons/fa";
 import { MdFormatColorFill } from "react-icons/md";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import EditCardModal from "@/Components/EditCardModal";
-import { Head, router } from "@inertiajs/react";
+import { Head, router, usePage } from "@inertiajs/react";
 import ErrorBoundary from "@/error";
 
 import { BsPersonFillAdd } from "react-icons/bs";
@@ -16,9 +16,13 @@ import PrimaryButton from "@/Components/PrimaryButton";
 import axios from "axios";
 import EditNameBoard from "@/Components/EditBoard";
 
-function Board({ boards, tasks, boardId, projectId, comments }) {
-    console.log("Commnets:", comments);
-    console.log("Boards:", tasks);
+function Board({ boards, tasks, boardId, projectId, comments, projects}) {
+    const { users } = usePage().props;
+    
+    console.log(projectId);
+    
+   
+    
     const mergedTasksByBoard = boards.reduce((acc, board) => {
         acc[board.name] = {
             id: board.id,
@@ -33,7 +37,10 @@ function Board({ boards, tasks, boardId, projectId, comments }) {
             (task) => task.board_id === board.id
         );
     });
-
+    
+        // Mengambil prop users dari Inertia
+    
+        
     const columnOrder = boards.map((board) => board.name);
 
     const [columns, setColumns] = useState(mergedTasksByBoard);
@@ -77,7 +84,7 @@ function Board({ boards, tasks, boardId, projectId, comments }) {
             console.log("Drag end result:", destination.droppableId);
             router.visit(`/tasks/${taskId}/${destination.droppableId}`, {
                 method: "put",
-                data: { task: taskId, boardId: destination.droppableId },
+                data: { task: taskId },
                 onSuccess: (data) => {
                     console.log("Board updated successfully", data);
                     onClose();
@@ -128,6 +135,7 @@ function Board({ boards, tasks, boardId, projectId, comments }) {
 
     // Task Modal Handlers
     const openTaskModal = (task) => {
+        console.log("Taske", task);
         setSelectedTask(task);
         setIsTaskModalOpen(true);
     };
@@ -166,6 +174,7 @@ function Board({ boards, tasks, boardId, projectId, comments }) {
                     ...prevOrder,
                     newBoardName,
                 ]);
+                window.location.reload();
                 setNewBoardName("");
             }
         } catch (error) {
@@ -463,6 +472,8 @@ function Board({ boards, tasks, boardId, projectId, comments }) {
                         isOpen={isTaskModalOpen}
                         onClose={closeTaskModal}
                         task={selectedTask}
+                        users={users}
+                        
                     />
 
                     <AddTaskModal
