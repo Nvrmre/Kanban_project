@@ -10,7 +10,14 @@ use App\Http\Controllers\SettingController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
-Route::redirect('/', '/dashboard');
+Route::get('/', function () {
+    // Jika user sudah login, arahkan ke dashboard
+    if (auth()->check()) {
+        return redirect()->route('dashboard');
+    }
+    // Jika user belum login, tampilkan halaman landing
+    return Inertia::render('Welcome');
+})->name('Welcome');
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/dashboard', [ProjectController::class, 'index'])
@@ -21,7 +28,7 @@ Route::put('/project/{project}', [ProjectController::class, 'update'])->middlewa
 
 
 Route::resource('project', ProjectController::class);
-//Route::put('/tasks/{task}/{boardId}', [TaskController::class, 'update_board'])->name('task.updateBoard');
+Route::put('/tasks/{task}/{boardId}', [TaskController::class, 'update_board'])->name('task.updateBoard');
 
 // For adding a comment to a specific task
 // Menambahkan route khusus untuk menambah komentar pada task tertentu
